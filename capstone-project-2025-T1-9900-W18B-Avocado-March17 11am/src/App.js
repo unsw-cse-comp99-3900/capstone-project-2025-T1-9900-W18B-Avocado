@@ -10,6 +10,7 @@ import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
 
 import MainHomePage from "./pages/MainHomePage/MainHomePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import EventDetailPage from "./pages/EventDetailPage/EventDetailPage";
 // import SchedulePage from "./pages/Schedule/SchedulePage";
 
 
@@ -27,6 +28,7 @@ const App = () => {
 
           <Route path="/home" element={<MainHomePage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/event/:id" element={<EventDetailPage />} />
           {/* <Route path="/schedule" element={<SchedulePage />} /> */}
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />

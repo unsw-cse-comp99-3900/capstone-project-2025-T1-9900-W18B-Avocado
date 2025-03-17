@@ -21,7 +21,7 @@ const shortcutsData = [
   { name: "Past Events", summary: "Explore previous events", icon: <FiSunset />, path: "/past-events" },
 ];
 
-const todaysEventsData = [
+export const todaysEventsData = [
   {
     id: 1,
     title: "Go Rumbling",
@@ -45,23 +45,23 @@ const todaysEventsData = [
   },
 ];
 
-const upcomingEventsData = [
+export const upcomingEventsData = [
   {
-    id: 1,
+    id: 4,
     title: "Book Club Meeting",
     summary: "Talk about great books",
     time: "March 20, 2025 | 10:00 AM",
     image: event4,
   },
   {
-    id: 2,
+    id: 5,
     title: "Music Jam Section",
     summary: "Play and enjoy music",
     time: "March 22, 2025 | 2:00 PM",
     image: event5,
   },
   {
-    id: 3,
+    id: 6,
     title: "Food Festival",
     summary: "Taste amazing food",
     time: "March 25, 2025 | 6:00 PM",
@@ -89,14 +89,14 @@ function Home() {
           </div>
           <div className="event-cards">
             {todaysEventsData.map((event) => (
-              <div className="event-card" key={event.id}>
+              <Link to={`/event/${event.id}`} key={event.id} className="event-card">
                 <img src={event.image} alt={event.title} className="event-image" />
                 <div className="event-info">
                   <div className="event-title">{event.title}</div>
                   <div className="event-summary">{event.summary}</div>
                   <div className="event-time">{event.time}</div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -108,14 +108,14 @@ function Home() {
           </div>
           <div className="event-cards">
             {upcomingEventsData.map((event) => (
-              <div className="event-card" key={event.id}>
+              <Link to={`/event/${event.id}`} key={event.id} className="event-card">
                 <img src={event.image} alt={event.title} className="event-image" />
                 <div className="event-info">
                   <div className="event-title">{event.title}</div>
                   <div className="event-summary">{event.summary}</div>
                   <div className="event-time">{event.time}</div>
                 </div>
-              </div>
+                </Link>
             ))}
           </div>
         </div>
