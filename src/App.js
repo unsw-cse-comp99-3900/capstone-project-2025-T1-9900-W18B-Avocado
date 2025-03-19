@@ -11,7 +11,8 @@ import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
 import MainHomePage from "./pages/MainHomePage/MainHomePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SchedulePage from "./pages/SchedulePage/SchedulePage";
-// import EventsPage from "./pages/EventsPage/EventsPage";
+import EventDetailPage from "./pages/EventDetailPage/EventDetailPage";
+
 
 const App = () => {
   return (
@@ -28,7 +29,8 @@ const App = () => {
           <Route path="/home" element={<MainHomePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/schedule/*" element={<SchedulePage />} />
-          {/* <Route path="/events/*" element={<EventsPage />} /> */}
+          <Route path="/event/:id" element={<EventDetailPage />} />
+
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/recommend-events" element={<RecommendEventPage />} />
