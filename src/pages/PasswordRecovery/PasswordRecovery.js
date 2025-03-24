@@ -21,9 +21,41 @@ const PasswordRecovery = () => {
   const [email, setEmail] = useState("");
   const [inputCode, setInputCode] = useState("");
   const [serverCode, setServerCode] = useState("");
+  const [prevPassword, setPrevPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+
+  // const MOCK_CODE = "123456";
+
+  // const handleEmailSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   setTimeout(() => {
+  //     alert("✅ (Mock) Verification code sent to your email.");
+  //     setServerCode(MOCK_CODE);
+  //     setStep(2);
+  //   }, 800);
+  // };
+
+
+  // const handleResetPassword = async (e) => {
+  //   e.preventDefault();
+
+  //   if (inputCode !== serverCode) {
+  //     alert("❌ Incorrect verification code.");
+  //     return;
+  //   }
+
+  //   if (newPassword !== confirmNewPassword) {
+  //     alert("❌ Passwords do not match.");
+  //     return;
+  //   }
+
+  //   setTimeout(() => {
+  //     setSuccessDialogOpen(true);
+  //   }, 800);
+  // };
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -34,11 +66,13 @@ const PasswordRecovery = () => {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.text();
+      const data = await response.json();
 
       if (response.status === 200) {
         alert("✅ Verification code sent to your email.");
+        // get verification code and previous password from the backend
         setServerCode(data.code);
+        setPrevPassword(data.password)
         setStep(2);
       } else {
         alert("❌ " + data);
@@ -48,19 +82,21 @@ const PasswordRecovery = () => {
     }
   };
 
-  const handleCodeVerification = (e) => {
-    e.preventDefault();
-    if (inputCode === serverCode) {
-      setStep(3);
-    } else {
-      alert("Incorrect verification code.");
-    }
-  };
-
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    // try to match verification code
+    if (inputCode !== serverCode) {
+      alert("❌ Incorrect verification code.");
+      return;
+    }
+
     if (newPassword !== confirmNewPassword) {
-      alert("Passwords do not match.");
+      alert("❌ Passwords do not match.");
+      return;
+    }
+
+    if (newPassword === prevPassword) {
+      alert("❌ Your new password can't be the same as your previous one.");
       return;
     }
 
@@ -121,7 +157,7 @@ const PasswordRecovery = () => {
           maxWidth: 400,
           textAlign: "center",
           backgroundColor: "white",
-          marginTop: 10,
+          marginTop: 6,
         }}
       >
         {step === 1 && (
@@ -161,10 +197,14 @@ const PasswordRecovery = () => {
           </form>
         )}
 
+
         {step === 2 && (
-          <form onSubmit={handleCodeVerification}>
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-              Enter the code sent to your email
+          <form onSubmit={handleResetPassword}>
+            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+              Reset Password
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+            A verification code has been sent to your email. Please enter the code to set a new password for your account.
             </Typography>
             <TextField
               label="Verification Code"
@@ -176,30 +216,6 @@ const PasswordRecovery = () => {
               onChange={(e) => setInputCode(e.target.value)}
               required
             />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              sx={{
-                mt: 2,
-                py: 1.5,
-                fontSize: "16px",
-                fontWeight: "bold",
-                borderRadius: "8px",
-                backgroundColor: "#000",
-                "&:hover": { backgroundColor: "#333" },
-              }}
-            >
-              Verify →
-            </Button>
-          </form>
-        )}
-
-        {step === 3 && (
-          <form onSubmit={handleResetPassword}>
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-              Set New Password
-            </Typography>
             <TextField
               label="New Password"
               type="password"
@@ -220,6 +236,23 @@ const PasswordRecovery = () => {
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               required
             />
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => setStep(1)}
+              sx={{
+                mt: 2,
+                py: 1.5,
+                fontSize: "16px",
+                fontWeight: "bold",
+                borderRadius: "8px",
+                borderColor: "#000",
+                color: "#000",
+                "&:hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              ← Back
+            </Button>
             <Button
               type="submit"
               variant="contained"
