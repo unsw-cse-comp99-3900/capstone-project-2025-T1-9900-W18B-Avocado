@@ -124,6 +124,10 @@ const PasswordRecovery = () => {
     navigate("/login");
   };
 
+  const returnLogin = () => {
+    navigate("/login");
+  }
+
   return (
     <Box
       sx={{
@@ -178,6 +182,23 @@ const PasswordRecovery = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={returnLogin}
+              sx={{
+                mt: 2,
+                py: 1.5,
+                fontSize: "16px",
+                fontWeight: "bold",
+                borderRadius: "8px",
+                borderColor: "#000",
+                color: "#000",
+                "&:hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              ← Back
+            </Button>
             <Button
               type="submit"
               variant="contained"
