@@ -1,36 +1,30 @@
 from datetime import datetime, timedelta
 import random
-
+from app.utils.redis_client import redis_client
 # In-memory verification code store
 verification_codes = {}
+
 
 # Generate a 6-digit random code
 def generate_code():
     return str(random.randint(100000, 999999))
 
-# Store code with 5-minute expiration
+# Store code in Redis with 5-minute expiration
 def store_code(email, code):
-    # 清除旧验证码，确保唯一性
-    verification_codes.pop(email, None)
+    key = f"verify:{email}"
+    redis_client.setex(name=key, time=timedelta(minutes=5), value=code)
+    print(f"[验证码已写入 Redis] {key} = {code}")
 
-    expire_at = datetime.utcnow() + timedelta(minutes=5)
-    verification_codes[email] = {
-        "code": code,
-        "expire_at": expire_at
-    }
-    print(f"[验证码已更新] {email}: {verification_codes[email]}")
-
-# Get the full code record (optional helper)
+# Get the stored code from Redis
 def get_code_record(email):
-    return verification_codes.get(email)
+    code = redis_client.get(f"verify:{email}")
+    return {"code": code} if code else None
 
-# Verify if the code matches and is not expired
+# Verify if code matches
 def verify_code(email, input_code):
-    record = verification_codes.get(email)
-    if not record:
-        return False
-    return record["code"] == input_code and datetime.utcnow() < record["expire_at"]
+    stored_code = redis_client.get(f"verify:{email}")
+    return stored_code == input_code
 
-# Remove used/expired code
+# Remove code after used or manually
 def remove_code(email):
-    verification_codes.pop(email, None)
+    redis_client.delete(f"verify:{email}")

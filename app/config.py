@@ -5,10 +5,9 @@ NACOS_SERVICE_NAME = "user-service"  # 在 Nacos 里注册的服务名
 NACOS_DATA_ID = "mysql-config"  # 配置 ID
 
 
-# SMTP 邮箱配置（以 QQ 邮箱为例）
-MAIL_SERVER = "smtp.gmail.com"
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_USERNAME = "w18bavocado@gmail.com"
-MAIL_PASSWORD = "inbzwkbichinuzzk"  # 注意：是授权码，不是邮箱登录密码
-MAIL_SENDER = "w18bavocado@gmail.com"
+MAIL_SERVER = "smtp.163.com"
+MAIL_PORT = 465
+MAIL_USE_SSL = True  # 163 需要 SSL（不是 TLS！）
+MAIL_USERNAME = "15505525259@163.com"
+MAIL_PASSWORD = "URj9k3BsspcabFdT"  # 不是登录密码，是授权码！
+MAIL_SENDER = "15505525259@163.com"
