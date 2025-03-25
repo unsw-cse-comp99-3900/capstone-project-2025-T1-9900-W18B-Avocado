@@ -2,10 +2,10 @@ from app.services.user_service import register_user, login_user
 from flask import Blueprint, request, jsonify
 from app.services.user_service import handle_email_verification
 from app.services.user_service import handle_password_reset
-
+from app.utils.logger import get_logger
 
 user_bp = Blueprint('user_bp', __name__)
-
+logger = get_logger("user-service")
 
 @user_bp.route("/register", methods=["POST"])
 def register():
@@ -17,6 +17,7 @@ def register():
 def login():
     data = request.json
     response, code = login_user(data.get("email"), data.get("password"))
+    logger.info("Login attempt", extra={"email": data.get("email")})
     return jsonify(response), code
 
 @user_bp.route("/validate-and-send", methods=["POST"])
