@@ -1,3 +1,17 @@
 {"asctime": "2025-03-25 20:12:49,726", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
 {"asctime": "2025-03-25 20:18:42,641", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
 {"asctime": "2025-03-25 20:19:10,971", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 00:52:51,321", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 00:54:34,290", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 00:55:40,282", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 00:58:21,561", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:19:26,181", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:26:49,647", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:26:51,177", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:28:40,148", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:28:41,752", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:29:20,673", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:29:26,097", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:33:21,322", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:33:51,578", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
+{"asctime": "2025-03-26 01:35:18,477", "levelname": "INFO", "service": "user-service", "message": "Login attempt"}
