@@ -1,0 +1,80 @@
+.schedule-container {
+  margin-top: 20px;
+  margin-left: 30px;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+/* 左侧选项卡 */
+.tabs {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+}
+
+.tabs a {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  border-radius: 5px;
+  font-weight: bold;
+  color: black;
+  background: white;
+  display: block;
+}
+
+.tabs a.active {
+  background: #4682B4;
+  color: white;
+}
+
+.tabs a:hover {
+  background: #87CEFA;
+  color: white;
+}
+
+/* 右侧事件表格 */
+.events-list {
+  flex-grow: 1; /* 占满剩余空间 */
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.events-table th,
+.events-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.events-table th {
+  background-color: #4682B4;
+  color: white;
+}
+
+.ticket-button {
+  padding: 8px 12px;
+  background: #4682B4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ticket-button:hover {
+  background: #5a9bd3;
+}
