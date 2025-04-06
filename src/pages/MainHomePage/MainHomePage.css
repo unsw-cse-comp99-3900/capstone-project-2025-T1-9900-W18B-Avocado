@@ -18,14 +18,14 @@
   align-items: center;
 
   gap: 20px;
-  width: 25%; 
+  width: 24%; 
   min-height: 100%;
   /* border: 1px solid black; */
   padding: 10px;
 }
 
 .shortcuts {
-  width: 90%;
+  width: 96%;
   padding: 15px;
   display: flex;
   flex-direction: column;
@@ -68,7 +68,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  width: 75%;
+  width: 76%;
   padding: 10px;
   background-color: #ffffff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
@@ -76,12 +76,11 @@
 }
 
 .cards-container {
+  flex: 1;
+  padding: 10px;
+  
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 45%;
-  padding: 10px;
-  gap: 10px;
 }
 
 
@@ -89,6 +88,7 @@
   display: flex;
   justify-content: space-between;
   font-weight: bold;
+  margin-bottom: 30px;
 }
 .event-module {
   padding-left: 10px;
@@ -112,27 +112,25 @@
 }
 
 .event-cards {
-  display: flex;
+  display: grid;
   gap: 20px;
   padding: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .event-card {
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  width: 250px;
-  min-width: 12%;
-
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   overflow: hidden;
   transition: transform 0.2s;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
 }
 
 .event-card:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .event-info {
@@ -140,14 +138,14 @@
   font-size: 14px;
   flex-direction: column;
   align-items: center;
-  padding: 5px;
+  padding: 10px;
   gap: 4px;
 }
 
 /* card details */
 .event-image {
   width: 100%;
-  height: 100px;
+  height: 140px;
   object-fit: cover;
 }
 
@@ -233,7 +231,7 @@
 
 /* 卡片样式固定大小 */
 .event-card.popup-card {
-  width: 200px;
+  width: 280px;
   height: 250px;
   display: flex;
   flex-direction: column;
@@ -268,4 +266,10 @@
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   position: relative;
+}
+
+@media (max-width: 968px) {
+  .find-more {
+    display: none;
+  }
 }

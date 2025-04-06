@@ -7,8 +7,11 @@ import "./MainHomePage.css";
 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { Button, Pagination ,Grid   } from "@mui/material";
+import EventCard from "../../components/EventCard"; 
 
-const useMockData = false;
+
+const useMockData = true;
 const mockEvents = [
   {
     id: 1,
@@ -62,7 +65,7 @@ const mockEvents = [
   {
     id: 5,
     title: "Mock Event 5",
-    summary: "Happening now",
+    summary: "Happening now IAM MCOK EVENT 5 and come on to have a look!!",
     time: "2025-03-29T10:00:00Z",
     end_time: "2025-04-06T23:59:59Z",
     image: require("../../assets/todayevent2.png"),
@@ -74,7 +77,7 @@ const mockEvents = [
   {
     id: 6,
     title: "Mock Event 6",
-    summary: "Happening now",
+    summary: "Happening now IAM MCOK EVENT SIX and come on to have a look!!",
     time: "2025-03-29T10:00:00Z",
     end_time: "2025-04-06T23:59:59Z",
     image: require("../../assets/todayevent3.png"),
@@ -88,7 +91,7 @@ const mockEvents = [
     id: 7,
     title: "Mock Event C",
     summary: "Up next",
-    time: "2025-04-06T12:00:00Z",
+    time: "2025-04-07T12:00:00Z",
     end_time: "2025-04-08T14:00:00Z",
     image: "",
     location: "Hall",
@@ -127,60 +130,67 @@ function EventPopup({ title, events, onClose, page, setPage }) {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-        <button className="popup-close" onClick={onClose}>Close</button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={onClose}
+            sx={{ position: "absolute", top: 10, right: 10 }}
+          >
+            Close
+          </Button>
+
         <h2>{title}</h2>
         <div className="event-cards popup-grid">
           {paginatedEvents.map(event => (
-            <Link to={`/event/${event.id}`} key={event.id} className="event-card popup-card"
-                onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}
+            <Link
+              to={`/event/${event.id}`}
+              key={event.id}
+              onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}
+              style={{ textDecoration: "none" }}
             >
-              <img
-                src={event.image && event.image.trim() !== "" ? event.image : "/logo.png"}
-                alt={event.title}
-                className="event-image"
-              />
-              <div className="event-info">
-                <div className="event-title">{event.title}</div>
-                <div className="event-summary">{event.summary}</div>
-                <div className="event-time">{new Date(event.time).toLocaleString()}</div>
-              </div>
+              <EventCard image={event.image} title={event.title} summary={event.summary} variant="popup" />
             </Link>
           ))}
         </div>
 
-        <div className="pagination-controls">
-          <button onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>Previous</button>
-          <span>Page {page} / {totalPages}</span>
-          <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>Next</button>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(event, value) => setPage(value)}
+            variant="outlined"
+            shape="rounded"
+            color="primary"
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFindMore, onPastFindMore, shortcutsData  }) {
+function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFindMore, onPastFindMore, shortcutsData }) {
   return (
     <div className="content">
       <div className="left-shortcuts">
-      {shortcutsData.map((shortcut, index) => {
-        const content = (
-          <>
-            <div className="shortcut-name">{shortcut.name}</div>
-            <div className="shortcut-summary">{shortcut.summary}</div>
-            <div className="shortcut-icon">{shortcut.icon}</div>
-          </>
-        );
+        {shortcutsData.map((shortcut, index) => {
+          const content = (
+            <>
+              <div className="shortcut-name">{shortcut.name}</div>
+              <div className="shortcut-summary">{shortcut.summary}</div>
+              <div className="shortcut-icon">{shortcut.icon}</div>
+            </>
+          );
 
-        return shortcut.path && shortcut.path !== "#" ? (
-          <Link to={shortcut.path} key={index} className="shortcuts">
-            {content}
-          </Link>
-        ) : (
-          <div key={index} className="shortcuts" onClick={shortcut.onClick}>
-            {content}
-          </div>
-        );
-      })}
+          return shortcut.path && shortcut.path !== "#" ? (
+            <Link to={shortcut.path} key={index} className="shortcuts">
+              {content}
+            </Link>
+          ) : (
+            <div key={index} className="shortcuts" onClick={shortcut.onClick}>
+              {content}
+            </div>
+          );
+        })}
       </div>
 
       <div className="right-cards">
@@ -188,44 +198,38 @@ function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFind
         <div className="cards-container">
           <div className="cards-header">
             <div className="event-module">Current Events</div>
-            <button className="find-more" onClick={onCurrentFindMore}>Find More</button>
+            <Button variant="outlined" size="small" onClick={onCurrentFindMore}>
+              Find More
+            </Button>
           </div>
-          <div className="event-cards">
-            {currentEvents.slice(0, 3).map(event => (
-              <Link to={`/event/${event.id}`} key={event.id} className="event-card"
-                onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}
-              >
-                <img src={event.image || "/logo.png"} alt={event.title} className="event-image" />
-                <div className="event-info">
-                  <div className="event-title">{event.title}</div>
-                  <div className="event-summary">{event.summary}</div>
-                  <div className="event-time">{new Date(event.time).toLocaleString()}</div>
-                </div>
-              </Link>
+          <Grid container spacing={2} justifyContent="flex-start" sx={{ padding: '0 16px' }}>
+            {currentEvents.slice(0, 5).map(event => (
+              <Grid item key={event.id} xs={12} sm={6} md={4} lg={2.4}>
+                <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
+                  <EventCard image={event.image} title={event.title} summary={event.summary} variant="popup"/>
+                </Link>
+              </Grid>
             ))}
-          </div>
+          </Grid>
         </div>
 
         {/* Upcoming Events */}
         <div className="cards-container">
           <div className="cards-header">
             <div className="event-module">Upcoming Events</div>
-            <button className="find-more" onClick={onUpcomingFindMore}>Find More</button>
+            <Button variant="outlined" size="small" onClick={onUpcomingFindMore}>
+              Find More
+            </Button>
           </div>
-          <div className="event-cards">
-            {upcomingEvents.slice(0, 3).map(event => (
-              <Link to={`/event/${event.id}`} key={event.id} className="event-card"
-                onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}
-              >
-                <img src={event.image || "/logo.png"} alt={event.title} className="event-image" />
-                <div className="event-info">
-                  <div className="event-title">{event.title}</div>
-                  <div className="event-summary">{event.summary}</div>
-                  <div className="event-time">{new Date(event.time).toLocaleString()}</div>
-                </div>
-              </Link>
+          <Grid container spacing={2} justifyContent="flex-start" sx={{ padding: '0 16px' }}>
+            {upcomingEvents.slice(0, 5).map(event => (
+              <Grid item key={event.id} xs={12} sm={6} md={4} lg={2.4}>
+                <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
+                  <EventCard image={event.image} title={event.title} summary={event.summary} variant="popup" />
+                </Link>
+              </Grid>
             ))}
-          </div>
+          </Grid>
         </div>
       </div>
     </div>
