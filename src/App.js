@@ -5,13 +5,14 @@ import theme from "./theme";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import AdminLoginPage from "./pages/AdminLoginPage";
 import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
 
 import MainHomePage from "./pages/MainHomePage/MainHomePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SchedulePage from "./pages/SchedulePage/SchedulePage";
 import EventDetailPage from "./pages/EventDetailPage/EventDetailPage";
+
+import AdminHomePage from "./pages/AdminHomePage/AdminHomePage";
 
 
 const App = () => {
@@ -23,13 +24,14 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/password-recovery" element={<PasswordRecovery />} />
 
           <Route path="/home" element={<MainHomePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/schedule/*" element={<SchedulePage />} />
           <Route path="/event/:id" element={<EventDetailPage />} />
+
+          <Route path="/admin/*" element={<AdminHomePage />} />
 
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />

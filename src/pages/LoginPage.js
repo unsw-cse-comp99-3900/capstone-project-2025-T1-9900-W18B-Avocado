@@ -142,15 +142,6 @@ const LoginPage = () => {
             </Link>
           </Box>
 
-          {/* Admin Log in Link */}
-          <Box mt={2}>
-            <Typography variant="body2">
-              <Link to="/admin-login" style={{ textDecoration: "none", color: "#027BFF" }}>
-                Admin Log in
-              </Link>
-            </Typography>
-          </Box>
-
           {/* Sign up Link */}
           <Box mt={2}>
             <Typography variant="body2">
