@@ -1,0 +1,96 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: demo_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - appnet
+
+  nacos:
+    image: nacos/nacos-server:v2.5.1
+    container_name: nacos
+    ports:
+      - "8848:8848"   # 控制台与注册中心 API
+      - "9848:9848"   # gRPC 注册服务使用（可选）
+    environment:
+      - MODE=standalone
+      - NACOS_AUTH_ENABLE=false
+      - JVM_XMS=256m
+      - JVM_XMX=512m
+    networks:
+      - appnet
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - appnet
+
+  userservice:
+    build: ./userservice
+    container_name: userservice
+    ports:
+      - "5000:5000"
+    environment:
+      - NACOS_SERVER=http://nacos:8848
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DB=demo_db
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - appnet
+
+  eventservice:
+    build: ./eventservice
+    container_name: eventservice
+    ports:
+      - "7000:5000"
+    environment:
+      - NACOS_SERVER=http://nacos:8848
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DB=demo_db
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - appnet
+
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - userservice
+      - eventservice
+    networks:
+      - appnet
+
+volumes:
+  mysql-data:
+
+networks:
+  appnet:
