@@ -14,6 +14,8 @@ import EventDetailPage from "./pages/EventDetailPage/EventDetailPage";
 
 import AdminHomePage from "./pages/AdminHomePage/AdminHomePage";
 
+import MyRewardsPage from "./pages/MyRewardsPage/MyRewardsPage"; 
+import RewardHistoryPage from "./pages/RewardHistoryPage/RewardHistoryPage";
 
 const App = () => {
   return (
@@ -33,6 +35,8 @@ const App = () => {
 
           <Route path="/admin/*" element={<AdminHomePage />} />
 
+          <Route path="/my-rewards" element={<MyRewardsPage />} /> 
+          <Route path="/reward-history" element={<RewardHistoryPage />} />
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/recommend-events" element={<RecommendEventPage />} />
