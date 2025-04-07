@@ -154,11 +154,10 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
     const payload = {
       ...formData,
       ...skillAbbr,
-      image: isNewImage ? image : null,
-      usePreviousImage: !isNewImage && !!formData.image,
+      // save previous pic if no image update
+      image: isNewImage ? image : formData.image,
     };
     delete payload.status;
-    delete payload.usePreviousImage;
   
     console.log("Final Payload:", payload);
     onConfirm?.(payload);

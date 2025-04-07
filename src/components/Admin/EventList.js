@@ -14,76 +14,76 @@ import {
   Select,
   MenuItem,
   Paper,
-  TablePagination,
+  TextField,
+  Pagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import FixedCell from "./FixedCell";
 import DeleteEventDialog from "./Dialogs/DeleteEventDialog";
 import EditEventDialog from "./Dialogs/EditEventDialog";
 
 const mockData = {
-  "events": [
+  events: [
     {
-      "AC": 1,
-      "AP": 0,
-      "CT": 0,
-      "EC": 0,
-      "EI": 0,
-      "LT": 2,
-      "NP": 0,
-      "PM": 4,
-      "PR": 0,
-      "SM": 0,
-      "description": "3",
-      "endTime": "2025-04-03 22:45:00",
-      "eventID": 2,
-      "externalLink": "3",
-      "image": "/static/uploads/00ffc8b8219a45c5a412023d24809408.png",
-      "location": "3",
-      "name": "3",
-      "organizer": "3",
-      "startTime": "2025-04-03 22:45:00",
-      "summary": "3",
-      "tag": 1
+      AC: 1,
+      AP: 0,
+      CT: 0,
+      EC: 0,
+      EI: 0,
+      LT: 2,
+      NP: 0,
+      PM: 4,
+      PR: 0,
+      SM: 0,
+      description: "3",
+      endTime: "2025-04-03 22:45:00",
+      eventID: 2,
+      externalLink: "3",
+      image: "/static/uploads/00ffc8b8219a45c5a412023d24809408.png",
+      location: "3",
+      name: "3",
+      organizer: "3",
+      startTime: "2025-04-03 22:45:00",
+      summary: "3",
+      tag: 1,
     },
     {
-      "AC": 0,
-      "AP": 3,
-      "CT": 0,
-      "EC": 0,
-      "EI": 3,
-      "LT": 0,
-      "NP": 0,
-      "PM": 1,
-      "PR": 1,
-      "SM": 0,
-      "description": "1",
-      "endTime": "2025-04-06 20:33:00",
-      "eventID": 1,
-      "externalLink": null,
-      "image": null,
-      "location": "1",
-      "name": "1",
-      "organizer": "1",
-      "startTime": "2025-03-31 20:33:00",
-      "summary": "1",
-      "tag": "1"
-    }
+      AC: 0,
+      AP: 3,
+      CT: 0,
+      EC: 0,
+      EI: 3,
+      LT: 0,
+      NP: 0,
+      PM: 1,
+      PR: 1,
+      SM: 0,
+      description: "1",
+      endTime: "2025-04-06 20:33:00",
+      eventID: 1,
+      externalLink: null,
+      image: null,
+      location: "1",
+      name: "1",
+      organizer: "1",
+      startTime: "2025-03-31 20:33:00",
+      summary: "1",
+      tag: "1",
+    },
   ],
-  "page": 1,
-  "pageSize": 10
+  page: 1,
+  pageSize: 10,
+  totalCount: 100,
+  totalPages: 10,
 };
 
-// status labels
 const statusInfoMap = {
   current: { label: "Current", color: "success" },
   upcoming: { label: "Upcoming", color: "info" },
   previous: { label: "Previous", color: "default" },
 };
 
-// catagory status labels
 function getEventStatus(start, end) {
   const now = new Date();
   const startDate = new Date(start);
@@ -93,7 +93,6 @@ function getEventStatus(start, end) {
   else return { label: "Previous", color: "default" };
 }
 
-// format time
 function formatDate(dateStr) {
   if (!dateStr) return "Invalid Date";
   const fixedStr = dateStr.replace(" ", "T");
@@ -111,40 +110,13 @@ function formatDate(dateStr) {
 }
 
 const processEvent = (e, filterStatus) => {
-  const status = filterStatus === "All"
-    ? getEventStatus(e.startTime, e.endTime)
-    : statusInfoMap[filterStatus.toLowerCase()];
-
-  return {
-    eventID: e.eventID,
-    name: e.name,
-    startTime: e.startTime,
-    endTime: e.endTime,
-    location: e.location,
-    organizer: e.organizer,
-    summary: e.summary,
-    description: e.description,
-    tag: e.tag,
-    externalLink: e.externalLink,
-    image: e.image,
-
-    // Skill points
-    AC: e.AC,
-    AP: e.AP,
-    CT: e.CT,
-    EC: e.EC,
-    EI: e.EI,
-    LT: e.LT,
-    NP: e.NP,
-    PM: e.PM,
-    PR: e.PR,
-    SM: e.SM,
-    status
-  };
+  const status = filterStatus === "All" ? getEventStatus(e.startTime, e.endTime) : statusInfoMap[filterStatus.toLowerCase()];
+  return { ...e, status };
 };
 
 function EventListTable({ isStatic = false }) {
   const [filterStatus, setFilterStatus] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
   const [events, setEvents] = useState([]);
@@ -160,12 +132,17 @@ function EventListTable({ isStatic = false }) {
       let eventList = [];
       if (isStatic) {
         eventList = mockData.events;
+        const filteredEvents = eventList.filter((e) =>
+          e.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        const processed = filteredEvents.map((e) => processEvent(e, filterStatus));
+        setEvents(processed);
+        setTotalCount(mockData.totalCount || filteredEvents.length);
       } else {
         const filterType = filterStatus.toLowerCase();
         const response = await fetch(
-          `http://localhost:7000/event_list?filter=${filterType}&page=${page + 1}&limit=${rowsPerPage}`
+          `http://localhost:7000/event_list?filter=${filterType}&page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`
         );
-
         if (!response.ok) {
           const data = await response.json();
           setErrorMsg(data.error || `❌ Error ${response.status}: Failed to fetch events.`);
@@ -173,14 +150,11 @@ function EventListTable({ isStatic = false }) {
           setTotalCount(0);
           return;
         }
-
         const data = await response.json();
-        eventList = data.events;
+        const processed = data.events.map((e) => processEvent(e, filterStatus));
+        setEvents(processed);
+        setTotalCount(data.totalCount || data.events.length);
       }
-
-      const processed = eventList.map((e) => processEvent(e, filterStatus));
-      setEvents(processed);
-      setTotalCount(eventList.length);
     } catch (err) {
       console.error("Failed to fetch events", err);
       setEvents([]);
@@ -191,8 +165,8 @@ function EventListTable({ isStatic = false }) {
 
   useEffect(() => {
     fetchEvents();
-  }, [filterStatus, page, isStatic]);
-
+    setErrorMsg("");
+  }, [filterStatus, page, isStatic, searchTerm]);
 
   const handleFilterChange = (e) => {
     setFilterStatus(e.target.value);
@@ -200,10 +174,9 @@ function EventListTable({ isStatic = false }) {
   };
 
   const handleChangePage = (_, newPage) => {
-    setPage(newPage);
+    setPage(newPage - 1);
   };
 
-  // delete event
   const handleDeleteClick = (event) => {
     setSelectedEvent(event);
     setDeleteDialogOpen(true);
@@ -211,16 +184,12 @@ function EventListTable({ isStatic = false }) {
 
   const handleDeleteConfirm = async () => {
     if (!selectedEvent?.eventID) return;
-
     try {
       const response = await fetch("http://localhost:7000/admin/delete-event", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ eventID: selectedEvent.eventID }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Failed to delete event:", errorData);
@@ -231,15 +200,12 @@ function EventListTable({ isStatic = false }) {
     } catch (error) {
       console.error("❌ Network error:", error);
     }
-
     setDeleteDialogOpen(false);
     setSelectedEvent(null);
   };
 
-  // edit event
   const handleEditClick = (event) => {
     setSelectedEvent(event);
-    console.log(event);
     setEditDialogOpen(true);
   };
 
@@ -250,16 +216,12 @@ function EventListTable({ isStatic = false }) {
 
   const handleEditConfirm = async () => {
     if (!selectedEvent?.eventID) return;
-  
     try {
       const response = await fetch("http://localhost:7000/admin/update-event", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedEvent),
       });
-  
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Failed to update event:", errorData);
@@ -270,32 +232,37 @@ function EventListTable({ isStatic = false }) {
     } catch (error) {
       console.error("❌ Network error:", error);
     }
-  
     setEditDialogOpen(false);
     setSelectedEvent(null);
   };
-  
 
   return (
     <Box p={2}>
       <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} gap={2}>
           <Typography variant="h6" fontWeight="bold">Manage Events</Typography>
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>Status</InputLabel>
-            <Select value={filterStatus} label="Status" onChange={handleFilterChange}>
-              <MenuItem value="All">All</MenuItem>
-              <MenuItem value="Upcoming">Upcoming</MenuItem>
-              <MenuItem value="Current">Current</MenuItem>
-              <MenuItem value="Previous">Previous</MenuItem>
-            </Select>
-          </FormControl>
+          <Box display="flex" gap={2}>
+            <TextField
+                size="small"
+                label="Search"
+                placeholder="Event Name"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            <FormControl size="small" sx={{ minWidth: 140 }}>
+              <InputLabel>Status</InputLabel>
+              <Select value={filterStatus} label="Status" onChange={handleFilterChange}>
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Upcoming">Upcoming</MenuItem>
+                <MenuItem value="Current">Current</MenuItem>
+                <MenuItem value="Previous">Previous</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
 
         {errorMsg && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {errorMsg}
-          </Typography>
+          <Typography color="error" sx={{ mb: 2 }}>{errorMsg}</Typography>
         )}
 
         <Table size="small">
@@ -320,38 +287,34 @@ function EventListTable({ isStatic = false }) {
                   <Chip label={event.status.label} color={event.status.color} size="small" variant="outlined" />
                 </FixedCell>
                 <FixedCell width={150} align="center">
-                    <Tooltip title="Edit">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleEditClick(event)}>
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
+                  <Tooltip title="Edit">
+                    <IconButton size="small" onClick={() => handleEditClick(event)}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDeleteClick(event)}
-                    >
+                    <IconButton size="small" color="error" onClick={() => handleDeleteClick(event)}>
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Preview"><IconButton size="small"><VisibilityIcon /></IconButton></Tooltip>
                 </FixedCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
 
-        <TablePagination
-          component="div"
-          count={totalCount}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[rowsPerPage]}
-        />
+        <Box display="flex" justifyContent="center" mt={2}>
+          <Pagination
+            count={Math.ceil(totalCount / rowsPerPage)}
+            page={page + 1}
+            onChange={handleChangePage}
+            color="primary"
+            variant="outlined"
+            shape="rounded"
+          />
+        </Box>
       </Paper>
+
       <DeleteEventDialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
