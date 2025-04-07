@@ -29,7 +29,7 @@ const LoginPage = () => {
     setError(null);
 
       try {
-        const response = await fetch("/api/login", {
+        const response = await fetch("http://localhost/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -37,18 +37,18 @@ const LoginPage = () => {
         const data = await response.json();
         setLoading(false);
 
-        if (response.ok && data.token) {
+        if (response.ok) {
           if (data.role === "student") {
-            navigate("/student-dashboard"); // 学生后台页面
-          } else {
-            setError("This User is not student, please login as admin");
+            navigate("/home"); // 学生后台页面
+          } else if (data.role === "admin"){
+            navigate("/admin"); // 管理员后台页面
           }
         } else {
           setError(data.message || "This Password unvalid, please try again");
         }
       } catch (err) {
         setLoading(false);
-        setError("Login failure, please try again");
+        setError("Something wrong, please try again");
       }
     };
 

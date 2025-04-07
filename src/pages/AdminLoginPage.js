@@ -30,7 +30,7 @@ const AdminLoginPage = () => {
     setError(null);
 
       try {
-        const response = await fetch("/api/login", { // 假设接口相同
+        const response = await fetch("http://localhost/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -38,18 +38,18 @@ const AdminLoginPage = () => {
         const data = await response.json();
         setLoading(false);
 
-        if (response.ok && data.token) {
+        if (response.ok) {
           if (data.role === "admin") {
-            navigate("/admin-dashboard"); // 管理员后台页面
-          } else {
-            setError("This user is not administrator");
+            navigate("/admin");
+          } else if (data.role === "student"){
+            navigate("/home"); // student后台页面
           }
         } else {
-          setError(data.message || "Unvalid email address or password");
+          setError(data.message || "This Password unvalid, please try again");
         }
       } catch (err) {
         setLoading(false);
-        setError("Login Failure, please try again");
+        setError("Something wrong, please try again");
       }
     };
 
