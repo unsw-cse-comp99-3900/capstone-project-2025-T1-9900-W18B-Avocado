@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   TextField,
   Button,
+  Container,
   Typography,
   Box,
   Paper,
@@ -15,7 +16,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const LoginPage = () => {
+const AdminLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ const LoginPage = () => {
     setError(null);
 
       try {
-        const response = await fetch("/api/login", {
+        const response = await fetch("/api/login", { // 假设接口相同
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -38,46 +39,48 @@ const LoginPage = () => {
         setLoading(false);
 
         if (response.ok && data.token) {
-          if (data.role === "student") {
-            navigate("/student-dashboard"); // 学生后台页面
+          if (data.role === "admin") {
+            navigate("/admin-dashboard"); // 管理员后台页面
           } else {
-            setError("This User is not student, please login as admin");
+            setError("This user is not administrator");
           }
         } else {
-          setError(data.message || "This Password unvalid, please try again");
+          setError(data.message || "Unvalid email address or password");
         }
       } catch (err) {
         setLoading(false);
-        setError("Login failure, please try again");
+        setError("Login Failure, please try again");
       }
     };
 
   return (
+    <>
+    {/* 页头 */}
+    <AppBar position="static" sx={{ backgroundColor: "#000" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button component={Link} to="/" sx={{ color: "#fff", marginRight: 2 }}>
+          Home
+        </Button>
+        <Button component={Link} to="/login" sx={{ color: "#fff", marginRight: 2 }}>
+          Login
+        </Button>
+        <Button component={Link} to="/register" sx={{ color: "#fff" }}>
+          Register
+        </Button>
+      </Toolbar>
+    </AppBar>
+    
     <Box
       sx={{
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        paddingTop: "3%",
+        paddingBottom: "10%",
+        justifyContent: "center",
         minHeight: "100vh",
         backgroundColor: "#FFFF66",
       }}
     >
-      {/* 页头 */}
-      <AppBar position="static" sx={{ backgroundColor: "#000" }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button component={Link} to="/" sx={{ color: "#fff", marginRight: 2 }}>
-            Home
-          </Button>
-          <Button component={Link} to="/login" sx={{ color: "#fff", marginRight: 2 }}>
-            Login
-          </Button>
-          <Button component={Link} to="/register" sx={{ color: "#fff" }}>
-            Register
-          </Button>
-        </Toolbar>
-      </AppBar>
 
-      {/* 登录框 */}
       <Paper
         elevation={6}
         sx={{
@@ -87,21 +90,23 @@ const LoginPage = () => {
           maxWidth: 400,
           textAlign: "center",
           backgroundColor: "white",
-          marginTop: 4,
         }}
       >
-        {/* Logo */}
+        {/* Admin Logo */}
         <img src="/logo.png" alt="App Logo" width="140" style={{ marginBottom: "16px" }} />
 
-        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#000", mb: 2 }}>
-          Student Life Passport
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#000", mb: 1 }}>
+          What's On! <span style={{ color: "#000" }}>| Admin</span>
+        </Typography>
+        <Typography variant="subtitle2" sx={{ mb: 2 }}>
+          Student Life Passport - Admin Panel
         </Typography>
 
         {error && <Alert severity="error">{error}</Alert>}
 
         <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "1rem" }}>
           <TextField
-            label="Email"
+            label="Admin Email"
             variant="outlined"
             fullWidth
             margin="normal"
@@ -129,7 +134,7 @@ const LoginPage = () => {
             }}
           />
 
-          {/* Log in Button */}
+          {/* Admin Login Button */}
           <Button
             type="submit"
             variant="contained"
@@ -150,9 +155,19 @@ const LoginPage = () => {
 
           {/* Forgot Password Link */}
           <Box textAlign="right" mt={1}>
-            <Link to="/password-recovery" style={{ textDecoration: "none", color: "#007BFF" }}>
+            <Link to="/forgot-password" style={{ textDecoration: "none", color: "#007BFF" }}>
               Forgot password?
             </Link>
+          </Box>
+
+          {/* Link to Student Login Page */}
+          <Box mt={2}>
+            <Typography variant="body2">
+               I'm a student,
+              <Link to="/login" style={{ textDecoration: "none", color: "#027BFF" }}>
+                  Log in
+              </Link>
+            </Typography>
           </Box>
 
           {/* Sign up Link */}
@@ -167,7 +182,8 @@ const LoginPage = () => {
         </form>
       </Paper>
     </Box>
+    </>
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;
