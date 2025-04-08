@@ -1,0 +1,93 @@
+
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #DFF0D8;
+}
+
+/* 左侧标签栏 */
+.tabs {
+    width: 300px;
+    background-color: #f9f9f9;
+    border-right: 1px solid #ddd;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+/* 每个大项标题（可点击展开） */
+.tab-header {
+    width: 250px;
+    height: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 8px;
+    display: flex;
+    align-items: center;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.tab-header:hover {
+    background-color: #ececec;
+    border-radius: 4px;
+}
+
+/* 展开子项区域 */
+.tab-children {
+    width: 250px;
+    padding-left: 32px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+
+/* 每个子链接 */
+.tab-children a {
+    height: 50px;
+    display: flex;
+    /* ⭐️ 关键点：让 <a> 成为 flex 容器 */
+    align-items: center;
+    /* 垂直居中 */
+    justify-content: center;
+    /* 水平居中 */
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+    transition: color 0.2s, background-color 0.2s;
+    border-radius: 6px;
+}
+
+.tab-children a:hover {
+    background-color: #f0f0f0;
+    color: #1976d2;
+}
+
+/* 激活状态 */
+.active:hover {
+    font-weight: bold;
+    color: #555;
+}
+
+.active {
+    font-weight: bold;
+    background-color: #1976d2;
+    color: white;
+}
+
+.expand-icon {
+    transition: transform 0.3s ease;
+    vertical-align: middle;
+    margin-right: 6px;
+    color: #555;
+}
+
+.expand-icon.expanded {
+    transform: rotate(180deg);
+}
+
+/* 可选：右侧内容区域样式 */
+.routes {
+    flex-grow: 1;
+    padding: 24px;
+}
