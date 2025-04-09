@@ -113,7 +113,7 @@ const UserInfoDialog = ({ open, onClose, user }) => {
             </Box>
         {/* Main content */}
         <Box flex={1} p={3}>
-          <DialogTitle>ID: {user?.id ?? 'N/A'}</strong></DialogTitle>
+          <DialogTitle><strong>ID: {user?.id ?? 'N/A'}</strong></DialogTitle>
           <DialogContent>{renderContent()}</DialogContent>
         </Box>
       </Box>
