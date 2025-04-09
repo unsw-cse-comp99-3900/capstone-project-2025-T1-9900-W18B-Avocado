@@ -1,66 +1,136 @@
-import React from "react";
-import { Link, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import "./SchedulePage.css";
+import React, { useState } from "react";
+import {
+  Link,
+  Routes,
+  Route,
+  useLocation
+} from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+  IconButton,
+  Tooltip,
+  Box,
+  Typography,
+  Chip,
+  Paper,
+  Button,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import "./SchedulePage.css";
 
+// Mock events data
 const eventsData = {
-  today: [
-    { id: 1, name: "Cultural Mixer", start: "28/2/2025  10:00:00 pm", end: "1/3/2025  3:00:00 am", location: "Science Theatre"},
-    { id: 2, name: "AI Workshop", start: "28/2/2025  6:00:00 pm", end: "28/2/2025  9:00:00 pm", location: "Kensington Hall"},
+  current: [
+    { id: 1, name: "Cultural Mixer", start: "2025-02-28 22:00:00", end: "2025-03-01 03:00:00", location: "Science Theatre", checkedIn: false },
+    { id: 2, name: "AI Workshop", start: "2025-02-28 18:00:00", end: "2025-02-28 21:00:00", location: "Kensington Hall", checkedIn: true },
   ],
   upcoming: [
-    { id: 3, name: "Wellness Retreat", start: "2/3/2025  10:00:00 pm", end: "3/3/2025  3:00:00 am", location: "Wellness Room"},
-    { id: 4, name: "Art & Craft Workshop", start: "1/3/2025  10:00:00 pm", end: "2/3/2025  3:00:00 am", location: "Art Studio"},
+    { id: 3, name: "Wellness Retreat", start: "2025-03-02 22:00:00", end: "2025-03-03 03:00:00", location: "Wellness Room", checkedIn: false },
+    { id: 4, name: "Art & Craft Workshop", start: "2025-03-01 22:00:00", end: "2025-03-02 03:00:00", location: "Art Studio", checkedIn: false },
   ],
-  past: [
-    { id: 5, name: "Startup Pitch Fest", start: "28/2/2025  12:00:00 pm", attendance: "67%" },
+  previous: [
+    { id: 5, name: "Startup Pitch Fest", start: "2025-02-28 12:00:00", end: "2025-02-28 14:00:00", checkedIn: true },
   ],
 };
 
-// 显示事件列表
-function EventsList({ category }) {
-  const eventList = eventsData[category] || [];
-  return (
-    <div className="events-list">
-      {eventList.length === 0 ? (
-        <p>No events available.</p>
-      ) : (
-        <table className="events-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Start Time</th>
-              {category !== "past" ? <th>End Time</th> : <th>Attendance</th>}
-              {category !== "past" && <th>Location</th>}
-              <th>Ticket</th>
-            </tr>
-          </thead>
-          <tbody>
-            {eventList.map((event) => (
-              <tr key={event.id}>
-                <td>{event.name}</td>
-                <td>{event.start}</td>
-                {category !== "past" ? (
-                  <>
-                    <td>{event.end}</td>
-                    <td>{event.location}</td>
-                  </>
-                ) : (
-                  <td>{event.attendance}</td>
-                )}
-                <td>
-                  <button className="ticket-button">detail</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+// 格式化时间显示
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat("en-AU", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Australia/Sydney",
+  }).format(date);
+}
+
+// 获取状态标签
+function getEventStatusLabel(event) {
+  return event.checkedIn ? (
+    <Chip label="Checked In" color="success" size="small" variant="outlined" />
+  ) : (
+    <Chip label="Not Checked In" color="default" size="small" variant="outlined" />
   );
 }
 
+// 表格组件
+function EventListTable({ events, category }) {
+  const [eventList, setEventList] = useState(events);
+
+  const handleCheckIn = (id) => {
+    const updated = eventList.map((e) =>
+      e.id === id ? { ...e, checkedIn: true } : e
+    );
+    setEventList(updated);
+  };
+
+  return (
+    <Box p={2}>
+      <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
+        <Box mb={2}>
+          <Typography variant="h6" fontWeight="bold">
+            Events List
+          </Typography>
+        </Box>
+
+        <Table size="small">
+          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: "bold" }}>Ticket ID</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Event Name</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Start Time</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>End Time</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {eventList.map((event) => (
+              <TableRow key={event.id} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
+                <TableCell>{event.id}</TableCell>
+                <TableCell>{event.name}</TableCell>
+                <TableCell>{formatDate(event.start)}</TableCell>
+                <TableCell>{formatDate(event.end)}</TableCell>
+                <TableCell>
+                  {category === "current" && !event.checkedIn ? (
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => handleCheckIn(event.id)}
+                    >
+                      Check In
+                    </Button>
+                  ) : (
+                    getEventStatusLabel(event)
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  <Tooltip title="Edit"><IconButton size="small"><EditIcon /></IconButton></Tooltip>
+                  <Tooltip title="Delete"><IconButton size="small" color="error"><DeleteIcon /></IconButton></Tooltip>
+                  <Tooltip title="Preview"><IconButton size="small"><VisibilityIcon /></IconButton></Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
+    </Box>
+  );
+}
+
+// 主页面
 function SchedulePage() {
   const location = useLocation();
 
@@ -68,28 +138,26 @@ function SchedulePage() {
     <div>
       <Header />
       <div className="schedule-container">
-        {/* 左侧选项卡 */}
+        {/* 左侧 Tabs */}
         <div className="tabs">
-          <Link to="/schedule/today" className={location.pathname === "/schedule/today" ? "active" : ""}>
-            Today's Events
+          <Link to="/schedule/current" className={location.pathname === "/schedule/current" ? "active" : ""}>
+            Current Events
           </Link>
           <Link to="/schedule/upcoming" className={location.pathname === "/schedule/upcoming" ? "active" : ""}>
             Upcoming Events
           </Link>
-          <Link to="/schedule/past" className={location.pathname === "/schedule/past" ? "active" : ""}>
-            My Past Events
+          <Link to="/schedule/previous" className={location.pathname === "/schedule/previous" ? "active" : ""}>
+            Previous Events
           </Link>
         </div>
 
-        {/* 右侧活动详情 (动态路由) */}
+        {/* 右侧内容区域 */}
         <Routes>
-          {/* 默认跳转到 today's events */}
-          <Route path="today" element={<EventsList category="today" />} />
-          <Route path="upcoming" element={<EventsList category="upcoming" />} />
-          <Route path="past" element={<EventsList category="past" />} />
+          <Route path="current" element={<EventListTable events={eventsData.current} category="current" />} />
+          <Route path="upcoming" element={<EventListTable events={eventsData.upcoming} category="upcoming" />} />
+          <Route path="previous" element={<EventListTable events={eventsData.previous} category="previous" />} />
         </Routes>
       </div>
-
       <Footer />
     </div>
   );
