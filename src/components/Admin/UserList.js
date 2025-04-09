@@ -17,6 +17,7 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FixedCell from "./FixedCell";
 import SwitchUserStatusDialog from "./Dialogs/SwitchUserStatusDialog";
+import UserInfoDialog from "./Dialogs/UserInfoDialog";
 
 const statusInfoMap = {
   active: { label: "Active", color: "success" },
@@ -26,17 +27,45 @@ const statusInfoMap = {
 const mockUsers = {
   users: [
     {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      active: true,
+      "id": "5299241",
+      "name": "Zach",
+      "role": "Student",
+      "isArcMember": true,
+      "email": "2@knowwhatson.com",
+      "faculty": "SCI",
+      "degree": "PSYC Postgraduate",
+      "graduationYear": "2025",
+      "eventHistory": ["Event A", "Event B", "Event C"],
+      "rewards": 10,
+      "active": true
     },
     {
-      id: 2,
-      name: "Bob Smith",
-      email: "bob@example.com",
-      active: false,
+      "id": "5299242",
+      "name": "Hazel",
+      "role": "Student",
+      "isArcMember": true,
+      "email": "3@knowwhatson.com",
+      "faculty": "MED",
+      "degree": "MEDH Postgraduate",
+      "graduationYear": "2028",
+      "eventHistory": ["Event A", "Event B", "Event C", "Event D"],
+      "rewards": 20,
+      "active": true
     },
+    {
+      "id": "5299243",
+      "name": "Diko",
+      "role": "Student",
+      "isArcMember": true,
+      "email": "4@knowwhatson.com",
+      "faculty": "ENG",
+      "degree": "CIVL Research",
+      "graduationYear": "2025",
+      "eventHistory": ["Event A", "Event B", "Event C", "Event D","Event E","Event F"],
+      "rewards": 30,
+      "active": false
+    },
+    
   ],
   page: 1,
   pageSize: 10,
@@ -53,6 +82,9 @@ function UserListTable({ isStatic = true }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [pendingUser, setPendingUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
+
 
   const fetchUsers = async () => {
     try {
@@ -199,8 +231,17 @@ function UserListTable({ isStatic = true }) {
                         />
                       </Tooltip>
                       <Tooltip title="Preview">
-                        <IconButton size="small"><VisibilityIcon /></IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setInfoDialogOpen(true);
+                          }}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
                       </Tooltip>
+
                     </Box>
                   </FixedCell>
                 </TableRow>
@@ -226,6 +267,11 @@ function UserListTable({ isStatic = true }) {
         onClose={() => setConfirmDialogOpen(false)}
         onConfirm={handleConfirmSwitch}
         user={pendingUser}
+      />
+      <UserInfoDialog
+        open={infoDialogOpen}
+        onClose={() => setInfoDialogOpen(false)}
+        user={selectedUser}
       />
     </Box>
   );
