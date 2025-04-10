@@ -30,6 +30,7 @@ def create_event(form, files):
     try:
         # 保存图片
         image_file = files.get("image")
+        print(image_file)
         image_url = None
 
         if image_file:
@@ -58,7 +59,6 @@ def create_event(form, files):
             "organizer": form.get("organizer"),
             "image": image_url
         }
-        print(form)
         # 解析技能评分 JSON
         skill_points_raw = form.get("skillPoints", "{}")
         try:
@@ -188,52 +188,78 @@ def get_event_list(filter_type, page, search=None, tag=None):
         cursor.close()
         conn.close()
 
-def update_event(event_id, form):
-    if not event_id:
-        return {"error": "Missing eventID"}, 400
 
+def update_event(event_id, form, image_file):
     try:
-        # 提取常规字段
-        data = {
-            "name": form.get("name"),
-            "location": form.get("location"),
-            "externalLink": form.get("externalLink"),
-            "startTime": form.get("start"),
-            "endTime": form.get("end"),
-            "summary": form.get("summary"),
-            "description": form.get("description"),
-            "tag": form.get("tag"),
-            "organizer": form.get("organizer")
-        }
-
-        # 提取 skillPoints（JSON 字符串）
-        skill_data = {}
-        skill_raw = form.get("skillPoints")
-        if skill_raw:
-            try:
-                skill_dict = json.loads(skill_raw)
-                for full, short in SKILL_MAPPING.items():
-                    skill_data[short] = skill_dict.get(full, 0)
-            except json.JSONDecodeError:
-                return {"error": "Invalid JSON format in skillPoints"}, 400
-
-        # 合并字段，排除空值
-        update_fields = {**data, **skill_data}
-        update_fields = {k: v for k, v in update_fields.items() if v is not None}
-
-        if not update_fields:
-            return {"error": "No fields to update"}, 400
-
-        # 构造 SQL
-        set_clause = ", ".join(f"{key} = %s" for key in update_fields.keys())
-        values = list(update_fields.values())
-
-        sql = f"UPDATE EventData SET {set_clause} WHERE eventID = %s"
-        values.append(event_id)
-
-        # 执行数据库操作
         conn = get_db_connection()
         cursor = conn.cursor()
+
+        # 获取旧图路径
+        cursor.execute("SELECT image FROM EventData WHERE eventID = %s", (event_id,))
+        result = cursor.fetchone()
+        if not result:
+            return {"error": "Event not found"}, 404
+        old_image_path = result[0]
+
+        # 保留字段更新逻辑
+        allowed_fields = [
+            "name", "location", "externalLink", "startTime", "endTime",
+            "summary", "description", "tag", "organizer", "image",
+            "EC", "LT", "AP", "PR", "AC", "CT", "PM", "EI", "NP", "SM"
+        ]
+        update_data = {}
+
+        for field in allowed_fields:
+            if field != "image" and field in form:
+                update_data[field] = form.get(field)
+
+        # ✅ 图片处理逻辑（使用 create_event 中的一致策略）
+        new_image_url = old_image_path
+
+        if image_file and image_file.filename:
+            # 生成唯一文件名 + 保存
+            filename = secure_filename(image_file.filename)
+            ext = os.path.splitext(filename)[-1]
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            save_path = os.path.join(UPLOAD_FOLDER, unique_filename)
+
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            image_file.save(save_path)
+
+            new_image_url = f"/{UPLOAD_FOLDER}/{unique_filename}"
+
+            # 删除旧图（如果有）
+            if old_image_path:
+                old_abs_path = os.path.join(os.getcwd(), old_image_path.lstrip("/"))
+                if os.path.exists(old_abs_path):
+                    try:
+                        os.remove(old_abs_path)
+                        print(f"🗑️ 已删除旧图片: {old_abs_path}")
+                    except Exception as e:
+                        print(f"⚠️ 删除旧图片失败: {e}")
+
+        elif not image_file:
+            # 没上传图 → 判断是否有老图，有就删除
+            if old_image_path:
+                old_abs_path = os.path.join(os.getcwd(), old_image_path.lstrip("/"))
+                if os.path.exists(old_abs_path):
+                    try:
+                        os.remove(old_abs_path)
+                        print(f"🗑️ 已删除旧图片: {old_abs_path}")
+                    except Exception as e:
+                        print(f"⚠️ 删除旧图片失败: {e}")
+                new_image_url = None
+
+        update_data["image"] = new_image_url
+
+        if not update_data:
+            return {"error": "No fields to update"}, 400
+
+        # 拼接更新 SQL
+        set_clause = ", ".join(f"{k} = %s" for k in update_data)
+        values = list(update_data.values()) + [event_id]
+
+        sql = f"UPDATE EventData SET {set_clause} WHERE eventID = %s"
         cursor.execute(sql, values)
         conn.commit()
 
@@ -255,22 +281,45 @@ def delete_event(event_id):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 检查是否存在
-        cursor.execute("SELECT * FROM EventData WHERE eventID = %s", (event_id,))
-        if not cursor.fetchone():
+        # 查询图片路径（如：static/uploads/xxx.jpg）
+        cursor.execute("SELECT image FROM EventData WHERE eventID = %s", (event_id,))
+        result = cursor.fetchone()
+        if not result:
             return {"error": "Event not found"}, 404
 
-        # 执行删除
+        image_path = result[0]  # e.g. static/uploads/xxx.jpg
+
+        # 删除数据库记录
         cursor.execute("DELETE FROM EventData WHERE eventID = %s", (event_id,))
         conn.commit()
+        image_path = image_path.lstrip("/")
+        # 删除本地图片
+        if image_path and isinstance(image_path, str) and image_path.strip():
+            if image_path.startswith("static/uploads"):  # ✅ 确保是我们的上传目录
+                relative_path = image_path.replace("/", os.sep)  # 转换为操作系统路径格式
+                file_path = os.path.join(os.getcwd(), relative_path)  # 拼接为绝对路径
+
+                if os.path.isfile(file_path):
+                    try:
+                        os.remove(file_path)
+                        print(f"🗑️ 已删除图片: {file_path}")
+                    except Exception as e:
+                        print(f"⚠️ 图片删除失败: {e}")
+                else:
+                    print(f"⚠️ 文件不存在: {file_path}")
+            else:
+                print(f"🚫 路径非法，跳过删除：{image_path}")
 
         return {"message": "Event deleted successfully"}, 200
 
     except Exception as e:
         return {"error": str(e)}, 500
+
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
+
+
 
 
 def register_event(data):

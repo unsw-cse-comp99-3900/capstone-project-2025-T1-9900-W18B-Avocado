@@ -15,6 +15,7 @@ def create_event_route():
     """
     管理端：创建 Event，接收 form 表单数据
     """
+    print(request.files)
     try:
         response, status = create_event(request.form, request.files)
         return jsonify(response), status
@@ -44,17 +45,24 @@ def get_event_list_route():
         return jsonify({"error": str(e)}), 500
 
 
-@event_bp.route("/admin/update-event/<int:event_id>", methods=["PUT"])
-def update_event_route(event_id):
+@event_bp.route("/admin/update_event", methods=["POST"])
+def update_event_route():
     form = request.form
+    new_image = request.files.get("image")  # 可为空
+
     try:
-        response, status = update_event(event_id, form)
+        event_id = form.get("eventID")
+        if not event_id:
+            return jsonify({"error": "Missing eventID in form data"}), 400
+
+        response, status = update_event(event_id, form, new_image)
         return jsonify(response), status
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@event_bp.route("/admin/delete-event/<int:event_id>", methods=["DELETE"])
+
+@event_bp.route("/admin/delete_event/<int:event_id>", methods=["DELETE"])
 def delete_event_route(event_id):
     """
     管理端：删除指定 eventID 的活动
@@ -62,7 +70,7 @@ def delete_event_route(event_id):
     response, status = delete_event(event_id)
     return jsonify(response), status
 
-@event_bp.route("/register-event", methods=["POST"])
+@event_bp.route("/register_event", methods=["POST"])
 def register_event_route():
     data = request.get_json() or request.form
     response, status = register_event(data)
