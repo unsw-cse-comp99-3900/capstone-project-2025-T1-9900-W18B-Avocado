@@ -14,6 +14,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import StarIcon from "@mui/icons-material/Star";
 import SkillPointsDialog from "../Dialogs/SkillPointsDialog";
 import { uploadButtonStyle, pointsButtonStyle } from "../Styles/EventFormStyles";
+import CloseIconButton from "../../Buttons/CloseIconButton";
 
 const skills = [
   "Effective Communication",
@@ -176,6 +177,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Edit Event (ID: {formData.eventID})</DialogTitle>
+      <CloseIconButton onClick={onClose} />
       <DialogContent>
         <Box mt={1}>
           <Grid container spacing={2}>

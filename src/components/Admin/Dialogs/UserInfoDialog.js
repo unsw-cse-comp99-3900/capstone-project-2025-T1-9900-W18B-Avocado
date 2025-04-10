@@ -11,6 +11,7 @@ import {
   Stack,
   Grid
 } from '@mui/material';
+import CloseIconButton from '../../Buttons/CloseIconButton';
 
 const UserInfoDialog = ({ open, onClose, user }) => {
   const [selectedTab, setSelectedTab] = useState('info');
@@ -79,6 +80,7 @@ const UserInfoDialog = ({ open, onClose, user }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <CloseIconButton onClick={onClose} />
       <Box display="flex" minHeight={400}>
         {/* Sidebar */}
         <Box width="200px" bgcolor="#f5f5f5" p={2}>

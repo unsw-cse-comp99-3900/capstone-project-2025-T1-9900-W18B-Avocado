@@ -6,9 +6,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography
+  Typography,
 } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
+import CloseIconButton from '../../Buttons/CloseIconButton';
 
 const DeleteEventDialog = ({ open, onClose, onConfirm, event }) => {
   return (
@@ -22,6 +23,7 @@ const DeleteEventDialog = ({ open, onClose, onConfirm, event }) => {
         <Box display="flex" alignItems="center" gap={1}>
             <WarningIcon color="error" />
             <Typography variant="h6" fontWeight="bold">Confirm Deletion</Typography>
+            <CloseIconButton onClick={onClose}/>
         </Box>
         </DialogTitle>
       <DialogContent>

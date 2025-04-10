@@ -137,7 +137,7 @@ const processEvent = (e, filterStatus) => {
   return { ...e, status };
 };
 
-function EventListTable({ isStatic = true }) {
+function EventListTable({ isStatic = false }) {
   const [filterStatus, setFilterStatus] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
@@ -190,29 +190,19 @@ function EventListTable({ isStatic = true }) {
     fetchEvents();
     setErrorMsg("");
   }, [filterStatus, page, isStatic, searchTerm]);
-
-  const handleFilterChange = (e) => {
-    setFilterStatus(e.target.value);
-    setPage(0);
-  };
-
-  const handleChangePage = (_, newPage) => {
-    setPage(newPage - 1);
-  };
-
-  const handleDeleteClick = (event) => {
-    setSelectedEvent(event);
-    setDeleteDialogOpen(true);
-  };
-
+  
+  // delete event
   const handleDeleteConfirm = async () => {
     if (!selectedEvent?.eventID) return;
+  
     try {
-      const response = await fetch("http://localhost:7000/admin/delete-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventID: selectedEvent.eventID }),
-      });
+      const response = await fetch(
+        `http://localhost:7000/admin/delete_event/${selectedEvent.eventID}`,
+        {
+          method: "DELETE",
+        }
+      );
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Failed to delete event:", errorData);
@@ -223,58 +213,75 @@ function EventListTable({ isStatic = true }) {
     } catch (error) {
       console.error("❌ Network error:", error);
     }
+  
     setDeleteDialogOpen(false);
     setSelectedEvent(null);
-  };
+  };  
 
-  const handleEditClick = (event) => {
-    setSelectedEvent(event);
-    setEditDialogOpen(true);
-  };
-
-  const handleCloseEditDialog = () => {
-    setEditDialogOpen(false);
-    setSelectedEvent(null);
-  };
-
-  const handleEditConfirm = async () => {
-    if (!selectedEvent?.eventID) return;
+  // edit event
+  const handleEditConfirm = async (editedEvent) => {
+    if (!editedEvent?.eventID) return;
+  
     try {
-      const response = await fetch("http://localhost:7000/admin/update-event", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedEvent),
+      const formData = new FormData();
+  
+      for (const key in editedEvent) {
+        if (key === "image") {
+          formData.append("image", editedEvent.image);
+        } else if (key === "status") {
+          continue;
+        } else {
+          formData.append(key, editedEvent[key]);
+        }
+      }      
+  
+      const response = await fetch("http://localhost:7000/admin/update_event", {
+        method: "POST",
+        body: formData,
       });
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Failed to update event:", errorData);
       } else {
-        console.log("✅ Event updated:", selectedEvent.eventID);
+        console.log("✅ Event updated:", editedEvent.eventID);
         await fetchEvents();
       }
     } catch (error) {
       console.error("❌ Network error:", error);
     }
+  
     setEditDialogOpen(false);
     setSelectedEvent(null);
   };
+  
 
   return (
     <Box p={2}>
-      <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
+      <Paper elevation={3} sx={{ borderRadius: 2, p: 2, overflowX: "auto" }}>
+        {/* Header controls */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} gap={2}>
-          <Typography variant="h6" fontWeight="bold">Manage Events</Typography>
+          <Typography variant="h6" fontWeight="bold">
+            Manage Events
+          </Typography>
           <Box display="flex" gap={2}>
             <TextField
-                size="small"
-                label="Search"
-                placeholder="Event Name"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              size="small"
+              label="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Event Name"
+            />
             <FormControl size="small" sx={{ minWidth: 140 }}>
               <InputLabel>Status</InputLabel>
-              <Select value={filterStatus} label="Status" onChange={handleFilterChange}>
+              <Select
+                label="Status"
+                value={filterStatus}
+                onChange={(e) => {
+                  setFilterStatus(e.target.value);
+                  setPage(0);
+                }}
+              >
                 <MenuItem value="All">All</MenuItem>
                 <MenuItem value="Upcoming">Upcoming</MenuItem>
                 <MenuItem value="Current">Current</MenuItem>
@@ -284,53 +291,73 @@ function EventListTable({ isStatic = true }) {
           </Box>
         </Box>
 
+        {/* Error display */}
         {errorMsg && (
-          <Typography color="error" sx={{ mb: 2 }}>{errorMsg}</Typography>
+          <Typography color="error" sx={{ mb: 2 }}>
+            {errorMsg}
+          </Typography>
         )}
 
-        <Table size="small">
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-            <TableRow>
-              <FixedCell width={100} fontWeight="bold">Event ID</FixedCell>
-              <FixedCell width={250} fontWeight="bold">Event Name</FixedCell>
-              <FixedCell width={200} fontWeight="bold">Start Time</FixedCell>
-              <FixedCell width={200} fontWeight="bold">End Time</FixedCell>
-              <FixedCell width={120} fontWeight="bold">Event Status</FixedCell>
-              <FixedCell width={150} fontWeight="bold" align="center">Actions</FixedCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {events.map((event) => (
-              <TableRow key={event.eventID} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
-                <FixedCell width={100}>{event.eventID}</FixedCell>
-                <FixedCell width={250}>{event.name}</FixedCell>
-                <FixedCell width={200}>{formatDate(event.startTime)}</FixedCell>
-                <FixedCell width={200}>{formatDate(event.endTime)}</FixedCell>
-                <FixedCell width={120}>
-                  <Chip label={event.status.label} color={event.status.color} size="small" variant="outlined" />
-                </FixedCell>
-                <FixedCell width={150} align="center">
-                  <Tooltip title="Edit">
-                    <IconButton size="small" onClick={() => handleEditClick(event)}>
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton size="small" color="error" onClick={() => handleDeleteClick(event)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </FixedCell>
+        {/* Table */}
+          <Table size="small" sx={{ width: "1020px" }}>
+            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableRow>
+                <FixedCell width={100} fontWeight="bold">Event ID</FixedCell>
+                <FixedCell width={250} fontWeight="bold">Event Name</FixedCell>
+                <FixedCell width={200} fontWeight="bold">Start Time</FixedCell>
+                <FixedCell width={200} fontWeight="bold">End Time</FixedCell>
+                <FixedCell width={120} fontWeight="bold">Event Status</FixedCell>
+                <FixedCell width={150} fontWeight="bold" align="center">Actions</FixedCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {events.map((event) => (
+                <TableRow key={event.eventID} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
+                  <FixedCell width={100}>{event.eventID}</FixedCell>
+                  <FixedCell width={250}>{event.name}</FixedCell>
+                  <FixedCell width={200}>{formatDate(event.startTime)}</FixedCell>
+                  <FixedCell width={200}>{formatDate(event.endTime)}</FixedCell>
+                  <FixedCell width={120}>
+                    <Chip
+                      label={event.status.label}
+                      color={event.status.color}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </FixedCell>
+                  <FixedCell width={150} align="center">
+                    <Tooltip title="Edit">
+                      <IconButton size="small" onClick={() => {
+                        setSelectedEvent(event);
+                        setEditDialogOpen(true);
+                      }}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </FixedCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
+        {/* Pagination */}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination
             count={Math.ceil(totalCount / rowsPerPage)}
             page={page + 1}
-            onChange={handleChangePage}
+            onChange={(_, newPage) => setPage(newPage - 1)}
             color="primary"
             variant="outlined"
             shape="rounded"
@@ -338,6 +365,7 @@ function EventListTable({ isStatic = true }) {
         </Box>
       </Paper>
 
+      {/* Dialogs */}
       <DeleteEventDialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
@@ -346,7 +374,7 @@ function EventListTable({ isStatic = true }) {
       />
       <EditEventDialog
         open={editDialogOpen}
-        onClose={handleCloseEditDialog}
+        onClose={() => setEditDialogOpen(false)}
         onConfirm={handleEditConfirm}
         event={selectedEvent}
       />

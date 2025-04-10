@@ -27,45 +27,44 @@ const statusInfoMap = {
 const mockUsers = {
   users: [
     {
-      "id": "5299241",
-      "name": "Zach",
-      "role": "Student",
-      "isArcMember": true,
-      "email": "2@knowwhatson.com",
-      "faculty": "SCI",
-      "degree": "PSYC Postgraduate",
-      "graduationYear": "2025",
-      "eventHistory": ["Event A", "Event B", "Event C"],
-      "rewards": 10,
-      "active": true
+      id: "5299241",
+      name: "Zach",
+      role: "Student",
+      isArcMember: true,
+      email: "2@knowwhatson.com",
+      faculty: "SCI",
+      degree: "PSYC Postgraduate",
+      graduationYear: "2025",
+      eventHistory: ["Event A", "Event B", "Event C"],
+      rewards: 10,
+      active: true,
     },
     {
-      "id": "5299242",
-      "name": "Hazel",
-      "role": "Student",
-      "isArcMember": true,
-      "email": "3@knowwhatson.com",
-      "faculty": "MED",
-      "degree": "MEDH Postgraduate",
-      "graduationYear": "2028",
-      "eventHistory": ["Event A", "Event B", "Event C", "Event D"],
-      "rewards": 20,
-      "active": true
+      id: "5299242",
+      name: "Hazel",
+      role: "Student",
+      isArcMember: true,
+      email: "3@knowwhatson.com",
+      faculty: "MED",
+      degree: "MEDH Postgraduate",
+      graduationYear: "2028",
+      eventHistory: ["Event A", "Event B", "Event C", "Event D"],
+      rewards: 20,
+      active: true,
     },
     {
-      "id": "5299243",
-      "name": "Diko",
-      "role": "Student",
-      "isArcMember": true,
-      "email": "4@knowwhatson.com",
-      "faculty": "ENG",
-      "degree": "CIVL Research",
-      "graduationYear": "2025",
-      "eventHistory": ["Event A", "Event B", "Event C", "Event D","Event E","Event F"],
-      "rewards": 30,
-      "active": false
+      id: "5299243",
+      name: "Diko",
+      role: "Student",
+      isArcMember: true,
+      email: "4@knowwhatson.com",
+      faculty: "ENG",
+      degree: "CIVL Research",
+      graduationYear: "2025",
+      eventHistory: ["Event A", "Event B", "Event C", "Event D", "Event E", "Event F"],
+      rewards: 30,
+      active: false,
     },
-    
   ],
   page: 1,
   pageSize: 10,
@@ -73,7 +72,7 @@ const mockUsers = {
   totalPages: 10,
 };
 
-function UserListTable({ isStatic = true }) {
+function UserListTable({ isStatic = false }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
@@ -85,16 +84,16 @@ function UserListTable({ isStatic = true }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
 
-
   const fetchUsers = async () => {
     try {
       let userList = [];
       if (isStatic) {
         userList = mockUsers.users;
-        const filtered = userList.filter((user) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          String(user.id).includes(searchTerm)
+        const filtered = userList.filter(
+          (user) =>
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            String(user.id).includes(searchTerm)
         );
         setUsers(filtered);
         setTotalCount(mockUsers.totalCount);
@@ -102,7 +101,6 @@ function UserListTable({ isStatic = true }) {
         const response = await fetch(
           `http://localhost:7000/user_list?page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`
         );
-
         if (!response.ok) {
           const data = await response.json();
           setErrorMsg(data.error || `❌ Error ${response.status}: Failed to fetch users.`);
@@ -110,7 +108,6 @@ function UserListTable({ isStatic = true }) {
           setTotalCount(0);
           return;
         }
-
         const data = await response.json();
         setUsers(data.users);
         setTotalCount(data.totalCount || data.users.length);
@@ -139,7 +136,6 @@ function UserListTable({ isStatic = true }) {
 
   const handleConfirmSwitch = async () => {
     if (!pendingUser) return;
-
     try {
       const response = await fetch("http://localhost:7000/admin/toggle-user-status", {
         method: "PUT",
@@ -149,7 +145,6 @@ function UserListTable({ isStatic = true }) {
           status: pendingUser.active ? "inactive" : "active",
         }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Failed to update user status:", errorData);
@@ -164,7 +159,6 @@ function UserListTable({ isStatic = true }) {
     } catch (err) {
       console.error("❌ Network error:", err);
     }
-
     setConfirmDialogOpen(false);
     setPendingUser(null);
   };
@@ -173,9 +167,11 @@ function UserListTable({ isStatic = true }) {
 
   return (
     <Box p={2}>
-      <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
+      <Paper elevation={3} sx={{ borderRadius: 2, p: 2, overflowX: "auto" }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6" fontWeight="bold">Manage Users</Typography>
+          <Typography variant="h6" fontWeight="bold">
+            Manage Users
+          </Typography>
           <TextField
             size="small"
             label="Search"
@@ -189,10 +185,12 @@ function UserListTable({ isStatic = true }) {
         </Box>
 
         {errorMsg && (
-          <Typography color="error" sx={{ mb: 2 }}>{errorMsg}</Typography>
+          <Typography color="error" sx={{ mb: 2 }}>
+            {errorMsg}
+          </Typography>
         )}
 
-        <Table size="small">
+        <Table size="small" sx={{ width: "1020px" }}>
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
             <TableRow>
               <FixedCell width={150} fontWeight="bold">Student ID</FixedCell>
@@ -206,13 +204,12 @@ function UserListTable({ isStatic = true }) {
             {users.map((user) => {
               const currentStatus = user.active ? "active" : "inactive";
               const { label, color } = statusInfoMap[currentStatus];
-
               return (
                 <TableRow key={user.id} hover>
                   <FixedCell width={150}>{user.id}</FixedCell>
-                  <FixedCell width={300}>{user.name}</FixedCell>
-                  <FixedCell width={300}>{user.email}</FixedCell>
-                  <FixedCell width={135}>
+                  <FixedCell width={250}>{user.name}</FixedCell>
+                  <FixedCell width={250}>{user.email}</FixedCell>
+                  <FixedCell width={185}>
                     <Chip
                       label={label}
                       color={color}
@@ -220,8 +217,8 @@ function UserListTable({ isStatic = true }) {
                       variant="outlined"
                     />
                   </FixedCell>
-                  <FixedCell width={135} align="center" >
-                  <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+                  <FixedCell width={185} align="center">
+                    <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
                       <Tooltip title={user.active ? "Disable" : "Enable"}>
                         <Switch
                           checked={user.active}
@@ -241,7 +238,6 @@ function UserListTable({ isStatic = true }) {
                           <VisibilityIcon />
                         </IconButton>
                       </Tooltip>
-
                     </Box>
                   </FixedCell>
                 </TableRow>

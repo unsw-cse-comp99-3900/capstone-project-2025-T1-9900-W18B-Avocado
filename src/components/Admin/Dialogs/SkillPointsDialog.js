@@ -11,6 +11,7 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
+import CloseIconButton from "../../Buttons/CloseIconButton";
 
 const SkillPointsDialog = ({ open, onClose, skills, skillPoints, onSkillChange, onReset }) => {
   return (
@@ -27,6 +28,7 @@ const SkillPointsDialog = ({ open, onClose, skills, skillPoints, onSkillChange, 
       >
         Earnable Skill Points
       </DialogTitle>
+      <CloseIconButton onClick={onClose} />
       <DialogContent>
         <Grid container spacing={2}>
           {skills.map((skill) => (

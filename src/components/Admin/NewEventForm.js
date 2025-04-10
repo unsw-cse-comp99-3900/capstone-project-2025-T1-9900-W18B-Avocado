@@ -14,6 +14,29 @@ import { SubmitButton, ResetButton } from "./FormButtons";
 import SkillPointsDialog from "./Dialogs/SkillPointsDialog";
 import { fieldStyle, uploadButtonStyle, pointsButtonStyle } from "./Styles/EventFormStyles";
 
+const validateTimes = (formData, setErrorMsg) => {
+  const now = new Date();
+  const startTime = new Date(formData.start);
+  const endTime = new Date(formData.end);
+
+  if (startTime < now) {
+    setErrorMsg("❌ Start time cannot be in the past.");
+    return false;
+  }
+
+  if (endTime < now) {
+    setErrorMsg("❌ End time cannot be in the past.");
+    return false;
+  }
+
+  if (endTime <= startTime) {
+    setErrorMsg("❌ End time must be after start time.");
+    return false;
+  }
+
+  return true;
+};
+
 const skills = [
   "Effective Communication",
   "Leadership & Team Management",
@@ -109,6 +132,7 @@ const NewEventForm = () => {
     event.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
+    if (!validateTimes(formData, setErrorMsg)) return;
 
     const fullFormData = {
       ...formData,
@@ -119,6 +143,8 @@ const NewEventForm = () => {
     for (let key in fullFormData) {
       if (key === "skillPoints") {
         multipartData.append("skillPoints", JSON.stringify(fullFormData.skillPoints));
+      } else if (key === "image") {
+        continue;
       } else {
         multipartData.append(key, fullFormData[key]);
       }
@@ -127,6 +153,12 @@ const NewEventForm = () => {
     if (image) {
       multipartData.append("image", image);
     }
+
+    console.log("Payload contents:");
+    for (let pair of multipartData.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+
 
     try {
       const response = await fetch("http://localhost:7000/admin/create_event", {
@@ -138,6 +170,7 @@ const NewEventForm = () => {
       if (response.ok) {
         setSuccessMsg("✅ " + (data.message || "Event created successfully!"));
         setTimeout(() => console.log("navigate to somewhere"), 2000);
+        handleReset();
       } else {
         setErrorMsg("❌ " + (data.error || "An error occurred."));
       }
@@ -170,7 +203,7 @@ const NewEventForm = () => {
 
   return (
     <Box p={4}>
-      <Paper elevation={1} sx={{ p: 4, borderRadius: 3, backgroundColor: "#f9f9f9" }}>
+      <Paper elevation={1} sx={{ p: 4, borderRadius: 3, backgroundColor: "#f9f9f9", minWidth: "700px" }}>
         <Typography variant="h5" fontWeight="bold" mb={3}>
           Create New Event
         </Typography>

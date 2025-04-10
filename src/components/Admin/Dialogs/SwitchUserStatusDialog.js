@@ -9,6 +9,7 @@ import {
   Typography
 } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
+import CloseIconButton from "../../Buttons/CloseIconButton";
 
 const SwitchUserStatusDialog = ({ open, onClose, onConfirm, user }) => {
   return (
@@ -23,6 +24,7 @@ const SwitchUserStatusDialog = ({ open, onClose, onConfirm, user }) => {
           <WarningIcon color="warning" />
           <Typography variant="h6" fontWeight="bold">Switch User Status</Typography>
         </Box>
+        <CloseIconButton onClick={onClose} />
       </DialogTitle>
 
       <DialogContent>
