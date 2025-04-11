@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from app.db.connection import get_db_connection
-
+import requests
 # 技能字段映射：全称 → 缩写
 SKILL_MAPPING = {
     "Effective Communication": "EC",
@@ -30,7 +30,6 @@ def create_event(form, files):
     try:
         # 保存图片
         image_file = files.get("image")
-        print(image_file)
         image_url = None
 
         if image_file:
@@ -348,6 +347,125 @@ def register_event(data):
 
         conn.commit()
         return {"message": "Registration successful"}, 201
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
+
+
+def get_student_events(student_id, page, filter_type):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 获取该学生报名的所有 eventID 和 checkIn
+        cursor.execute(
+            "SELECT eventID, checkIn FROM AttendanceData WHERE studentID = %s",
+            (student_id,)
+        )
+        records = cursor.fetchall()
+        if not records:
+            return {
+                "events": [],
+                "page": page,
+                "pageSize": PAGE_SIZE,
+                "totalCount": 0,
+                "totalPages": 0
+            }, 200
+
+        event_checkin_map = {r["eventID"]: r["checkIn"] for r in records}
+        all_event_ids = list(event_checkin_map.keys())
+
+        # 动态构建 SQL 的 IN 子句
+        format_strings = ','.join(['%s'] * len(all_event_ids))
+
+        # 处理时间过滤
+        time_filter = ""
+        now = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        if filter_type == "current":
+            time_filter = "AND startTime <= %s AND endTime >= %s"
+            filter_values = [now, now]
+        elif filter_type == "previous":
+            time_filter = "AND endTime < %s"
+            filter_values = [now]
+        elif filter_type == "upcoming":
+            time_filter = "AND startTime > %s"
+            filter_values = [now]
+        else:
+            filter_values = []
+
+        # 查询总数
+        count_sql = f"""
+            SELECT COUNT(*) as total FROM EventData 
+            WHERE eventID IN ({format_strings}) {time_filter}
+        """
+        cursor.execute(count_sql, all_event_ids + filter_values)
+        total_count = cursor.fetchone()['total']
+        total_pages = (total_count + PAGE_SIZE - 1) // PAGE_SIZE
+        offset = (page - 1) * PAGE_SIZE
+
+        # 查询分页数据
+        query_sql = f"""
+            SELECT * FROM EventData
+            WHERE eventID IN ({format_strings}) {time_filter}
+            ORDER BY startTime DESC
+            LIMIT %s OFFSET %s
+        """
+        cursor.execute(query_sql, all_event_ids + filter_values + [PAGE_SIZE, offset])
+        event_rows = cursor.fetchall()
+
+        # 添加 checkIn 字段
+        enriched_events = []
+        for ev in event_rows:
+            ev["checkIn"] = event_checkin_map.get(str(ev["eventID"]), 0)
+            # 可选：只返回需要的字段
+            enriched_events.append({
+                "eventID": ev["eventID"],
+                "name": ev["name"],
+                "location": ev["location"],
+                "startTime": ev["startTime"],
+                "endTime": ev["endTime"],
+                "checkIn": ev["checkIn"],
+                "tag": ev.get("tag")
+            })
+        return {
+            "events": enriched_events,
+            "page": page,
+            "pageSize": PAGE_SIZE,
+            "totalCount": total_count,
+            "totalPages": total_pages
+        }, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
+
+
+def checkin_event(student_id, event_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 检查是否存在报名记录
+        cursor.execute(
+            "SELECT * FROM AttendanceData WHERE studentID = %s AND eventID = %s",
+            (student_id, event_id)
+        )
+        if not cursor.fetchone():
+            return {"error": "No registration found for this event"}, 404
+
+        # 执行签到更新
+        cursor.execute(
+            "UPDATE AttendanceData SET checkIn = 1 WHERE studentID = %s AND eventID = %s",
+            (student_id, event_id)
+        )
+        conn.commit()
+        return {"message": "Check-in successful"}, 200
 
     except Exception as e:
         return {"error": str(e)}, 500

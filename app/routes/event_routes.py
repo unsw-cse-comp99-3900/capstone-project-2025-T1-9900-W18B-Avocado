@@ -6,6 +6,9 @@ from app.services.event_service import get_event_list
 from app.services.event_service import update_event
 from app.services.event_service import delete_event
 from app.services.event_service import register_event
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.event_service import get_student_events
+from app.services.event_service import checkin_event
 
 event_bp = Blueprint("event_bp", __name__)
 
@@ -63,6 +66,7 @@ def update_event_route():
 
 
 @event_bp.route("/admin/delete_event/<int:event_id>", methods=["DELETE"])
+
 def delete_event_route(event_id):
     """
     管理端：删除指定 eventID 的活动
@@ -71,7 +75,38 @@ def delete_event_route(event_id):
     return jsonify(response), status
 
 @event_bp.route("/register_event", methods=["POST"])
+@jwt_required()
 def register_event_route():
     data = request.get_json() or request.form
     response, status = register_event(data)
+    return jsonify(response), status
+
+
+@event_bp.route("/my_event", methods=["GET"])
+@jwt_required()
+def my_event():
+    identity = get_jwt_identity()
+    student_id = identity.get("studentID")
+    role = identity.get("role")
+
+    if role != "student":
+        return jsonify({"error": "Only students can access this endpoint"}), 403
+
+    # 接收分页和过滤参数
+    page = request.args.get("page", default=1, type=int)
+    filter_type = request.args.get("filter", default="all", type=str)
+
+    result, status = get_student_events(student_id, page, filter_type)
+    return jsonify(result), status
+
+@event_bp.route("/checkin/<int:event_id>", methods=["PATCH"])
+@jwt_required()
+def checkin_route(event_id):
+    identity = get_jwt_identity()
+    student_id = identity.get("studentID")
+
+    if not student_id:
+        return jsonify({"error": "Missing studentID in token"}), 400
+
+    response, status = checkin_event(student_id, event_id)
     return jsonify(response), status
