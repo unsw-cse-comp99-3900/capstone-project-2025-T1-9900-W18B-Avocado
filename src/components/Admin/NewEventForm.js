@@ -19,16 +19,6 @@ const validateTimes = (formData, setErrorMsg) => {
   const startTime = new Date(formData.start);
   const endTime = new Date(formData.end);
 
-  if (startTime < now) {
-    setErrorMsg("❌ Start time cannot be in the past.");
-    return false;
-  }
-
-  if (endTime < now) {
-    setErrorMsg("❌ End time cannot be in the past.");
-    return false;
-  }
-
   if (endTime <= startTime) {
     setErrorMsg("❌ End time must be after start time.");
     return false;

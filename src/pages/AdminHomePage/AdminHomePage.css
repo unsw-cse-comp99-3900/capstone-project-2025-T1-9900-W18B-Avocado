@@ -6,7 +6,7 @@
     overflow-x: auto;
 }
 
-/* 左侧标签栏 */
+/* left sidebar */
 .tabs {
     width: 300px;
     background-color: #f9f9f9;
@@ -15,7 +15,7 @@
     box-sizing: border-box;
 }
 
-/* 每个大项标题（可点击展开） */
+/* tab section title*/
 .tab-header {
     width: 250px;
     height: 50px;
@@ -33,7 +33,7 @@
     border-radius: 4px;
 }
 
-/* 展开子项区域 */
+/* tab children */
 .tab-children {
     width: 250px;
     padding-left: 32px;
@@ -47,11 +47,8 @@
 .tab-children a {
     height: 50px;
     display: flex;
-    /* ⭐️ 关键点：让 <a> 成为 flex 容器 */
     align-items: center;
-    /* 垂直居中 */
     justify-content: center;
-    /* 水平居中 */
     text-decoration: none;
     color: #555;
     font-size: 14px;
@@ -87,7 +84,7 @@
     transform: rotate(180deg);
 }
 
-/* 可选：右侧内容区域样式 */
+/* right side */
 .routes {
     flex-grow: 1;
     padding: 24px;

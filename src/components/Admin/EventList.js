@@ -22,6 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FixedCell from "./FixedCell";
 import DeleteEventDialog from "./Dialogs/DeleteEventDialog";
 import EditEventDialog from "./Dialogs/EditEventDialog";
+import HorizontalScrollBox from "./Styles/HorizontalScrollBox";
 
 const mockData = {
   events: [
@@ -37,7 +38,7 @@ const mockData = {
       PR: 0,
       SM: 0,
       description: "3",
-      endTime: "2025-04-10 22:45:00",
+      endTime: "2025-04-30 22:45:00",
       eventID: 3,
       externalLink: "3",
       image: "/static/uploads/00ffc8b8219a45c5a412023d24809408.png",
@@ -137,7 +138,7 @@ const processEvent = (e, filterStatus) => {
   return { ...e, status };
 };
 
-function EventListTable({ isStatic = false }) {
+function EventListTable({ isStatic = true }) {
   const [filterStatus, setFilterStatus] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
@@ -257,13 +258,19 @@ function EventListTable({ isStatic = false }) {
   
 
   return (
-    <Box p={2}>
-      <Paper elevation={3} sx={{ borderRadius: 2, p: 2, overflowX: "auto" }}>
-        {/* Header controls */}
+    <Box>
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: 2,
+          p: 2,
+          width: "100%",
+          overflow: "hidden",
+        }}
+      >
+        {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} gap={2}>
-          <Typography variant="h6" fontWeight="bold">
-            Manage Events
-          </Typography>
+          <Typography variant="h6" fontWeight="bold">Manage Events</Typography>
           <Box display="flex" gap={2}>
             <TextField
               size="small"
@@ -290,34 +297,28 @@ function EventListTable({ isStatic = false }) {
             </FormControl>
           </Box>
         </Box>
-
-        {/* Error display */}
-        {errorMsg && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {errorMsg}
-          </Typography>
-        )}
-
-        {/* Table */}
-          <Table size="small" sx={{ width: "1020px" }}>
+  
+        {/* Table with scrollable wrapper */}
+        <HorizontalScrollBox>
+          <Table size="small" sx={{ minWidth: "950px", width: "100%" }}>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>
-                <FixedCell width={100} fontWeight="bold">Event ID</FixedCell>
-                <FixedCell width={250} fontWeight="bold">Event Name</FixedCell>
-                <FixedCell width={200} fontWeight="bold">Start Time</FixedCell>
-                <FixedCell width={200} fontWeight="bold">End Time</FixedCell>
-                <FixedCell width={120} fontWeight="bold">Event Status</FixedCell>
-                <FixedCell width={150} fontWeight="bold" align="center">Actions</FixedCell>
+                <FixedCell width="10%" minWidth={80} fontWeight="bold">Event ID</FixedCell>
+                <FixedCell width="25%" minWidth={180} fontWeight="bold">Event Name</FixedCell>
+                <FixedCell width="20%" minWidth={150} fontWeight="bold">Start Time</FixedCell>
+                <FixedCell width="20%" minWidth={150} fontWeight="bold">End Time</FixedCell>
+                <FixedCell width="15%" minWidth={100} fontWeight="bold">Status</FixedCell>
+                <FixedCell width="10%" minWidth={80} fontWeight="bold" align="center">Actions</FixedCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {events.map((event) => (
                 <TableRow key={event.eventID} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
-                  <FixedCell width={100}>{event.eventID}</FixedCell>
-                  <FixedCell width={250}>{event.name}</FixedCell>
-                  <FixedCell width={200}>{formatDate(event.startTime)}</FixedCell>
-                  <FixedCell width={200}>{formatDate(event.endTime)}</FixedCell>
-                  <FixedCell width={120}>
+                  <FixedCell width="10%" minWidth={80}>{event.eventID}</FixedCell>
+                  <FixedCell width="25%" minWidth={180}>{event.name}</FixedCell>
+                  <FixedCell width="20%" minWidth={150}>{formatDate(event.startTime)}</FixedCell>
+                  <FixedCell width="20%" minWidth={150}>{formatDate(event.endTime)}</FixedCell>
+                  <FixedCell width="15%" minWidth={100}>
                     <Chip
                       label={event.status.label}
                       color={event.status.color}
@@ -325,7 +326,7 @@ function EventListTable({ isStatic = false }) {
                       variant="outlined"
                     />
                   </FixedCell>
-                  <FixedCell width={150} align="center">
+                  <FixedCell width="10%" minWidth={80} align="center">
                     <Tooltip title="Edit">
                       <IconButton size="small" onClick={() => {
                         setSelectedEvent(event);
@@ -351,7 +352,8 @@ function EventListTable({ isStatic = false }) {
               ))}
             </TableBody>
           </Table>
-
+        </HorizontalScrollBox>
+  
         {/* Pagination */}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination
@@ -364,7 +366,7 @@ function EventListTable({ isStatic = false }) {
           />
         </Box>
       </Paper>
-
+  
       {/* Dialogs */}
       <DeleteEventDialog
         open={deleteDialogOpen}
@@ -379,7 +381,6 @@ function EventListTable({ isStatic = false }) {
         event={selectedEvent}
       />
     </Box>
-  );
+  );  
 }
-
 export default EventListTable;

@@ -18,6 +18,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import FixedCell from "./FixedCell";
 import SwitchUserStatusDialog from "./Dialogs/SwitchUserStatusDialog";
 import UserInfoDialog from "./Dialogs/UserInfoDialog";
+import HorizontalScrollBox from "./Styles/HorizontalScrollBox";
 
 const statusInfoMap = {
   active: { label: "Active", color: "success" },
@@ -72,7 +73,7 @@ const mockUsers = {
   totalPages: 10,
 };
 
-function UserListTable({ isStatic = false }) {
+function UserListTable({ isStatic = true }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
@@ -166,8 +167,9 @@ function UserListTable({ isStatic = false }) {
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   return (
-    <Box p={2}>
-      <Paper elevation={3} sx={{ borderRadius: 2, p: 2, overflowX: "auto" }}>
+    <Box>
+      <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
+        {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" fontWeight="bold">
             Manage Users
@@ -190,62 +192,60 @@ function UserListTable({ isStatic = false }) {
           </Typography>
         )}
 
-        <Table size="small" sx={{ width: "1020px" }}>
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-            <TableRow>
-              <FixedCell width={150} fontWeight="bold">Student ID</FixedCell>
-              <FixedCell width={250} fontWeight="bold">Name</FixedCell>
-              <FixedCell width={250} fontWeight="bold">Email</FixedCell>
-              <FixedCell width={185} fontWeight="bold">Status</FixedCell>
-              <FixedCell width={185} fontWeight="bold" align="center">Actions</FixedCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => {
-              const currentStatus = user.active ? "active" : "inactive";
-              const { label, color } = statusInfoMap[currentStatus];
-              return (
-                <TableRow key={user.id} hover>
-                  <FixedCell width={150}>{user.id}</FixedCell>
-                  <FixedCell width={250}>{user.name}</FixedCell>
-                  <FixedCell width={250}>{user.email}</FixedCell>
-                  <FixedCell width={185}>
-                    <Chip
-                      label={label}
-                      color={color}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </FixedCell>
-                  <FixedCell width={185} align="center">
-                    <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-                      <Tooltip title={user.active ? "Disable" : "Enable"}>
-                        <Switch
-                          checked={user.active}
-                          onChange={() => handleToggleRequest(user)}
-                          color="primary"
-                          size="small"
-                        />
-                      </Tooltip>
-                      <Tooltip title="Preview">
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setInfoDialogOpen(true);
-                          }}
-                        >
-                          <VisibilityIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </FixedCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <HorizontalScrollBox>
+          <Table size="small" sx={{ width: "100%" }}>
+            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableRow>
+              <FixedCell width="15%" minWidth={120} fontWeight="bold">Student ID</FixedCell>
+              <FixedCell width="20%" minWidth={150} fontWeight="bold">Name</FixedCell>
+              <FixedCell width="30%" minWidth={200} fontWeight="bold">Email</FixedCell>
+              <FixedCell width="15%" minWidth={120} fontWeight="bold">Status</FixedCell>
+              <FixedCell width="20%" minWidth={150} fontWeight="bold" align="center">Actions</FixedCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => {
+                const currentStatus = user.active ? "active" : "inactive";
+                const { label, color } = statusInfoMap[currentStatus];
+                return (
+                  <TableRow key={user.id} hover>
+                    <FixedCell width="15%" minWidth={120}>{user.id}</FixedCell>
+                    <FixedCell width="20%" minWidth={150}>{user.name}</FixedCell>
+                    <FixedCell width="30%" minWidth={200}>{user.email}</FixedCell>
+                    <FixedCell width="15%" minWidth={120}>
+                      <Chip label={label} color={color} size="small" variant="outlined" />
+                    </FixedCell>
+                    <FixedCell width="20%" minWidth={150} align="center">
+                      <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+                        <Tooltip title={user.active ? "Disable" : "Enable"}>
+                          <Switch
+                            checked={user.active}
+                            onChange={() => handleToggleRequest(user)}
+                            color="primary"
+                            size="small"
+                          />
+                        </Tooltip>
+                        <Tooltip title="Preview">
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setInfoDialogOpen(true);
+                            }}
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </FixedCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </HorizontalScrollBox>
 
+        {/* Pagination */}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination
             count={totalPages}
@@ -258,6 +258,7 @@ function UserListTable({ isStatic = false }) {
         </Box>
       </Paper>
 
+      {/* Dialogs */}
       <SwitchUserStatusDialog
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}

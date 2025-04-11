@@ -16,6 +16,24 @@ import SkillPointsDialog from "../Dialogs/SkillPointsDialog";
 import { uploadButtonStyle, pointsButtonStyle } from "../Styles/EventFormStyles";
 import CloseIconButton from "../../Buttons/CloseIconButton";
 
+const getPreviousImage = async (url, filename, mimeType) => {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    return new File([blob], filename, { type: mimeType });
+  } catch (error) {
+    console.error("Error fetching previous image:", error);
+    return null;
+  }
+};
+
+
+
 const skills = [
   "Effective Communication",
   "Leadership & Team Management",
@@ -79,7 +97,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [originalEvent, setOriginalEvent] = useState(null);
-
+  const [imageError, setImageError] = useState("");
 
   useEffect(() => {
     if (open && event) {
@@ -88,6 +106,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
       setImage(null);
       setImagePreview(event.image ? `http://localhost:7000${event.image}` : "");
       setOriginalEvent({ ...event });
+      setImageError("");
     }
   }, [open, event]);
   
@@ -115,7 +134,11 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
   const handleImageReset = () => {
     setImage(null);
     setImagePreview("");
-  };
+    setFormData((prev) => ({
+      ...prev,
+      image: null,
+    }));
+  };  
 
   const handleReset = () => {
     setFormData({
@@ -147,24 +170,39 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
     setSkillPoints(skills.reduce((acc, s) => ({ ...acc, [s]: 0 }), {}));
   };
 
-  const handleSubmit = () => {
+  // submit
+  const handleSubmit = async () => {
     const skillAbbr = unmapSkills(skillPoints);
+    const formDataToSend = new FormData();
+    setImageError("");
   
-    const isNewImage = image instanceof File;
+    for (const key of [
+      "eventID", "name", "location", "organizer",
+      "startTime", "endTime", "tag", "externalLink",
+      "summary", "description"
+    ]) {
+      formDataToSend.append(key, formData[key] || "");
+    }
   
-    const payload = {
-      ...formData,
-      ...skillAbbr,
-      // save previous pic if no image update
-      image: isNewImage ? image : formData.image,
-    };
-    delete payload.status;
+    formDataToSend.append("skillPoints", JSON.stringify(skillAbbr));
   
-    console.log("Final Payload:", payload);
-    onConfirm?.(payload);
-  };  
+    if (image instanceof File) {
+      formDataToSend.append("image", image);
+    } else if (imagePreview) {
+      const oldFile = await getPreviousImage(imagePreview, "oldImage.jpg", "image/jpeg");
+      if (oldFile) {
+        formDataToSend.append("image", oldFile);
+      } else {
+        setImageError("Failed to fetch the previous image. Please upload a new one.");
+        return;
+      }
+    }
   
-
+    onConfirm?.(formDataToSend);
+    console.log("🧪 Submitting edited event...", formData);
+  };
+  
+  
   const handleDiscardChanges = () => {
     if (originalEvent) {
         setFormData({ ...originalEvent });
@@ -214,6 +252,11 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
                     Reset Image
                   </Button>
                 </Box>
+              )}
+              {imageError && (
+                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                  {imageError}
+                </Typography>
               )}
             </Grid>
             <Grid item xs={12} md={4}>

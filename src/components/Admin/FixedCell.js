@@ -3,7 +3,8 @@ import { TableCell, Tooltip } from "@mui/material";
 
 function FixedCell({
   children,
-  width = 120,
+  width = "20%",       // 使用百分比宽度
+  minWidth = 100,      // 可控最小宽度
   align = "left",
   tooltip = false,
   fontWeight,
@@ -11,7 +12,7 @@ function FixedCell({
 }) {
   const cellStyle = {
     width,
-    maxWidth: width,
+    minWidth: `${minWidth}px`,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",

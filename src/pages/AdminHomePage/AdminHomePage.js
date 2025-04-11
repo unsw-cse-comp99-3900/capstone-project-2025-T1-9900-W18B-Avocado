@@ -100,16 +100,17 @@ function AdminHomePage() {
             )}
           </div>
         </div>
+        <div className="routes">
+          <Routes>
+            <Route path="" element={<Placeholder text="Please select an option from the sidebar." />} />
+            <Route path="new-event" element={<NewEventForm />} />
 
-        <Routes>
-          <Route path="" element={<Placeholder text="Please select an option from the sidebar." />} />
-          <Route path="new-event" element={<NewEventForm />} />
-
-          <Route path="new-announcement" element={<NewAnnoucementForm />} />
-          <Route path="event-list" element={<EventListTable />} />
-          <Route path="user-list" element={<UserListTable />} />
-          <Route path="manage-announcement" element={<Placeholder text="Edit or remove announcements." />} />
-        </Routes>
+            <Route path="new-announcement" element={<NewAnnoucementForm />} />
+            <Route path="event-list" element={<EventListTable />} />
+            <Route path="user-list" element={<UserListTable />} />
+            <Route path="manage-announcement" element={<Placeholder text="Edit or remove announcements." />} />
+          </Routes>
+        </div>
       </div>
       <Footer />
     </div>
