@@ -4,8 +4,8 @@ from app.nacos.client import get_mysql_config
 mysql_config = get_mysql_config()
 
 DB_CONFIG = {
-    "host": mysql_config.get("host", "localhost"),
-    "user": mysql_config.get("user", "root"),
+    "host": mysql_config.get("host", "mysql"),
+    "user": mysql_config.get("user", "user"),
     "password": mysql_config.get("password", "123456"),
     "database": mysql_config.get("database", "demo_db")
 }
