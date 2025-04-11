@@ -1,3 +1,4 @@
+from flask_jwt_extended import create_access_token
 from app.models.db import get_db_connection
 from app.utils.auth import hash_password, verify_password
 from app.utils.code import generate_code, store_code
@@ -71,8 +72,11 @@ def login_user(email, password):
             return {"error": "Invalid credentials"}, 401
         studentID, hashed, role = user
         if verify_password(hashed, password):
-            return {"message": "Login successful", "studentID": studentID, "role": role}, 200
+            userData = {"studentID": studentID, "role": role}
+            return {"message": "Login successful", "studentID": studentID, "role": role, "token": create_access_token(identity=userData)}, 200
         return {"error": "Invalid credentials"}, 401
+    except Exception as e:
+        return {"error": str(e)}, 500
     finally:
         cursor.close()
         conn.close()
@@ -138,6 +142,41 @@ def handle_password_reset(email, code_input, new_password):
         remove_code(email)
 
         return {"message": "Password has been reset successfully."}, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_all_users():
+    conn = get_db_connection()
+    if not conn:
+        return {"error": "Database connection failed"}, 500
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM demo_userData")
+        users = cursor.fetchall()
+        return {"users": users}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+        
+def get_user(user):
+    conn = get_db_connection()
+    if not conn:
+        return {"error": "Database connection failed"}, 500
+    try:
+        cursor = conn.cursor(dictionary=True)
+        print(user)
+        studentID = user["studentID"]
+        role = user["role"]
+        cursor.execute("SELECT * FROM demo_studentData WHERE studentID = %s", (studentID,))
+        user_data = cursor.fetchone()
+        
+        return user_data, 201
 
     except Exception as e:
         return {"error": str(e)}, 500
