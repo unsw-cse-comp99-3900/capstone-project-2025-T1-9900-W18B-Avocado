@@ -28,29 +28,35 @@ const LoginPage = () => {
     setLoading(true);
     setError(null);
 
-      try {
-        const response = await fetch("http://localhost/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await response.json();
-        setLoading(false);
+    try {
+      const response = await fetch("http://localhost/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-        if (response.ok) {
-          if (data.role === "student") {
-            navigate("/home"); // 学生后台页面
-          } else if (data.role === "admin"){
-            navigate("/admin"); // 管理员后台页面
-          }
-        } else {
-          setError(data.message || "This Password unvalid, please try again");
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.ok) {
+        // ✅ 关键逻辑：保存 token 和 userID
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userID", data.studentID); // studentID = userID
+
+        // ✅ 跳转页面逻辑（保留你的）
+        if (data.role === "student") {
+          navigate("/home");
+        } else if (data.role === "admin") {
+          navigate("/admin");
         }
-      } catch (err) {
-        setLoading(false);
-        setError("Something wrong, please try again");
+      } else {
+        setError(data.message || "This Password unvalid, please try again");
       }
-    };
+    } catch (err) {
+      setLoading(false);
+      setError("Something wrong, please try again");
+    }
+  };
 
   return (
     <Box
@@ -129,7 +135,6 @@ const LoginPage = () => {
             }}
           />
 
-          {/* Log in Button */}
           <Button
             type="submit"
             variant="contained"
@@ -148,14 +153,12 @@ const LoginPage = () => {
             {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Log in"}
           </Button>
 
-          {/* Forgot Password Link */}
           <Box textAlign="right" mt={1}>
             <Link to="/password-recovery" style={{ textDecoration: "none", color: "#007BFF" }}>
               Forgot password?
             </Link>
           </Box>
 
-          {/* Sign up Link */}
           <Box mt={2}>
             <Typography variant="body2">
               Not a member yet?{" "}

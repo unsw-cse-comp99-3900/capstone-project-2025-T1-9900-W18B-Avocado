@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 import { IoPersonCircleOutline } from "react-icons/io5";
@@ -17,26 +17,35 @@ const shortcutsData = [
   { name: "Career Coach", icon: <AiOutlineRadarChart />, path: "/career-coach" },
 ];
 
-
 function ProfilePage() {
-  const navigate = useNavigate(); // 初始化导航函数
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("http://localhost/profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!response.ok) throw new Error("Network error or unauthenticated");
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("Failed to obtain user information:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleLogout = () => {
-    // localStorage.removeItem("userToken"); 
+    // localStorage.removeItem("token");
     navigate("/login");
   };
 
-  const [userData] = useState({
-    id: "5299241",
-    name: "Zach",
-    role: "Student",
-    email: "2@knowwhatson.com",
-    faculty: "SCI",
-    degree: "PSYC Postgraduate",
-    graduationYear: "2025",
-    eventHistory: ["Event A", "Event B", "Event C"],
-    rewards: 10,
-  });
+  if (!userData) return <div>加载中...</div>;
 
   return (
     <div className="profile-page">
@@ -48,20 +57,19 @@ function ProfilePage() {
             <IoPersonCircleOutline className="avatar-icon" />
           </div>
           <div className="arcmember-box">
-            ArcMember
+            {userData.isArcMember === "1" ? "ArcMember" : "Guest"}
           </div>
           <div className="brief-record">
             <div className="brief-container">
               <div>Event History</div>
-              <div className="brief-number">{userData.eventHistory.length}</div>
+              <div className="brief-number">3</div> {/* 可改为动态 */}
             </div>
             <div className="brief-container">
               <div>My Reward</div>
               <div className="brief-reward">
-                <div className="brief-number">{userData.rewards}</div>
+                <div className="brief-number">10</div> {/* 可接 reward 字段 */}
                 <div>pts</div>
               </div>
-              
             </div>
           </div>
         </div>
@@ -71,7 +79,7 @@ function ProfilePage() {
           <div className="profile-details">
             <h2>My Profile</h2>
             <div className="detail-container">
-              <div><strong>ID:</strong> {userData.id}</div>
+              <div><strong>ID:</strong> {userData.studentID}</div>
               <div><strong>Role:</strong> {userData.role}</div>
             </div>
             <div className="detail-container">
@@ -83,7 +91,7 @@ function ProfilePage() {
               <div><strong>Degree:</strong> {userData.degree}</div>
               <div><strong>Graduation Year:</strong> {userData.graduationYear}</div>
             </div>
-            
+
             <button className="logout-button" onClick={handleLogout}>Log out</button>
           </div>
 
@@ -98,7 +106,7 @@ function ProfilePage() {
           </div>
         </div>
       </div>
-    <Footer />
+      <Footer />
     </div>
   );
 }
