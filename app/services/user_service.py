@@ -155,7 +155,7 @@ def get_all_users():
         return {"error": "Database connection failed"}, 500
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM demo_userData")
+        cursor.execute("SELECT * FROM StudentData")
         users = cursor.fetchall()
         return {"users": users}, 200
     except Exception as e:
