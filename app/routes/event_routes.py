@@ -9,7 +9,9 @@ from app.services.event_service import register_event
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services.event_service import get_student_events
 from app.services.event_service import checkin_event
-
+from app.services.event_service import redeem_reward
+from app.services.event_service import attend_event
+from app.services.event_service import delete_selected_events
 event_bp = Blueprint("event_bp", __name__)
 
 
@@ -109,4 +111,41 @@ def checkin_route(event_id):
         return jsonify({"error": "Missing studentID in token"}), 400
 
     response, status = checkin_event(student_id, event_id)
+    return jsonify(response), status
+
+@event_bp.route("/rewards/redeem", methods=["POST"])
+@jwt_required()
+def redeem_reward_route():
+    data = request.get_json()
+    reward_id = data.get("rewardID")
+
+    if not reward_id:
+        return jsonify({"error": "Missing rewardID"}), 400
+
+    student_id = get_jwt_identity().get("studentID")
+
+    response, status = redeem_reward(student_id, reward_id)
+    return jsonify(response), status
+
+
+@event_bp.route("/event/attend", methods=["POST"])
+@jwt_required()
+def attend_event_route():
+    data = request.get_json()
+    event_id = data.get("eventID")
+    student_id = get_jwt_identity()  # 从 JWT 中获取 studentID
+
+    if not event_id:
+        return jsonify({"error": "Missing eventID"}), 400
+
+    response, status = attend_event(event_id, student_id)
+    return jsonify(response), status
+
+
+@event_bp.route("/admin/delete_selected", methods=["POST"])
+def delete_selected_events_route():
+    data = request.get_json()
+    event_ids = data.get("eventIDs")
+
+    response, status = delete_selected_events(event_ids)
     return jsonify(response), status

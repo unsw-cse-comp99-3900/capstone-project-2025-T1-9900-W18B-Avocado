@@ -291,7 +291,8 @@ def delete_event(event_id):
         # 删除数据库记录
         cursor.execute("DELETE FROM EventData WHERE eventID = %s", (event_id,))
         conn.commit()
-        image_path = image_path.lstrip("/")
+        if image_path is not None:
+            image_path = image_path.lstrip("/")
         # 删除本地图片
         if image_path and isinstance(image_path, str) and image_path.strip():
             if image_path.startswith("static/uploads"):  # ✅ 确保是我们的上传目录
@@ -318,7 +319,59 @@ def delete_event(event_id):
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
 
+def delete_selected_events(event_ids):
+    if not event_ids or not isinstance(event_ids, list):
+        return {"error": "Invalid eventIDs"}, 400
 
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 查询所有对应的图片路径
+        format_strings = ','.join(['%s'] * len(event_ids))
+        cursor.execute(
+            f"SELECT eventID, image FROM EventData WHERE eventID IN ({format_strings})",
+            tuple(event_ids)
+        )
+        results = cursor.fetchall()
+
+        # 删除数据库记录
+        cursor.execute(
+            f"DELETE FROM EventData WHERE eventID IN ({format_strings})",
+            tuple(event_ids)
+        )
+        conn.commit()
+
+        # 删除每个 event 的图片（如果存在）
+        for row in results:
+            event_id, image_path = row
+            if image_path is not None:
+                image_path = image_path.lstrip("/")
+
+            if image_path and isinstance(image_path, str) and image_path.strip():
+                if image_path.startswith("static/uploads"):
+                    relative_path = image_path.replace("/", os.sep)
+                    file_path = os.path.join(os.getcwd(), relative_path)
+
+                    if os.path.isfile(file_path):
+                        try:
+                            os.remove(file_path)
+                            print(f"🗑️ 已删除图片: {file_path}")
+                        except Exception as e:
+                            print(f"⚠️ 图片删除失败（{event_id}）: {e}")
+                    else:
+                        print(f"⚠️ 文件不存在: {file_path}")
+                else:
+                    print(f"🚫 非法路径，跳过删除（{event_id}）: {image_path}")
+
+        return {"message": f"Deleted {len(results)} events successfully."}, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
 
 
 def register_event(data):
@@ -472,3 +525,83 @@ def checkin_event(student_id, event_id):
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
+
+
+REWARD_COST = {
+    1: 20,
+    2: 50,
+    3: 100
+}
+
+def redeem_reward(student_id, reward_id):
+    if reward_id not in REWARD_COST:
+        return {"error": "Invalid rewardID"}, 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        # 获取当前学生积分
+        cursor.execute("SELECT points FROM studentData WHERE studentID = %s", (student_id,))
+        row = cursor.fetchone()
+        if not row:
+            return {"error": "Student not found"}, 404
+        current_points = row["points"]
+        cost = REWARD_COST[reward_id]
+
+        if current_points < cost:
+            return {"error": "Not enough points to redeem this reward"}, 400
+
+        # 记录兑换记录
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute("""
+            INSERT INTO rewardData (studentID, rewardID, timestamp)
+            VALUES (%s, %s, %s)
+        """, (student_id, reward_id, now))
+
+        # 更新学生积分
+        cursor.execute("""
+            UPDATE studentData SET points = points - %s WHERE studentID = %s
+        """, (cost, student_id))
+
+        conn.commit()
+        return {"message": "Reward redeemed successfully"}, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+
+def attend_event(event_id, student_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 判断是否已报名
+        cursor.execute(
+            "SELECT 1 FROM AttendanceData WHERE studentID = %s AND eventID = %s",
+            (student_id, event_id)
+        )
+        if cursor.fetchone():
+            return {"error": "You have already registered for this event."}, 400
+
+        # 插入新报名记录，默认 checkIn = 0
+        cursor.execute(
+            "INSERT INTO AttendanceData (studentID, eventID, checkIn) VALUES (%s, %s, 0)",
+            (student_id, event_id)
+        )
+        conn.commit()
+
+        return {"message": "Event registration successful."}, 201
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
+

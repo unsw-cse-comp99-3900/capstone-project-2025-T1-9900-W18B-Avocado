@@ -6,4 +6,4 @@ NACOS_SERVICE_NAME = "event-service"
 NACOS_GROUP = "DEFAULT_GROUP"
 NACOS_DATA_ID = "event-mysql-config"
 
-SERVICE_PORT = 6000
+SERVICE_PORT = 7000
