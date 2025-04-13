@@ -33,6 +33,12 @@
     border-radius: 4px;
 }
 
+.tab-header.expanded-parent {
+    background-color: #f0f0f0;
+    border-radius: 6px;
+  }
+  
+
 /* tab children */
 .tab-children {
     width: 250px;
@@ -50,39 +56,46 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    color: #555;
-    font-size: 14px;
+    font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #444;
+    letter-spacing: 0.3px;
     transition: color 0.2s, background-color 0.2s;
     border-radius: 6px;
-}
+  }
+  
 
 .tab-children a:hover {
-    background-color: #f0f0f0;
-    color: #1976d2;
+    background-color: 	#f2f2f2;
+    color: #3E7D5E;
 }
 
-/* 激活状态 */
+/* Active */
 .active:hover {
     font-weight: bold;
     color: #555;
 }
 
 .active {
-    font-weight: bold;
-    background-color: #1976d2;
-    color: white;
-}
+    font-weight: bold !important;
+    background-color: #FFE5B4 !important;
+    color: #4A5A29 !important;
+  }
 
 .expand-icon {
     transition: transform 0.3s ease;
     vertical-align: middle;
     margin-right: 6px;
-    color: #555;
-}
-
-.expand-icon.expanded {
+    color: #4CAF50;
+  }
+  
+  .expand-icon.expanded {
     transform: rotate(180deg);
-}
+  }
+  
+  
+
 
 /* right side */
 .routes {

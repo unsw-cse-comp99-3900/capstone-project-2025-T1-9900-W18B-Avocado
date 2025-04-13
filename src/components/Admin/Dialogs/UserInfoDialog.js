@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   List,
   ListItem,
   ListItemText,
   Box,
   Typography,
-  Stack,
+  Chip,
   Grid
 } from '@mui/material';
 import CloseIconButton from '../../Buttons/CloseIconButton';
@@ -115,8 +114,21 @@ const UserInfoDialog = ({ open, onClose, user }) => {
             </Box>
         {/* Main content */}
         <Box flex={1} p={3}>
-          <DialogTitle><strong>ID: {user?.id ?? 'N/A'}</strong></DialogTitle>
-          <DialogContent>{renderContent()}</DialogContent>
+        <DialogContent sx={{ pt: 0, pb: 3, px: 4 }}>
+          <Box>
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <Chip
+                label={`ID: ${user?.id ?? 'N/A'}`}
+                variant="outlined"
+                color="primary"
+                size="medium"
+                sx={{ fontWeight: 'bold' }}
+              />
+            </Box>
+            {renderContent()}
+          </Box>
+        </DialogContent>
+
         </Box>
       </Box>
     </Dialog>

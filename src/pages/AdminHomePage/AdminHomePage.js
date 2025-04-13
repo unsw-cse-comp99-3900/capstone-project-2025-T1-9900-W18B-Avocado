@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Link, Routes, Route, useLocation } from "react-router-dom";
+import { Box,Typography } from "@mui/material";
+
 import "./AdminHomePage.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import NewEventForm from "../../components/Admin/NewEventForm";
-import NewAnnoucementForm from "../../components/Admin/NewAnnouncementForm";
+import NewNoticeForm from "../../components/Admin/NewNoticeForm";
 import EventListTable from "../../components/Admin/EventList";
-
-import { Box,Typography } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UserListTable from "../../components/Admin/UserList";
+import NoticeListTable from "../../components/Admin/NoticeList";
 
 
 function Placeholder({ text }) {
@@ -29,6 +30,15 @@ function AdminHomePage() {
     setExpandedTab(expandedTab === tab ? "" : tab);
   };
 
+  const isTabActive = (tab) => {
+    const map = {
+      event: ["/admin/new-event", "/admin/event-list"],
+      user: ["/admin/user-list"],
+      notice: ["/admin/new-notice", "/admin/notice-list"],
+    };
+    return map[tab]?.some((path) => location.pathname === path);
+  };
+
   return (
     <div>
       <Header />
@@ -36,10 +46,20 @@ function AdminHomePage() {
         <div className="tabs">
           {/* Event Management */}
           <div>
-            <div className="tab-header" onClick={() => handleTabClick("event")}>
-              <ExpandMoreIcon className={expandedTab === "event" ? "expand-icon expanded" : "expand-icon"} />
-              Event Management
-            </div>
+          <div
+            className={`tab-header ${
+              expandedTab === "event" || isTabActive("event") ? "expanded-parent" : ""
+            }`}
+            onClick={() => handleTabClick("event")}
+          >
+            <ExpandMoreIcon
+              className={
+                expandedTab === "event" ? "expand-icon expanded" : "expand-icon"
+              }
+            />
+            Event Management
+          </div>
+
             {expandedTab === "event" && (
               <div className="tab-children">
                 <Link
@@ -60,7 +80,8 @@ function AdminHomePage() {
 
           {/* User Management */}
           <div>
-            <div className="tab-header" onClick={() => handleTabClick("user")}>
+            <div className={`tab-header ${expandedTab === "user" || isTabActive("user") ? "expanded-parent" : ""}`}
+                 onClick={() => handleTabClick("user")}>
               <ExpandMoreIcon className={expandedTab === "user" ? "expand-icon expanded" : "expand-icon"} />
               User Management
             </div>
@@ -76,25 +97,26 @@ function AdminHomePage() {
             )}
           </div>
 
-          {/* Announcement Management */}
+          {/* Notice Management */}
           <div>
-            <div className="tab-header" onClick={() => handleTabClick("announcement")}>
-              <ExpandMoreIcon className={expandedTab === "announcement" ? "expand-icon expanded" : "expand-icon"} />
-              Announcement Management
+            <div className={`tab-header ${expandedTab === "notice" || isTabActive("notice") ? "expanded-parent" : ""}`}
+                 onClick={() => handleTabClick("notice")}>
+              <ExpandMoreIcon className={expandedTab === "notice" ? "expand-icon expanded" : "expand-icon"} />
+              Notice Management
             </div>
-            {expandedTab === "announcement" && (
+            {expandedTab === "notice" && (
               <div className="tab-children">
                 <Link
-                  to="/admin/new-announcement"
-                  className={location.pathname === "/admin/new-announcement" ? "active" : ""}
+                  to="/admin/new-notice"
+                  className={location.pathname === "/admin/new-notice" ? "active" : ""}
                 >
-                  Create New Announcement
+                  Create New Notice
                 </Link>
                 <Link
-                  to="/admin/announcement-list"
-                  className={location.pathname === "/admin/announcement-list" ? "active" : ""}
+                  to="/admin/notice-list"
+                  className={location.pathname === "/admin/notice-list" ? "active" : ""}
                 >
-                  Announcement List
+                  Notice List
                 </Link>
               </div>
             )}
@@ -104,11 +126,10 @@ function AdminHomePage() {
           <Routes>
             <Route path="" element={<Placeholder text="Please select an option from the sidebar." />} />
             <Route path="new-event" element={<NewEventForm />} />
-
-            <Route path="new-announcement" element={<NewAnnoucementForm />} />
+            <Route path="new-notice" element={<NewNoticeForm />} />
             <Route path="event-list" element={<EventListTable />} />
             <Route path="user-list" element={<UserListTable />} />
-            <Route path="manage-announcement" element={<Placeholder text="Edit or remove announcements." />} />
+            <Route path="notice-list" element={<NoticeListTable />} />
           </Routes>
         </div>
       </div>

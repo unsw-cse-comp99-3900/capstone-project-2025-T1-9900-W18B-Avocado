@@ -16,6 +16,10 @@ import {
   Paper,
   TextField,
   Pagination,
+  Checkbox,
+  Button,
+  TableCell,
+  Divider
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,6 +27,8 @@ import FixedCell from "./FixedCell";
 import DeleteEventDialog from "./Dialogs/DeleteEventDialog";
 import EditEventDialog from "./Dialogs/EditEventDialog";
 import HorizontalScrollBox from "./Styles/HorizontalScrollBox";
+
+import formatDate from "../Functions/formatDate";
 
 const mockData = {
   events: [
@@ -117,28 +123,12 @@ function getEventStatus(start, end) {
   else return { label: "Previous", color: "default" };
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return "Invalid Date";
-  const fixedStr = dateStr.replace(" ", "T");
-  const date = new Date(fixedStr);
-  if (isNaN(date)) return "Invalid Date";
-  return new Intl.DateTimeFormat("en-AU", {
-    timeZone: "Australia/Sydney",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  }).format(date);
-}
-
 const processEvent = (e, filterStatus) => {
   const status = filterStatus === "All" ? getEventStatus(e.startTime, e.endTime) : statusInfoMap[filterStatus.toLowerCase()];
   return { ...e, status };
 };
 
-function EventListTable({ isStatic = true }) {
+function EventListTable({ isStatic = false }) {
   const [filterStatus, setFilterStatus] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
@@ -150,6 +140,32 @@ function EventListTable({ isStatic = true }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEventIDs, setSelectedEventIDs] = useState([]);
+
+  const handleSelectAll = () => {
+    const allIDs = events.map((e) => e.eventID);
+    setSelectedEventIDs(allIDs);
+  };
+
+  const handleUnselectAll = () => {
+    setSelectedEventIDs([]);
+  };
+
+  const handleToggleCheckbox = (id) => {
+    setSelectedEventIDs((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const handleBatchDelete = async () => {
+    for (const id of selectedEventIDs) {
+      await fetch(`http://localhost:7000/admin/delete_event/${id}`, {
+        method: "DELETE",
+      });
+    }
+    setSelectedEventIDs([]);
+    await fetchEvents();
+  };
 
   const fetchEvents = async () => {
     try {
@@ -259,50 +275,72 @@ function EventListTable({ isStatic = true }) {
 
   return (
     <Box>
-      <Paper
-        elevation={3}
-        sx={{
-          borderRadius: 2,
-          p: 2,
-          width: "100%",
-          overflow: "hidden",
-        }}
-      >
-        {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} gap={2}>
-          <Typography variant="h6" fontWeight="bold">Manage Events</Typography>
-          <Box display="flex" gap={2}>
-            <TextField
-              size="small"
-              label="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Event Name"
-            />
-            <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel>Status</InputLabel>
-              <Select
-                label="Status"
-                value={filterStatus}
-                onChange={(e) => {
-                  setFilterStatus(e.target.value);
-                  setPage(0);
-                }}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Upcoming">Upcoming</MenuItem>
-                <MenuItem value="Current">Current</MenuItem>
-                <MenuItem value="Previous">Previous</MenuItem>
-              </Select>
-            </FormControl>
+      <Paper elevation={3} sx={{ borderRadius: 2, p: 2, width: "100%", overflow: "hidden" }}>
+        {/* Title + Divider + Error */}
+          <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+            <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Manage Events</Typography>
+            {errorMsg && (
+              <Typography variant="body2" color="error" sx={{ maxWidth: 400, wordBreak: "break-word" }}>
+                {errorMsg}
+              </Typography>
+            )}
           </Box>
+          <Divider sx={{ my: 2 }} />
+  
+        {/* Filter Row + Buttons */} 
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={2}>
+          <Box display="flex" gap={1}>
+              <Button size="small" variant="outlined" onClick={handleSelectAll}>Select All</Button>
+              <Button size="small" variant="outlined" color="error" onClick={handleUnselectAll}>Unselect All</Button>
+              <Button
+                size="small"
+                variant="contained"
+                color="error"
+                onClick={handleBatchDelete}
+                disabled={selectedEventIDs.length === 0}
+              >
+                Delete Selected
+              </Button>
+            </Box>
+            <Box display="flex" gap={2}>
+              <TextField
+                size="small"
+                label="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Event Name"
+              />
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  label="Status"
+                  value={filterStatus}
+                  onChange={(e) => {
+                    setFilterStatus(e.target.value);
+                    setPage(0);
+                  }}
+                >
+                  <MenuItem value="All">All</MenuItem>
+                  <MenuItem value="Upcoming">Upcoming</MenuItem>
+                  <MenuItem value="Current">Current</MenuItem>
+                  <MenuItem value="Previous">Previous</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
         </Box>
   
-        {/* Table with scrollable wrapper */}
+        {/* Table */}
         <HorizontalScrollBox>
           <Table size="small" sx={{ minWidth: "950px", width: "100%" }}>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedEventIDs.length === events.length && events.length > 0}
+                    indeterminate={selectedEventIDs.length > 0 && selectedEventIDs.length < events.length}
+                    onChange={(e) => e.target.checked ? handleSelectAll() : handleUnselectAll()}
+                  />
+                </TableCell>
                 <FixedCell width="10%" minWidth={80} fontWeight="bold">Event ID</FixedCell>
                 <FixedCell width="25%" minWidth={180} fontWeight="bold">Event Name</FixedCell>
                 <FixedCell width="20%" minWidth={150} fontWeight="bold">Start Time</FixedCell>
@@ -314,17 +352,18 @@ function EventListTable({ isStatic = true }) {
             <TableBody>
               {events.map((event) => (
                 <TableRow key={event.eventID} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selectedEventIDs.includes(event.eventID)}
+                      onChange={() => handleToggleCheckbox(event.eventID)}
+                    />
+                  </TableCell>
                   <FixedCell width="10%" minWidth={80}>{event.eventID}</FixedCell>
                   <FixedCell width="25%" minWidth={180}>{event.name}</FixedCell>
                   <FixedCell width="20%" minWidth={150}>{formatDate(event.startTime)}</FixedCell>
                   <FixedCell width="20%" minWidth={150}>{formatDate(event.endTime)}</FixedCell>
                   <FixedCell width="15%" minWidth={100}>
-                    <Chip
-                      label={event.status.label}
-                      color={event.status.color}
-                      size="small"
-                      variant="outlined"
-                    />
+                    <Chip label={event.status.label} color={event.status.color} size="small" variant="outlined" />
                   </FixedCell>
                   <FixedCell width="10%" minWidth={80} align="center">
                     <Tooltip title="Edit">
@@ -381,6 +420,8 @@ function EventListTable({ isStatic = true }) {
         event={selectedEvent}
       />
     </Box>
-  );  
+  );
+  
 }
+
 export default EventListTable;

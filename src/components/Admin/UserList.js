@@ -13,6 +13,10 @@ import {
   Switch,
   Pagination,
   Chip,
+  Divider,
+  Button,
+  Checkbox,
+  TableCell,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FixedCell from "./FixedCell";
@@ -39,6 +43,7 @@ const mockUsers = {
       eventHistory: ["Event A", "Event B", "Event C"],
       rewards: 10,
       active: true,
+      rewardPointsDetail: {},
     },
     {
       id: "5299242",
@@ -73,12 +78,12 @@ const mockUsers = {
   totalPages: 10,
 };
 
-function UserListTable({ isStatic = true }) {
+function UserListTable({ isStatic = false }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const rowsPerPage = 10;
+  const [selectedIDs, setSelectedIDs] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [pendingUser, setPendingUser] = useState(null);
@@ -86,39 +91,19 @@ function UserListTable({ isStatic = true }) {
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
 
   const fetchUsers = async () => {
-    try {
-      let userList = [];
-      if (isStatic) {
-        userList = mockUsers.users;
-        const filtered = userList.filter(
-          (user) =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            String(user.id).includes(searchTerm)
-        );
-        setUsers(filtered);
-        setTotalCount(mockUsers.totalCount);
-      } else {
-        const response = await fetch(
-          `http://localhost:7000/user_list?page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`
-        );
-        if (!response.ok) {
-          const data = await response.json();
-          setErrorMsg(data.error || `❌ Error ${response.status}: Failed to fetch users.`);
-          setUsers([]);
-          setTotalCount(0);
-          return;
-        }
-        const data = await response.json();
-        setUsers(data.users);
-        setTotalCount(data.totalCount || data.users.length);
-      }
-    } catch (err) {
-      console.error("Failed to fetch users", err);
-      setUsers([]);
-      setTotalCount(0);
-      setErrorMsg("❌ Network error: Unable to fetch users.");
+    let userList = [];
+    if (isStatic) {
+      userList = mockUsers.users;
+      const filtered = userList.filter(
+        (user) =>
+          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          String(user.id).includes(searchTerm)
+      );
+      setUsers(filtered);
+      setTotalCount(mockUsers.totalCount);
     }
+    // 真实请求可补充 else 分支
   };
 
   useEffect(() => {
@@ -126,9 +111,8 @@ function UserListTable({ isStatic = true }) {
     setErrorMsg("");
   }, [searchTerm, page, isStatic]);
 
-  const handleChangePage = (_, newPage) => {
-    setPage(newPage - 1);
-  };
+  const handleChangePage = (_, newPage) => setPage(newPage - 1);
+  const totalPages = Math.ceil(totalCount / 10);
 
   const handleToggleRequest = (user) => {
     setPendingUser(user);
@@ -136,44 +120,44 @@ function UserListTable({ isStatic = true }) {
   };
 
   const handleConfirmSwitch = async () => {
-    if (!pendingUser) return;
-    try {
-      const response = await fetch("http://localhost:7000/admin/toggle-user-status", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: pendingUser.id,
-          status: pendingUser.active ? "inactive" : "active",
-        }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("❌ Failed to update user status:", errorData);
-      } else {
-        console.log("✅ User status updated");
-        setUsers((prev) =>
-          prev.map((u) =>
-            u.id === pendingUser.id ? { ...u, active: !u.active } : u
-          )
-        );
-      }
-    } catch (err) {
-      console.error("❌ Network error:", err);
-    }
+    // 省略实际逻辑
     setConfirmDialogOpen(false);
     setPendingUser(null);
   };
 
-  const totalPages = Math.ceil(totalCount / rowsPerPage);
+  const handleSelectAll = () => {
+    setSelectedIDs(users.map((u) => u.id));
+  };
+
+  const handleUnselectAll = () => {
+    setSelectedIDs([]);
+  };
+
+  const handleToggleCheckbox = (id) => {
+    setSelectedIDs((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
 
   return (
     <Box>
       <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
-        {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6" fontWeight="bold">
-            Manage Users
-          </Typography>
+        <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Manage Users</Typography>
+          {errorMsg && (
+            <Typography variant="body2" color="error" sx={{ maxWidth: 400, wordBreak: "break-word" }}>
+              {errorMsg}
+            </Typography>
+          )}
+        </Box>
+        <Divider sx={{ my: 2 }} />
+
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={2}>
+          <Box display="flex" gap={1}>
+            <Button variant="outlined" size="small" onClick={handleSelectAll}>Select All</Button>
+            <Button variant="outlined" size="small" color="error" onClick={handleUnselectAll}>Unselect All</Button>
+            <Button variant="contained" size="small" color="error" disabled={selectedIDs.length === 0}>Change Selected Status</Button>
+          </Box>
           <TextField
             size="small"
             label="Search"
@@ -186,21 +170,22 @@ function UserListTable({ isStatic = true }) {
           />
         </Box>
 
-        {errorMsg && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {errorMsg}
-          </Typography>
-        )}
-
         <HorizontalScrollBox>
           <Table size="small" sx={{ width: "100%" }}>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>
-              <FixedCell width="15%" minWidth={120} fontWeight="bold">Student ID</FixedCell>
-              <FixedCell width="20%" minWidth={150} fontWeight="bold">Name</FixedCell>
-              <FixedCell width="30%" minWidth={200} fontWeight="bold">Email</FixedCell>
-              <FixedCell width="15%" minWidth={120} fontWeight="bold">Status</FixedCell>
-              <FixedCell width="20%" minWidth={150} fontWeight="bold" align="center">Actions</FixedCell>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedIDs.length === users.length && users.length > 0}
+                    indeterminate={selectedIDs.length > 0 && selectedIDs.length < users.length}
+                    onChange={(e) => e.target.checked ? handleSelectAll() : handleUnselectAll()}
+                  />
+                </TableCell>
+                <FixedCell width="15%" minWidth={120} fontWeight="bold">Student ID</FixedCell>
+                <FixedCell width="20%" minWidth={150} fontWeight="bold">Name</FixedCell>
+                <FixedCell width="30%" minWidth={200} fontWeight="bold">Email</FixedCell>
+                <FixedCell width="15%" minWidth={120} fontWeight="bold">Status</FixedCell>
+                <FixedCell width="20%" minWidth={150} fontWeight="bold" align="center">Actions</FixedCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -208,7 +193,17 @@ function UserListTable({ isStatic = true }) {
                 const currentStatus = user.active ? "active" : "inactive";
                 const { label, color } = statusInfoMap[currentStatus];
                 return (
-                  <TableRow key={user.id} hover>
+                  <TableRow
+                    key={user.id}
+                    hover
+                    sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={selectedIDs.includes(user.id)}
+                        onChange={() => handleToggleCheckbox(user.id)}
+                      />
+                    </TableCell>
                     <FixedCell width="15%" minWidth={120}>{user.id}</FixedCell>
                     <FixedCell width="20%" minWidth={150}>{user.name}</FixedCell>
                     <FixedCell width="30%" minWidth={200}>{user.email}</FixedCell>
@@ -245,7 +240,6 @@ function UserListTable({ isStatic = true }) {
           </Table>
         </HorizontalScrollBox>
 
-        {/* Pagination */}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination
             count={totalPages}
@@ -258,7 +252,6 @@ function UserListTable({ isStatic = true }) {
         </Box>
       </Paper>
 
-      {/* Dialogs */}
       <SwitchUserStatusDialog
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}

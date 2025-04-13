@@ -14,6 +14,7 @@ import { SubmitButton, ResetButton } from "./FormButtons";
 import SkillPointsDialog from "./Dialogs/SkillPointsDialog";
 import { fieldStyle, uploadButtonStyle, pointsButtonStyle } from "./Styles/EventFormStyles";
 
+
 const validateTimes = (formData, setErrorMsg) => {
   const now = new Date();
   const startTime = new Date(formData.start);
@@ -192,11 +193,22 @@ const NewEventForm = () => {
   };
 
   return (
-    <Box p={4}>
-      <Paper elevation={1} sx={{ p: 4, borderRadius: 3, backgroundColor: "#f9f9f9", minWidth: "700px" }}>
-        <Typography variant="h5" fontWeight="bold" mb={3}>
+    <Box >
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: 2,
+          p: 2,
+          width: "100%",
+          maxWidth:"1000px",
+          overflow: "hidden",
+          backgroundColor: "#fff",
+        }}
+      >
+        <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold" Box mb={1}>
           Create New Event
         </Typography>
+        <Divider sx={{ my: 2 }} />
 
         {errorMsg && <Typography color="error" mb={2}>{errorMsg}</Typography>}
         {successMsg && <Typography color="success.main" mb={2}>{successMsg}</Typography>}
