@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -12,10 +12,18 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Pagination,
 } from "@mui/material";
-
-import { useNavigate } from "react-router-dom"; // ✅ 新增
-
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 
@@ -41,50 +49,119 @@ const rewardsList = [
 ];
 
 const MyRewardsPage = () => {
-  const [userPoints] = useState(50); // 模拟积分
-  const [history, setHistory] = useState([]);
-  const [redeemedRewards, setRedeemedRewards] = useState([]);
+  const [userPoints, setUserPoints] = useState(0);
+  const [fullRecords, setFullRecords] = useState([]);
+  const [redeemCountMap, setRedeemCountMap] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 5;
+  const [selectedReward, setSelectedReward] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate(); // ✅ 新增
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("http://localhost/rewards/status", {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        });
+        if (!res.ok) throw new Error("Server Error");
+        const data = await res.json();
+        setUserPoints(data.points || 0);
+        const sorted = (data.records || []).sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        setFullRecords(sorted);
+        setRedeemCountMap(data.rewardCounts || {});
+      } catch (err) {
+        console.error("❌ Backend error:", err);
+        const mockRecords = [
+          { rewardID: 1, timestamp: "2025-04-13 15:00:00" },
+          { rewardID: 2, timestamp: "2025-04-12 13:20:00" },
+          { rewardID: 3, timestamp: "2025-04-11 10:15:00" },
+        ];
+        setUserPoints(50);
+        setFullRecords(mockRecords);
+        setRedeemCountMap({ 1: 3, 2: 2, 3: 1 });
+        setAlertMessage("⚠️ Backend unavailable, using mock data");
+        setAlertOpen(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const handleRedeem = (reward) => {
-    if (redeemedRewards.includes(reward.id)) {
-      setAlertMessage(`✅ You've already redeemed "${reward.name}".`);
-    } else {
-      setRedeemedRewards((prev) => [...prev, reward.id]);
-      setHistory((prev) => [
-        ...prev,
-        `${new Date().toLocaleString()} - Redeemed "${reward.name}"`,
-      ]);
-      setAlertMessage(`🎉 You've successfully redeemed "${reward.name}"!`);
-    }
-    setAlertOpen(true);
+  const handleRedeemClick = (reward) => {
+    setSelectedReward(reward);
+    setDialogOpen(true);
   };
+
+  const handleConfirmRedeem = async () => {
+    if (!selectedReward) return;
+    try {
+      const res = await fetch("http://localhost:7000/rewards/redeem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify({ rewardID: selectedReward.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUserPoints(data.points);
+        const now = new Date();
+        const timestamp = now.toISOString().slice(0, 19).replace("T", " ");
+        setFullRecords((prev) => [
+          { rewardID: selectedReward.id, timestamp },
+          ...prev,
+        ]);
+        setRedeemCountMap((prev) => ({
+          ...prev,
+          [selectedReward.id]: (prev[selectedReward.id] || 0) + 1,
+        }));
+        setCurrentPage(1);
+        setAlertMessage(`🎉 Successfully redeemed "${selectedReward.name}"!`);
+      } else {
+        setAlertMessage(`❌ ${data.message || "Redemption failed."}`);
+      }
+    } catch (err) {
+      console.error("Redemption error:", err);
+      setAlertMessage("❌ Redemption failed: Network or server error.");
+    } finally {
+      setAlertOpen(true);
+      setDialogOpen(false);
+      setSelectedReward(null);
+    }
+  };
+
+  const displayedRecords = fullRecords.slice(
+    (currentPage - 1) * recordsPerPage,
+    currentPage * recordsPerPage
+  );
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <Box sx={{ backgroundColor: "#DFF0D8", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <CircularProgress />
+        </Box>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
       <Header />
-      <Box
-        sx={{
-          backgroundColor: "#DFF0D8",
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          paddingBottom: 4,
-        }}
-      >
-        <Container
-          maxWidth="md"
-          sx={{
-            mt: 6,
-            backgroundColor: "#fff",
-            borderRadius: 3,
-            boxShadow: 3,
-            p: 4,
-          }}
-        >
+      <Box sx={{ backgroundColor: "#DFF0D8", minHeight: "100vh", display: "flex", flexDirection: "column", paddingBottom: 4 }}>
+        <Container maxWidth="md" sx={{ mt: 6, backgroundColor: "#fff", borderRadius: 3, boxShadow: 3, p: 4 }}>
           <Typography variant="h4" align="center" gutterBottom>
             You have {userPoints} Points
           </Typography>
@@ -92,62 +169,27 @@ const MyRewardsPage = () => {
           <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
             {rewardsList.map((reward) => {
               const unlocked = userPoints >= reward.pointsRequired;
-              const alreadyRedeemed = redeemedRewards.includes(reward.id);
-              const progress = Math.min(
-                (userPoints / reward.pointsRequired) * 100,
-                100
-              );
-
+              const progress = Math.min((userPoints / reward.pointsRequired) * 100, 100);
+              const redeemedCount = redeemCountMap[reward.id] || 0;
               return (
                 <Grid item key={reward.id}>
-                  <Card
-                    sx={{
-                      width: 260,
-                      opacity: unlocked ? 1 : 0.6,
-                      border: unlocked
-                        ? "2px solid #4caf50"
-                        : "1px dashed #ccc",
-                      transition: "0.3s",
-                    }}
-                  >
+                  <Card sx={{ width: 260, opacity: unlocked ? 1 : 0.6, border: unlocked ? "2px solid #4caf50" : "1px dashed #ccc", position: "relative" }}>
+                    {redeemedCount > 0 && (
+                      <Box sx={{ position: "absolute", top: 8, right: 8, backgroundColor: "#4caf50", color: "#fff", px: 1.2, py: 0.5, borderRadius: "12px", fontSize: "0.75rem", fontWeight: "bold" }}>
+                        {redeemedCount} times
+                      </Box>
+                    )}
                     <CardContent sx={{ textAlign: "center" }}>
-                      <img
-                        src={reward.image}
-                        alt={reward.name}
-                        width={80}
-                        height={80}
-                        style={{ marginBottom: 8 }}
-                      />
+                      <img src={reward.image} alt={reward.name} width={80} height={80} style={{ marginBottom: 8 }} />
                       <Typography variant="h6">{reward.name}</Typography>
-                      <Typography color="text.secondary">
-                        Requires {reward.pointsRequired} pts
-                      </Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={progress}
-                        sx={{ mt: 2, height: 8, borderRadius: 4 }}
-                      />
+                      <Typography color="text.secondary">Requires {reward.pointsRequired} pts</Typography>
+                      <LinearProgress variant="determinate" value={progress} sx={{ mt: 2, height: 8, borderRadius: 4 }} />
                     </CardContent>
                     <CardActions>
-                      <Tooltip
-                        title={
-                          alreadyRedeemed
-                            ? "Already redeemed"
-                            : unlocked
-                            ? "Click to redeem"
-                            : `Earn ${reward.pointsRequired - userPoints
-                            } more points to unlock`
-                        }
-                      >
+                      <Tooltip title={unlocked ? "Click to redeem" : `Earn ${reward.pointsRequired - userPoints} more points`}>
                         <span style={{ width: "100%" }}>
-                          <Button
-                            variant="contained"
-                            color="success"
-                            fullWidth
-                            disabled={!unlocked}
-                            onClick={() => handleRedeem(reward)}
-                          >
-                            {alreadyRedeemed ? "Redeemed" : unlocked ? "Redeem Now" : "Locked"}
+                          <Button variant="contained" color="success" fullWidth disabled={!unlocked} onClick={() => handleRedeemClick(reward)}>
+                            Redeem Now
                           </Button>
                         </span>
                       </Tooltip>
@@ -162,55 +204,57 @@ const MyRewardsPage = () => {
             <Typography variant="h6" align="center" gutterBottom>
               Redemption History
             </Typography>
-            {history.length === 0 ? (
-              <Typography align="center" color="text.secondary">
-                No rewards redeemed yet.
-              </Typography>
+            {fullRecords.length === 0 ? (
+              <Typography align="center" color="text.secondary">No rewards redeemed yet.</Typography>
             ) : (
-              <ul style={{ maxWidth: 500, margin: "0 auto", padding: 0 }}>
-                {history.map((log, idx) => (
-                  <li key={idx} style={{ marginBottom: 8 }}>
-                    <Typography variant="body2">{log}</Typography>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: "bold" }}>Time</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Reward</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {displayedRecords.map((rec, idx) => {
+                      const reward = rewardsList.find((r) => r.id === rec.rewardID);
+                      const name = reward ? reward.name : `Reward ${rec.rewardID}`;
+                      return (
+                        <TableRow key={idx}>
+                          <TableCell>{rec.timestamp}</TableCell>
+                          <TableCell>{name}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+                <Box display="flex" justifyContent="center" mt={2}>
+                  <Pagination count={Math.ceil(fullRecords.length / recordsPerPage)} page={currentPage} onChange={(e, value) => setCurrentPage(value)} color="primary" />
+                </Box>
+              </>
             )}
-
-            {/* ✅ 新增：跳转按钮 */}
-            <Box textAlign="center" mt={4}>
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/reward-history")}
-                sx={{
-                  borderColor: "#4caf50",
-                  color: "#4caf50",
-                  fontWeight: "bold",
-                  px: 4,
-                  py: 1,
-                  '&:hover': {
-                    bgcolor: "#e8f5e9",
-                    borderColor: "#388e3c",
-                    color: "#388e3c",
-                  },
-                }}
-              >
-                View Reward History →
-              </Button>
-            </Box>
           </Box>
         </Container>
 
-        <Snackbar
-          open={alertOpen}
-          autoHideDuration={3000}
-          onClose={() => setAlertOpen(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => setAlertOpen(false)}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <DialogTitle>Confirm Redemption</DialogTitle>
+          <DialogContent>
+            {selectedReward && (
+              <Typography>
+                Are you sure you want to redeem <strong>{selectedReward.name}</strong> for <strong>{selectedReward.pointsRequired} points</strong>?
+              </Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmRedeem} variant="contained" color="success">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar open={alertOpen} autoHideDuration={3000} onClose={() => setAlertOpen(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Alert onClose={() => setAlertOpen(false)} severity="success" sx={{ width: "100%" }}>
             {alertMessage}
           </Alert>
         </Snackbar>
