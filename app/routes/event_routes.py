@@ -132,7 +132,7 @@ def redeem_reward_route():
 @jwt_required()
 def attend_event_route():
     data = request.get_json()
-    event_id = data.get("eventID")
+    event_id = data.get("eventId")
     student_id = get_jwt_identity().get("studentID")  # 从 JWT 中获取 studentID
     print(event_id)
     print(student_id)
