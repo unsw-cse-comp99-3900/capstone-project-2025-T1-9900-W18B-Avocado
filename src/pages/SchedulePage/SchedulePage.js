@@ -6,8 +6,6 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  IconButton,
-  Tooltip,
   Box,
   Typography,
   Chip,
@@ -20,14 +18,10 @@ import {
   DialogActions,
   CircularProgress,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import "./SchedulePage.css";
 
-// 格式化日期函数
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   if (isNaN(date)) return "Invalid Date";
@@ -42,7 +36,6 @@ function formatDate(dateStr) {
   }).format(date);
 }
 
-// 签到状态显示
 function getEventStatusLabel(event) {
   return event.checkIn === 1 ? (
     <Chip label="Checked In" color="success" size="small" variant="outlined" />
@@ -53,8 +46,6 @@ function getEventStatusLabel(event) {
 
 function SchedulePage() {
   const location = useLocation();
-
-  // 根据初始 location.pathname 计算初始 filter 值
   const initialCategory = location.pathname.includes("upcoming")
     ? "upcoming"
     : location.pathname.includes("previous")
@@ -68,7 +59,6 @@ function SchedulePage() {
   const [checkInDialogOpen, setCheckInDialogOpen] = useState(false);
   const [selectedEventID, setSelectedEventID] = useState(null);
 
-  // 自定义弹窗的样式（用于确认签到的自定义弹窗）
   const overlayStyle = {
     position: "fixed",
     top: 0,
@@ -90,7 +80,6 @@ function SchedulePage() {
     textAlign: "center",
   };
 
-  // 当路由(location)变化时，更新 filter 与页码
   useEffect(() => {
     const pathname = location.pathname;
     const newCategory = pathname.includes("upcoming")
@@ -102,7 +91,6 @@ function SchedulePage() {
     setPage(1);
   }, [location]);
 
-  // 根据 category 与 page 加载活动数据
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -121,7 +109,6 @@ function SchedulePage() {
         setTotalPages(data.totalPages || 1);
       } catch (err) {
         console.error("❌ Error fetching events:", err);
-        // 如无后端则使用死数据进行测试（共 10 条数据）
         const dummyData = Array.from({ length: 10 }, (_, i) => {
           const day = String(i + 1).padStart(2, "0");
           return {
@@ -130,7 +117,7 @@ function SchedulePage() {
             startTime: `2025-04-${day}T14:00:00`,
             endTime: `2025-04-${day}T16:00:00`,
             tag: "Test",
-            checkIn: i % 2, // 模拟交替签到状态
+            checkIn: i % 2,
           };
         });
         setEventList(dummyData);
@@ -142,7 +129,6 @@ function SchedulePage() {
     fetchEvents();
   }, [category, page]);
 
-  // 调用签到接口（若后端不可用可自行模拟）
   const handleCheckIn = async (id) => {
     try {
       const res = await fetch(`http://localhost:7000/checkin/${id}`, {
@@ -187,7 +173,6 @@ function SchedulePage() {
     <div>
       <Header />
       <div className="schedule-container">
-        {/* 分类标签导航 */}
         <div className="tabs">
           <Link
             to="/schedule/current"
@@ -209,7 +194,6 @@ function SchedulePage() {
           </Link>
         </div>
 
-        {/* 表格内容区域 */}
         <Box p={2} width="100%">
           <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
             <Box mb={2}>
@@ -227,9 +211,6 @@ function SchedulePage() {
                   <TableCell sx={{ fontWeight: "bold" }}>End Time</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }}>Tag</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }} align="center">
-                    Actions
-                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -265,23 +246,6 @@ function SchedulePage() {
                         getEventStatusLabel(event)
                       )}
                     </TableCell>
-                    <TableCell align="center">
-                      <Tooltip title="Edit">
-                        <IconButton size="small">
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton size="small" color="error">
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Preview">
-                        <IconButton size="small">
-                          <VisibilityIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -302,7 +266,6 @@ function SchedulePage() {
       </div>
       <Footer />
 
-      {/* 自定义确认签到弹窗 */}
       {checkInDialogOpen && (
         <Box style={overlayStyle}>
           <Box style={modalStyle}>
