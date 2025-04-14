@@ -594,14 +594,21 @@ def attend_event(event_id, student_id):
             "INSERT INTO AttendanceData (studentID, eventID, checkIn) VALUES (%s, %s, 0)",
             (student_id, event_id)
         )
+        ticket_id = cursor.lastrowid  # ✅ 获取刚插入的 ticket ID
         conn.commit()
 
-        return {"message": "Event registration successful."}, 201
+        return {
+            "message": "Event registration successful.",
+            "ticketId": ticket_id  # ✅ 返回 ticketId
+        }, 201
 
     except Exception as e:
-        return {"error": str(e)}, 500
+        print("❌ attend_event error:", repr(e))
+        return {"error": f"Server error: {str(e)}"}, 500
 
     finally:
-        if 'cursor' in locals(): cursor.close()
-        if 'conn' in locals(): conn.close()
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
