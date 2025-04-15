@@ -78,7 +78,7 @@ const mockUsers = {
   totalPages: 10,
 };
 
-function UserListTable({ isStatic = false }) {
+function UserListTable({ isStatic = true }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);

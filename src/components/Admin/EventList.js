@@ -158,14 +158,27 @@ function EventListTable({ isStatic = false }) {
   };
 
   const handleBatchDelete = async () => {
-    for (const id of selectedEventIDs) {
-      await fetch(`http://localhost:7000/admin/delete_event/${id}`, {
+    try {
+      const response = await fetch("http://localhost:7000/admin/delete_selected", {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ eventIDs: selectedEventIDs }),
       });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server responded with ${response.status}: ${errorText}`);
+      }
+  
+      setSelectedEventIDs([]);
+      await fetchEvents();
+    } catch (error) {
+      console.error("Batch delete failed:", error);
+      alert("Failed to delete events. Please try again.");
     }
-    setSelectedEventIDs([]);
-    await fetchEvents();
-  };
+  };  
 
   const fetchEvents = async () => {
     try {
