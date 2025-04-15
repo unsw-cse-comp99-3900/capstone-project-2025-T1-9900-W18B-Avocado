@@ -9,11 +9,10 @@ import {
   Alert,
   IconButton,
   InputAdornment,
-  AppBar,
-  Toolbar,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import CommonHeader from "../components/CommonHeader";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -39,14 +38,14 @@ const LoginPage = () => {
       setLoading(false);
 
       if (response.ok) {
-        // ✅ 关键逻辑：保存 token 和 userID
+        // Save token & id
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userID", data.studentID); // studentID = userID
+        localStorage.setItem("userID", data.studentID);
 
         // ✅ 跳转页面逻辑（保留你的）
-        if (data.role === "student") {
+        if (data.role === "Student") {
           navigate("/home");
-        } else if (data.role === "admin") {
+        } else if (data.role === "Admin") {
           navigate("/admin");
         }
       } else {
@@ -65,25 +64,12 @@ const LoginPage = () => {
         flexDirection: "column",
         alignItems: "center",
         minHeight: "100vh",
-        backgroundColor: "#FFFF66",
+        backgroundColor: "#a8e847",
       }}
     >
-      {/* 页头 */}
-      <AppBar position="static" sx={{ backgroundColor: "#000" }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button component={Link} to="/" sx={{ color: "#fff", marginRight: 2 }}>
-            Home
-          </Button>
-          <Button component={Link} to="/login" sx={{ color: "#fff", marginRight: 2 }}>
-            Login
-          </Button>
-          <Button component={Link} to="/register" sx={{ color: "#fff" }}>
-            Register
-          </Button>
-        </Toolbar>
-      </AppBar>
+      {/* Header */}
+      <CommonHeader />
 
-      {/* 登录框 */}
       <Paper
         elevation={6}
         sx={{
@@ -97,9 +83,9 @@ const LoginPage = () => {
         }}
       >
         {/* Logo */}
-        <img src="/logo.png" alt="App Logo" width="140" style={{ marginBottom: "16px" }} />
+        <img src="/WhatsOnLogo.png" alt="App Logo" width="140" style={{ marginBottom: "16px" }} />
 
-        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#000", mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000", mb: 2 }}>
           Student Life Passport
         </Typography>
 
@@ -145,8 +131,8 @@ const LoginPage = () => {
               fontSize: "16px",
               fontWeight: "bold",
               borderRadius: "8px",
-              backgroundColor: "#000",
-              "&:hover": { backgroundColor: "#333" },
+              backgroundColor: "#235858",
+              "&:hover": { backgroundColor: "#333", color:"#a8e847" },
             }}
             disabled={loading}
           >
@@ -160,7 +146,7 @@ const LoginPage = () => {
           </Box>
 
           <Box mt={2}>
-            <Typography variant="body2">
+            <Typography variant="body1">
               Not a member yet?{" "}
               <Link to="/register" style={{ textDecoration: "none", color: "#007BFF" }}>
                 Sign up

@@ -13,6 +13,8 @@ import {
   DialogActions,
 } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
+import CommonHeader from "../../components/CommonHeader";
+
 
 const PasswordRecovery = () => {
   const navigate = useNavigate();
@@ -25,37 +27,6 @@ const PasswordRecovery = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-
-  // const MOCK_CODE = "123456";
-
-  // const handleEmailSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   setTimeout(() => {
-  //     alert("✅ (Mock) Verification code sent to your email.");
-  //     setServerCode(MOCK_CODE);
-  //     setStep(2);
-  //   }, 800);
-  // };
-
-
-  // const handleResetPassword = async (e) => {
-  //   e.preventDefault();
-
-  //   if (inputCode !== serverCode) {
-  //     alert("❌ Incorrect verification code.");
-  //     return;
-  //   }
-
-  //   if (newPassword !== confirmNewPassword) {
-  //     alert("❌ Passwords do not match.");
-  //     return;
-  //   }
-
-  //   setTimeout(() => {
-  //     setSuccessDialogOpen(true);
-  //   }, 800);
-  // };
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -135,22 +106,10 @@ const PasswordRecovery = () => {
         flexDirection: "column",
         alignItems: "center",
         minHeight: "100vh",
-        backgroundColor: "#FFFF66",
+        backgroundColor: "#a8e847",
       }}
     >
-      <AppBar position="static" sx={{ backgroundColor: "#000" }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button component={Link} to="/" sx={{ color: "#fff", marginRight: 2 }}>
-            Home
-          </Button>
-          <Button component={Link} to="/login" sx={{ color: "#fff", marginRight: 2 }}>
-            Login
-          </Button>
-          <Button component={Link} to="/register" sx={{ color: "#fff" }}>
-            Register
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <CommonHeader />
 
       <Paper
         elevation={6}
@@ -194,7 +153,7 @@ const PasswordRecovery = () => {
                 borderRadius: "8px",
                 borderColor: "#000",
                 color: "#000",
-                "&:hover": { backgroundColor: "#f0f0f0" },
+                "&:hover": { backgroundColor: "#f0f0f0", color:"#235858" },
               }}
             >
               ← Back
@@ -209,8 +168,8 @@ const PasswordRecovery = () => {
                 fontSize: "16px",
                 fontWeight: "bold",
                 borderRadius: "8px",
-                backgroundColor: "#000",
-                "&:hover": { backgroundColor: "#333" },
+                backgroundColor: "#235858",
+                "&:hover": { backgroundColor: "#000", color:"#a8e847" },
               }}
             >
               Send Code →
@@ -269,7 +228,7 @@ const PasswordRecovery = () => {
                 borderRadius: "8px",
                 borderColor: "#000",
                 color: "#000",
-                "&:hover": { backgroundColor: "#f0f0f0" },
+                "&:hover": { backgroundColor: "#f0f0f0", color:"#235858" },
               }}
             >
               ← Back
@@ -284,8 +243,8 @@ const PasswordRecovery = () => {
                 fontSize: "16px",
                 fontWeight: "bold",
                 borderRadius: "8px",
-                backgroundColor: "#000",
-                "&:hover": { backgroundColor: "#333" },
+                backgroundColor: "#235858",
+                "&:hover": { backgroundColor: "#000", color:"#a8e847" },
               }}
             >
               Reset →

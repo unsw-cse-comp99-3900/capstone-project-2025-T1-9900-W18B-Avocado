@@ -8,7 +8,7 @@ const HomePage = () => {
       sx={{
         display: "flex",
         height: "100vh",
-        backgroundColor: "#FFFF66",
+        backgroundColor: "#a8e847",
       }}
     >
       {/* Left Section (Logo & Join Us) */}
@@ -24,7 +24,7 @@ const HomePage = () => {
       >
         {/* Logo with Adjustable Size */}
         <img
-          src="/logo.png"
+          src="/WhatsOnLogo.png"
           alt="What's On Logo"
           style={{
             width: "400px",

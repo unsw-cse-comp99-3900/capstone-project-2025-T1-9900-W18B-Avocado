@@ -8,11 +8,15 @@ import {
   Alert,
   Select,
   MenuItem,
-  AppBar,
-  Toolbar,
   Grid,
+  FormControl,
+  InputLabel,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import CommonHeader from "../components/CommonHeader";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -35,6 +39,8 @@ const RegisterPage = () => {
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [codeSentMsg, setCodeSentMsg] = useState("");
   const [countdown, setCountdown] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -130,19 +136,12 @@ const RegisterPage = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: "#000" }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button component={Link} to="/" sx={{ color: "#fff", marginRight: 2 }}>Home</Button>
-          <Button component={Link} to="/login" sx={{ color: "#fff", marginRight: 2 }}>Login</Button>
-          <Button component={Link} to="/register" sx={{ color: "#fff" }}>Register</Button>
-        </Toolbar>
-      </AppBar>
+      <CommonHeader />
+      <Box sx={{ display: "flex", justifyContent: "center", pt: 3, pb: 6, minHeight: "100vh", backgroundColor: "#a8e847" }}>
+        <Paper elevation={6} sx={{ padding: 4, borderRadius: 3, width: "100%", maxWidth: 800, textAlign: "center", backgroundColor: "white" }}>
+          <img src="/WhatsOnLogo.png" alt="App Logo" width="140" style={{ marginBottom: "16px" }} />
 
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "#CCFFCC", paddingTop: 4 }}>
-        <Paper elevation={6} sx={{ padding: 4, borderRadius: 3, width: "100%", maxWidth: 900, textAlign: "center", backgroundColor: "white" }}>
-          <img src="/logo.png" alt="App Logo" width="140" style={{ marginBottom: "16px" }} />
-
-          <Typography variant="h4" sx={{ fontWeight: "bold", color: "#000", mb: 2 }}>Student Register</Typography>
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000", mb: 2 }}>Student Registration</Typography>
 
           {errorMsg && <Alert severity="error" key={errorMsg}>{errorMsg}</Alert>}
           {successMsg && <Alert severity="success" key={successMsg}>{successMsg}</Alert>}
@@ -150,63 +149,132 @@ const RegisterPage = () => {
 
           <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "1rem" }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField label="Email" type="email" name="email" fullWidth value={formData.email} onChange={handleChange} required />
               </Grid>
               <Grid item xs={6} md={4}>
                 <TextField label="Verification Code" name="emailCode" fullWidth value={formData.emailCode} onChange={handleChange} required />
               </Grid>
-              <Grid item xs={6} md={4}>
-                <Button variant="outlined" fullWidth onClick={handleSendCode} disabled={isSendingCode || countdown > 0} sx={{ height: "100%" }}>
+              <Grid item xs={6} md={2}>
+                <Button variant="outlined" color="success" fullWidth onClick={handleSendCode} disabled={isSendingCode || countdown > 0} sx={{ height: "100%" }}>
                   {countdown > 0 ? `Resend in ${countdown}s` : "Send Code"}
                 </Button>
               </Grid>
 
+              {/* Name + Student ID */}
               <Grid item xs={12} md={6}>
                 <TextField label="Full Name" name="name" fullWidth value={formData.name} onChange={handleChange} required />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField label="Password" type="password" name="password" fullWidth value={formData.password} onChange={handleChange} required />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField label="Confirm Password" type="password" name="confirmPassword" fullWidth value={formData.confirmPassword} onChange={handleChange} required />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
                 <TextField label="Student ID" name="studentID" fullWidth value={formData.studentID} onChange={handleChange} required />
               </Grid>
+              {/* Password + Password Confirm */}
+              <Grid item xs={12} md={6}>
+                <TextField
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  fullWidth
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  label="Confirm Password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  fullWidth
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+
               <Grid item xs={12} md={6}>
                 <TextField label="Faculty" name="faculty" fullWidth value={formData.faculty} onChange={handleChange} required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField label="Degree" name="degree" fullWidth value={formData.degree} onChange={handleChange} required />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={3}>
                 <TextField label="Citizenship" name="citizenship" fullWidth value={formData.citizenship} onChange={handleChange} required />
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Select fullWidth name="isArcMember" value={formData.isArcMember} onChange={handleChange}>
-                  <MenuItem value="TRUE">Yes (Arc Member)</MenuItem>
-                  <MenuItem value="FALSE">No</MenuItem>
-                </Select>
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth required>
+                  <InputLabel id="arc-label">Arc Member</InputLabel>
+                  <Select
+                    labelId="arc-label"
+                    name="isArcMember"
+                    value={formData.isArcMember}
+                    onChange={handleChange}
+                    label="Arc Member"
+                  >
+                    <MenuItem value="TRUE">Yes</MenuItem>
+                    <MenuItem value="FALSE">No</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Select fullWidth name="graduationYear" value={formData.graduationYear} onChange={handleChange}>
-                  {[2023, 2024, 2025, 2026, 2027, 2028].map(year => (
-                    <MenuItem key={year} value={year.toString()}>{year}</MenuItem>
-                  ))}
-                </Select>
+
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth required>
+                  <InputLabel id="grad-label">Graduation Year</InputLabel>
+                  <Select
+                    labelId="grad-label"
+                    name="graduationYear"
+                    value={formData.graduationYear}
+                    onChange={handleChange}
+                    label="Graduation Year"
+                  >
+                    {[2025, 2026, 2027, 2028, 2029].map(year => (
+                      <MenuItem key={year} value={year.toString()}>
+                        {year}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Select fullWidth name="role" value={formData.role} onChange={handleChange} required>
-                  <MenuItem value="Student">Student</MenuItem>
-                  <MenuItem value="Admin">Admin</MenuItem>
-                </Select>
+
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth required>
+                  <InputLabel id="role-label">Role</InputLabel>
+                  <Select
+                    labelId="role-label"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    label="Role"
+                  >
+                    <MenuItem value="Student">Student</MenuItem>
+                    <MenuItem value="Admin">Admin</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
+
             </Grid>
 
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 3, py: 1.5, fontSize: "16px", fontWeight: "bold", borderRadius: "8px", backgroundColor: "#000", "&:hover": { backgroundColor: "#333" } }}>
+            <Button type="submit" variant="contained" fullWidth sx={{ mt: 3, py: 1.5, fontSize: "16px", fontWeight: "bold", borderRadius: "8px", backgroundColor: "#235858", "&:hover": { backgroundColor: "#333", color: "#a8e847" } }}>
               Register
             </Button>
           </form>
