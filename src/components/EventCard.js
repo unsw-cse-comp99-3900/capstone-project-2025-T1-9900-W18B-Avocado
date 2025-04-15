@@ -4,151 +4,130 @@ import {
     CardMedia,
     Typography,
     CardActionArea,
-    Box,Divider,
+    CardActions,
+    CardHeader,
+    Avatar,
+    Box,
     Chip,
     Stack,
-    
+    Divider,
 } from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PlaceIcon from "@mui/icons-material/Place";
 
-function EventCard({ image, title, summary, variant, time, endTime, location,tags}) {
-    const isPopup = variant === "popup";
+function EventCard({ image, title, summary, variant, time, endTime, location, tags }) {
     const finalTags = Array.isArray(tags) ? tags : tags ? [tags] : [];
+    const isPopup = variant === "popup";
 
     return (
-    <Card
-        sx={{
-        width: "100%",           // 由 Grid 控制列宽
-        maxWidth: 250,
-        height: 300,
-        borderRadius: 1.2,         
-        boxShadow: 3,
-        overflow: "hidden",      // ✅ 防止内容超出
-        display: "flex",
-        flexDirection: "column",
-        transition: "transform 0.2s ease, box-shadow 0.2s",
-        "&:hover": {
-            transform: "scale(1.03)",
-            boxShadow: 6,
-        },
-        }}>
-    
-        <CardActionArea
-        sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "stretch",
-            padding: 0,
-            margin: 0,
-        }}
-        >
-        <Box sx={{ height: 140, width: "100%" }}>
-            <CardMedia
-                component="img"
-                image={image || "/logo.png"}
-                alt={title}
-                sx={{
-                height: "100%",
-                width: "100%",
-                objectFit: "cover",
-                display: "block",
-                m: 0,
-                p: 0,
-                }}
-            />
-        </Box>
-
-        {/*内容 */}
-        <CardContent
+        <Card
             sx={{
-            flexGrow: 1,
-            padding: "8px 16px",
+            width: "100%",
+            maxWidth: 320, // ✅ 弹窗卡片更窄
+            height: 380,
+            borderRadius: 2,
+            boxShadow: 3,
+            overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between", // 让上下空间自动分布
+            transition: "transform 0.2s ease, box-shadow 0.2s",
+            "&:hover": {
+                transform: "scale(1.03)",
+                boxShadow: 6,
+            },
             }}
         >
-
-            {/*上部分 标题时间summary */}
-            <Box sx={{ flexGrow: 1 }}>
-                <Typography
-                gutterBottom
-                variant="h6"
-                component="div"
-                sx={{ fontSize: "1rem", marginBottom: "0.2em" }}
-                >
-                {title}
-                </Typography>
-
-                {time && (
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: "0.75rem", mt: 0.5 }}
-                >
-                    🕒{new Date(time).toLocaleString()} – {new Date(endTime).toLocaleString()}
-                </Typography>
-                )}
-
-
-                {/* 地点 */}
-                {location && (
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.75rem", display: "block" }}>
-                    📍 {location}
-                </Typography>
-                )}
-
-                <Typography
-                variant="body2"
-                color="text.secondary"
+            <CardActionArea
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "stretch",
+                padding: 0,
+                height: "100%", 
+            }}
+            >
+            {/* Image */}
+            <Box sx={{ height: 160, width: "100%" }}>
+                <CardMedia
+                component="img"
+                image={image || "/WhatsOnLogo.png"}
+                alt={title}
                 sx={{
-                    mt: 0.5,
-                    mb: 1.5, // 预留出 Divider 空间，保持卡片高度一致
-                    fontSize: "0.82rem",
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                }}
+                />
+            </Box>
+        
+            
+            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+
+                <CardContent sx={{ px: 2, py: 1.5 }}>
+                <Typography gutterBottom variant="h6" fontWeight="bold" fontSize="1.1rem">
+                    {title}
+                </Typography>
+        
+                {/* Time */}
+                {time && (
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: isPopup ? "0.75rem" : "0.8rem", color: "text.secondary" }}>
+                    <AccessTimeIcon fontSize="small" />
+                    <span>{new Date(time).toLocaleString()} – {new Date(endTime).toLocaleString()}</span>
+                    </Stack>
+                )}
+        
+                {/* Location */}
+                {location && (
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: "0.8rem", color: "text.secondary", mt: 0.5 }}>
+                    <PlaceIcon fontSize="small" />
+                    <span>{location}</span>
+                    </Stack>
+                )}
+        
+                {/* Summary*/}
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                    mt: 0.8,
+                    fontSize: "0.85rem",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     display: "-webkit-box",
-                    WebkitLineClamp: 1,
+                    WebkitLineClamp: 3,
                     WebkitBoxOrient: "vertical",
-                    margin:0,
-                }}
+                    minHeight: "2.7em",
+                    }}
                 >
                     {summary}
                 </Typography>
+                </CardContent>
+        
+                
+                <Box sx={{ px: 2, pb: 1.5 }}>
+                <Divider sx={{ mb: 1.2 }} />
+                <CardActions sx={{ p: 0 }}>
+                    <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
+                    {finalTags.slice(0, 2).map((tag, idx) => (
+                        <Chip
+                        key={idx}
+                        label={tag}
+                        size="small"
+                        sx={{
+                            fontSize: "0.75rem",
+                            height: 22,
+                            backgroundColor: "#e3f2fd",
+                            color: "#1565c0",
+                        }}
+                        />
+                    ))}
+                    </Stack>
+                </CardActions>
+                </Box>
             </Box>
-
-
-            {/* 分割线 */}
-            <Divider
-                sx={{
-                position: "absolute",
-                bottom: "2.8em",
-                left: "1.5em",
-                right: "1.5em",
-                my: 0.5,
-                }}
-            />
-
-            {/* 标签 */}
-            <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
-                {finalTags.slice(0, 2).map((tag, idx) => (
-                <Chip
-                    key={idx}
-                    label={tag}
-                    size="small"
-                    sx={{
-                    fontSize: "0.7rem",
-                    height: "20px",
-                    backgroundColor: "#e3f2fd",
-                    color: "#1565c0",
-                    }}
-                />
-                ))}
-            </Stack>
-        </CardContent>
-        </CardActionArea>
-    </Card>
-    );
+            </CardActionArea>
+        </Card>
+        );
 }
-
 export default EventCard;

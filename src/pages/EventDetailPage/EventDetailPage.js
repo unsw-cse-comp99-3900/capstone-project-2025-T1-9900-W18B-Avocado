@@ -6,14 +6,24 @@ import { AiOutlineArrowLeft, AiOutlineClockCircle } from "react-icons/ai";
 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { Button,Box, Chip, Snackbar, Alert } from "@mui/material";
-
 import {
+    Box,
+    Typography,
+    Container,
+    Grid,
+    Button,
+    Chip,
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Snackbar,
+    Alert,
+    Paper,
+    Backdrop,Divider,Stack
 } from "@mui/material";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 function EventDetailPage() {
     const { id } = useParams();
@@ -46,7 +56,6 @@ function EventDetailPage() {
                 setError("No event data found in localStorage.");
             }
         } catch (err) {
-            
             setError("Failed to load event detail");
         } finally {
             setLoading(false);
@@ -102,137 +111,224 @@ function EventDetailPage() {
         sendRegistrationsToBackend(numericId);
     };
 
+    if (loading) return <Typography>Loading...</Typography>;
+    if (error) return <Typography color="error">Error: {error}</Typography>;
 
-    if (loading) return <h2>Loading...</h2>;
-    if (error) return <h2>error:{error}</h2>;
-
+    //modify buju
     return (
-        <div className="event-detail-page">
+        <Box sx={{ minHeight: "100vh", backgroundColor: "#f4fff1" ,display: "flex", flexDirection: "column"}}>
         <Header />
-
-        <div className="event-detail-container">
-            <Link to="/home" className="back-button">
-                <AiOutlineArrowLeft /> Back to Home
+        <Box sx={{ flexGrow: 1 }}>
+        <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 4 }, maxWidth: { xs: "100%", sm: "100%", md: "960px", lg: "1300px" } }}>
+            <Link
+            to="/home"
+            style={{
+                textDecoration: "underline",
+                color: "#1565c0",
+                fontSize: "1rem",
+                fontWeight: 500,
+                marginBottom: 24,
+                display: "inline-block",
+                transition: "all 0.3s",
+                display: "inline-block",
+                
+            }}
+            onMouseOver={e => (e.target.style.color = "#6a1b9a")}
+            onMouseOut={e => (e.target.style.color = "#1565c0")}
+            >
+            &lt; Back to Home
             </Link>
 
-            <div className="event-layout">
-                <div className="event-image-container">
-                    <div className="event-booking">Booking the event</div>
+
+            <Paper elevation={4} sx={{ borderRadius: 4, p: 6, bgcolor: "white", minHeight: "72vh", display: "flex", flexDirection: "column",justifyContent: "flex-start" }}>
+            <Typography variant="h5" fontWeight="bold"  mb={4}>
+            Booking the event
+            </Typography>
+
+            <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={4} alignItems="center">
+                <Grid item xs={12} md={6.5}>
+                    <Box 
+                    sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}
+                >
                     <img
-                    src={event.image && event.image.trim() !== "" ? event.image : "/logo.png"}
+                    src={event.image && event.image.trim() !== "" ? event.image : "/WhatsOnLogo.png"}
                     alt={event.title}
-                    className="event-image"
+                    style={{ width: "100%", borderRadius: 12, objectFit: "cover" ,marginTop: "10px" }}
                     />
-                </div>
+                </Box>
+                </Grid>
 
-                <div className="event-info-container">
-                    <h1 className="event-title">{event.title}</h1>
-                    <p className="event-summary">{event.summary}</p>
+                <Grid item xs={12} md={5}   >
+                    <Box display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    height="100%"
+                    gap={2}  
+                    mt={2}
+                    >
+                        <Typography variant="h5" fontWeight="bold" 
+                        sx={{
+                            transition: "transform 0.3s",
+                            '&:hover': {
+                            transform: "scale(1.03)"
+                            }
+                        }}>{event.title}</Typography>
 
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 , justifyContent: "center"}}>
+                        <Typography variant="body1" color="text.secondary">
+                        {event.summary || ""}
+                        </Typography>
+
+                        <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
                         {(Array.isArray(event.tags) ? event.tags : event.tag ? [event.tag] : []).map((tag, idx) => (
-                            <Chip key={idx} label={tag} variant="outlined" />
+                            <Chip
+                            key={idx}
+                            label={tag}
+                            size="big"
+                            sx={{
+                                fontSize: "0.7rem",
+                                height: "20px",
+                                backgroundColor: "#e3f2fd",
+                                color: "#1565c0",
+                                transition: "0.3s",
+                                '&:hover': {
+                                backgroundColor: "#bbdefb",
+                                transform: "scale(1.1)"
+                                }
+                            }}
+                            />
                         ))}
+                        </Stack>
+
+
+                        <Box display="flex" alignItems="center" mb={1} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
+                        <LocationOnIcon sx={{ mr: 1 }} />
+                        <Typography variant="body1">
+                            <strong>Location:</strong> {event.location || "TBD"}
+                        </Typography>
+                        </Box>
+
+                        <Box display="flex" alignItems="center" mb={2} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
+                        <AccessTimeIcon sx={{ mr: 1 }} />
+                        <Typography variant="body1">
+                            <strong>Time:</strong> {new Date(event.time).toLocaleString()} - {new Date(event.end_time).toLocaleString()}
+                        </Typography>
+                        </Box>
+                        
+                        <Typography variant="body1" mb={3} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
+                        {event.description || "Join us for a great event!"}
+                        </Typography>
+
+                        <Button variant="contained" 
+                        sx={{
+                            mt: 2,
+                            mb: 3 ,
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: "1rem",
+                            transition: "transform 0.2s",
+                            '&:hover': {
+                                backgroundColor: "#333",
+                                transform: "scale(1.02)"
+                            }
+                        }}
+                        onClick={() => setShowRewards(true)} >
+                        View Earnable Rewards
+                        </Button>
                     </Box>
 
-                    <div className="event-meta">
-                    <p><strong>📍 Location:</strong> {event.location || "TBD"}</p>
-                    <p>
-                        <AiOutlineClockCircle /> <strong>Date & Time:</strong>{" "}
-                        {new Date(event.time).toLocaleString()} – {new Date(event.end_time).toLocaleString()}
-                    </p>
-                    </div>
-
-                    <p className="event-description">{event.description || "Join us for a great event!"}</p>
-
-                    <Button
-                    variant="contained"
-                    onClick={() => setShowRewards(true)}
-                    sx={{ marginTop: 2 }}
+                    <Dialog
+                    open={showRewards}
+                    onClose={() => setShowRewards(false)}
+                    BackdropProps={{
+                        sx: {
+                        backdropFilter: "blur(3px)"
+                        }
+                    }}
+                    PaperProps={{
+                        sx: { borderRadius: 3, px: 3, py: 2, minWidth: 320 }
+                    }}
                     >
-                    View Earnable Rewards
-                    </Button>
-                </div>
-            </div>
+                    <DialogTitle fontWeight="bold">Earnable Rewards</DialogTitle>
+                    <DialogContent>
+                        <ul>
+                        {typeof event.rewards === "object" ? (
+                            Object.entries(event.rewards).map(([cat, pts], idx) => (
+                            <li key={idx}>
+                                <strong>{cat}</strong>: {pts} pts
+                            </li>
+                            ))
+                        ) : (
+                            <li>
+                            <strong>Reward</strong>: {event.rewards} pts
+                            </li>
+                        )}
+                        </ul>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setShowRewards(false)} variant="outlined">
+                        OK
+                        </Button>
+                    </DialogActions>
+                    </Dialog>
+                </Grid>
+            </Grid>
 
-            <div className="attend-section">
+            <Box mt={7}>
                 <Button
                     fullWidth
                     variant="contained"
-                    color="success"
+                    sx={{
+                        backgroundColor: "#000",
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        transition: "transform 0.2s",
+                        '&:hover': {
+                            backgroundColor: "#333",
+                            transform: "scale(1.02)"
+                        }
+                    }}
                     onClick={handleAttend}
-                    sx={{ mt: 2 }}
                 >
                     Attend
                 </Button>
-            </div>
+            </Box>
+            </Box>
+            </Paper>
+        </Container>
 
-            {showRewards && (
-            <div className="rewards-popup">
-                <div className="rewards-content">
-                <h2>Earnable Rewards</h2>
-                <ul>
-                    {typeof event.rewards === "object" ? (
-                    Object.entries(event.rewards).map(([cat, pts], idx) => (
-                        <li key={idx}><strong>{cat}</strong>: {pts} pts</li>
-                    ))
-                    ) : (
-                    <li><strong>Reward</strong>: {event.rewards} pts</li>
-                    )}
-                </ul>
-                <Button
-                    onClick={() => setShowRewards(false)}
-                    variant="outlined"
-                    sx={{ mt: 2 }}
-                >
-                    OK
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+            <DialogTitle>{dialogMsg}</DialogTitle>
+            <DialogContent>
+            {ticketId && <Box sx={{ mt: 1 }}><strong>Ticket Number:</strong> {ticketId}</Box>}
+            </DialogContent>
+            <DialogActions>
+            <Button onClick={() => setDialogOpen(false)}>Close</Button>
+            {ticketId && (
+                <Button onClick={() => navigate("/schedule/today")} variant="contained" color="primary">
+                View My Schedule
                 </Button>
-                </div>
-            </div>
             )}
-        
-        </div>
-            {/* Dialog for registration feedback */}
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                <DialogTitle>{dialogMsg}</DialogTitle>
-                <DialogContent>
-                    {ticketId && (
-                    <Box sx={{ mt: 1 }}>
-                        <strong>Ticket Number:</strong> {ticketId}
-                    </Box>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDialogOpen(false)}>Close</Button>
-                    {ticketId && (
-                    <Button onClick={() => navigate("/schedule/today")} variant="contained" color="primary">
-                        View My Schedule
-                    </Button>
-                    )}
-                </DialogActions>
-            </Dialog>
+            </DialogActions>
+        </Dialog>
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={3000}
-                onClose={() => setOpenSnackbar(false)}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-                <Alert
-                onClose={() => setOpenSnackbar(false)}
-                severity="info"
-                variant="filled"
-                sx={{ width: "100%" }}
-                >
-                {snackbarMsg}
-                </Alert>
-            </Snackbar>
+        <Snackbar
+            open={openSnackbar}
+            autoHideDuration={3000}
+            onClose={() => setOpenSnackbar(false)}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+            <Alert onClose={() => setOpenSnackbar(false)} severity="info" variant="filled" sx={{ width: "100%" }}>
+            {snackbarMsg}
+            </Alert>
+        </Snackbar>
+        </Box>
+        <Footer />
 
-            <Footer />
-            
-            </div>
-        
+    </Box>
     );
 }
+
 
 export default EventDetailPage;

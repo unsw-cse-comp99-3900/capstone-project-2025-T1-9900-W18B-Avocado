@@ -7,18 +7,28 @@ import "./MainHomePage.css";
 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { Button, Pagination ,Grid, Divider , Box, Typography} from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Typography,
+  Container,
+  Stack,
+  Paper,
+  Tab,
+  Pagination
+} from "@mui/material";
 import EventCard from "../../components/EventCard"; 
+import LandingSection from "../../components/LandingSection";
 
-
-const useMockData = false;
+const useMockData = true;
 const mockEvents = [
   {
     id: 1,
     title: "Mock Event A",
     summary: "Happening now . This event will improve your AC and EC!! it is a both books and art tags! good experience for you ",
     time: "2025-03-28T10:00:00Z",
-    end_time: "2025-04-10T23:59:59Z",
+    end_time: "2025-04-20T23:59:59Z",
     image: require("../../assets/todayevent1.png"),
     location: "Library",
     description: "Come and join mock event A! ",
@@ -31,7 +41,7 @@ const mockEvents = [
     title: "Mock Event B",
     summary: "Happening now",
     time: "2025-03-29T10:00:00Z",
-    end_time: "2025-04-10T23:59:59Z",
+    end_time: "2025-04-21T23:59:59Z",
     image: require("../../assets/todayevent2.png"),
     location: "Library",
     description: "Come and join mock event B!",
@@ -43,7 +53,7 @@ const mockEvents = [
     title: "Mock Event 3",
     summary: "Happening now",
     time: "2025-03-30T10:00:00Z",
-    end_time: "2025-04-11T23:59:59Z",
+    end_time: "2025-04-22T23:59:59Z",
     image: require("../../assets/todayevent3.png"),
     location: "Library",
     description: "Come and join mock event 3!",
@@ -55,7 +65,7 @@ const mockEvents = [
     title: "Mock Event 4",
     summary: "Happening now",
     time: "2025-04-11T10:00:00Z",
-    end_time: "2025-04-18T23:59:59Z",
+    end_time: "2025-04-23T23:59:59Z",
     image: require("../../assets/upevent1.png"),
     location: "Library",
     description: "Come and join mock event 4!",
@@ -66,7 +76,7 @@ const mockEvents = [
     id: 5,
     title: "Mock Event 5",
     summary: "Happening now IAM MCOK EVENT 5 and come on to have a look!!",
-    time: "2025-04-12T10:00:00Z",
+    time: "2025-04-15T10:00:00Z",
     end_time: "2025-04-26T23:59:59Z",
     image: require("../../assets/upevent2.png"),
     location: "Library",
@@ -75,55 +85,55 @@ const mockEvents = [
     rewards: { "AC": 5, "EC": 10 }
   },
   {
-    id: 6,
-    title: "Mock Event 6",
-    summary: "Happening now IAM MCOK EVENT SIX and come on to have a look!!",
-    time: "2025-04-19T10:00:00Z",
-    end_time: "2025-04-26T23:59:59Z",
-    image: require("../../assets/upevent3.png"),
-    location: "Library",
-    description: "Come and join mock event 6!",
-    tags: ["Books"],
-    rewards: { "AC": 5, "EC": 10 }
+  id: 6,
+  title: "Mock Event 6",
+  summary: "Happening now IAM MCOK EVENT SIX and come on to have a look!!",
+  time: "2025-04-19T10:00:00Z",
+  end_time: "2025-04-26T23:59:59Z",
+  image: require("../../assets/upevent3.png"),
+  location: "Library",
+  description: "Come and join mock event 6!",
+  tags: ["Books"],
+  rewards: { "AC": 5, "EC": 10 }
   },
 
   {
-    id: 7,
-    title: "Mock Event 7",
-    summary: "Up next",
-    time: "2025-04-07T12:00:00Z",
-    end_time: "2025-04-08T14:00:00Z",
-    image: "",
-    location: "Hall",
-    description: "Coming soon",
-    tags: ["Music"],
-    rewards: { "AC": 0, "EC": 7, "SM": 3 }
+  id: 7,
+  title: "Mock Event 7",
+  summary: "Up next",
+  time: "2025-04-17T12:00:00Z",
+  end_time: "2025-04-28T14:00:00Z",
+  image: "",
+  location: "Hall",
+  description: "Coming soon",
+  tags: ["Music"],
+  rewards: { "AC": 0, "EC": 7, "SM": 3 }
   },
 
   {
-    id: 8,
-    title: "Mock Event D",
-    summary: "Up next",
-    time: "2025-04-10T12:00:00Z",
-    end_time: "2025-04-11T14:00:00Z",
-    image: require("../../assets/pastevent1.png"),
-    location: "Hall",
-    description: "Came already",
-    tags: ["Music"],
-    rewards: { "EC": 8, "SM": 8 }
+  id: 8,
+  title: "Mock Event D",
+  summary: "Up next",
+  time: "2025-04-18T12:00:00Z",
+  end_time: "2025-04-28T14:00:00Z",
+  image: require("../../assets/pastevent1.png"),
+  location: "Hall",
+  description: "Came already",
+  tags: ["Music"],
+  rewards: { "EC": 8, "SM": 8 }
   },
 
   {
-    id: 9,
-    title: "Mock Event 8",
-    summary: "Up next",
-    time: "2025-04-07T12:00:00Z",
-    end_time: "2025-04-11T14:00:00Z",
-    image: require("../../assets/current8.png"),
-    location: "Hall",
-    description: "Came already",
-    tags: ["Music"],
-    rewards: { "EC": 8, "SM": 8 }
+  id: 9,
+  title: "Mock Event 8",
+  summary: "Up next",
+  time: "2025-04-07T12:00:00Z",
+  end_time: "2025-04-11T14:00:00Z",
+  image: require("../../assets/current8.png"),
+  location: "Hall",
+  description: "Came already",
+  tags: ["Music"],
+  rewards: { "EC": 8, "SM": 8 }
   }
 ]
 
@@ -333,10 +343,12 @@ function MainHomePage() {
   const [pastPage, setPastPage] = useState(1);
 
   const shortcutsData = [
-    { name: "Schedule", summary: "Check your attending events", icon: <LuCalendarCheck />, path: "/schedule/today" },
-    { name: "You might like...", summary: "Events recommended for you", icon: <BiHappyHeartEyes />, path: "#", onClick: () => setShowRecommendPopup(true)},
-    { name: "Past Events", summary: "Explore previous events", icon: <FiSunset />, path: "#", onClick: () => setShowPastPopup(true) }, 
+    { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
+    { name: "You might like", icon: <BiHappyHeartEyes />, path: "#", onClick: () => setShowRecommendPopup(true)},
+    { name: "Past Events", icon: <FiSunset />, path: "#", onClick: () => setShowPastPopup(true) }, 
   ];
+
+
 
   const fetchEventsByFilter = async (filterType, page = 1) => {
     try {
@@ -362,7 +374,7 @@ function MainHomePage() {
           description: event.description,
           image: event.image && event.image.trim() !== "" 
             ? `${IMAGE_BASE_URL}${event.image}` 
-            : "/logo.png",
+            : "/WhatsOnLogo.png",
           tags: event.tags ? event.tags.split(",") : [],
           rewards
         };
@@ -404,59 +416,109 @@ function MainHomePage() {
   }, [pastPage]);
 
   return (
-    <div className="homepage">
+    <>
       <Header />
-      <Home
-        currentEvents={currentEvents}
-        upcomingEvents={upcomingEvents}
-        onCurrentFindMore={() => setShowCurrentPopup(true)}
-        onUpcomingFindMore={() => setShowUpcomingPopup(true)}
-        onPastFindMore={() => setShowPastPopup(true)}
-        shortcutsData={shortcutsData}
-      />
+  
+      <LandingSection />
+      <div className="homepage" id="event-section" sx={{ background: "#e6f4e6", minHeight: "100vh" }}>
+      <Container  maxWidth="xl">
+        {/* Shortcuts */}
+        <Stack direction="row" spacing={1} justifyContent="center"  mb={6}>
+          {shortcutsData.map((s, idx) => (
+            <Grid item xs={12} sm={4} key={idx} mt={8}>
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{
+                  color: "white",
+                  bgcolor:"#333",
+                  height: 80,
+                  px: 2,
+                  maxWidth: 240,
+                  minWidth:220,
+                  textTransform: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  borderRadius: 1,
+                  transition: "all 0.3s ease",
+                    '&:hover': {
+                      backgroundColor: "#e0e0e0",
+                      transform: "scale(1.03)",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
+                    }
+                }}
+                onClick={() => s.path !== "#" ? window.location.href = s.path : s.onClick()}
+              >
+                <Stack direction="column" alignItems="center" spacing={0.5}>
+                  <Box sx={{ fontSize: 28 }}>{s.icon}</Box>
+                  {s.name}
+                </Stack>
 
-      {showCurrentPopup && (
-        <EventPopup
-          title="All Current Events"
-          events={currentEvents}
-          onClose={() => setShowCurrentPopup(false)}
-          page={1}
-          setPage={() => {}}
-        />
-      )}
+              </Button>
+            </Grid>
+          ))}
+        </Stack>
 
-      {showUpcomingPopup && (
-        <EventPopup
-          title="All Upcoming Events"
-          events={upcomingEvents}
-          onClose={() => setShowUpcomingPopup(false)}
-          page={1}
-          setPage={() => {}}
-        />
-      )}
+        {/* Current Events Section */}
+        <Typography variant="h4" fontWeight="bold" textAlign="center"   margin={6}>Current Events</Typography>
+        <Grid container spacing={2} rowSpacing={5}>
+          {currentEvents.map(event => (
+            <Grid item key={event.id} xs={12} sm={6} md={4} lg={3}>
+              <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
+              <EventCard
+                image={event.image}
+                title={event.title}
+                summary={event.summary}
+                time={event.time}
+                endTime={event.end_time}   
+                location={event.location}
+                tags={event.tags}
+                variant="popup"
+              />
+              </Link>
+            </Grid>
+          ))}
+        </Grid>
 
-      {showRecommendPopup && (
-        <EventPopup
-          title="Recommended Events"
-          events={mockEvents.slice(0, 6)} // 仅测试推荐用
-          onClose={() => setShowRecommendPopup(false)}
-          page={1}
-          setPage={() => {}}
-        />
-      )}
-      {showPastPopup && (
-        <EventPopup
-          title="All Past Events"
-          events={pastEvents}
-          onClose={() => setShowPastPopup(false)}
-          page={pastPage}
-          setPage={setPastPage}
-        />
-      )}
+        {/* Upcoming Events Section */}
+        <Typography variant="h4" fontWeight="bold" textAlign="center"  mt={5} margin={6}>Upcoming Events</Typography>
+        <Grid container spacing={2} rowSpacing={5}>
+          {upcomingEvents.map(event => (
+            <Grid item key={event.id} xs={12} sm={6} md={4} lg={3} mb={8}>
+              <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
+              <EventCard
+                image={event.image}
+                title={event.title}
+                summary={event.summary}
+                time={event.time}
+                endTime={event.end_time}   
+                location={event.location}
+                tags={event.tags}
+                variant="popup"
+              />
+              </Link>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
 
+      {/* Popups */}
+      {showCurrentPopup && <EventPopup title="All Current Events" events={currentEvents} onClose={() => setShowCurrentPopup(false)} page={1} setPage={() => {}} />} 
+      {showUpcomingPopup && <EventPopup title="All Upcoming Events" events={upcomingEvents} onClose={() => setShowUpcomingPopup(false)} page={1} setPage={() => {}} />} 
+      {showRecommendPopup && <EventPopup title="Recommended Events" events={mockEvents.slice(0, 6)} onClose={() => setShowRecommendPopup(false)} page={1} setPage={() => {}} />} 
+      {showPastPopup && <EventPopup title="All Past Events" events={pastEvents} onClose={() => setShowPastPopup(false)} page={pastPage} setPage={setPastPage} />} 
+
+      
+      </div>
       <Footer />
-    </div>
+
+      
+    </>
   );
+  
 }
 
 export default MainHomePage;

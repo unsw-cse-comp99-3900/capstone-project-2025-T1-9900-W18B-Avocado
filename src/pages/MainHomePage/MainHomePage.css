@@ -1,5 +1,6 @@
 .homepage {
-  background-color: #DFF0D8;
+
+  background: linear-gradient(to top right,  #e0f7fa, #dcedc8); /* 淡绿渐变 */
   min-height: 100vh;
 }
  /* 主要内容区域 */
@@ -36,7 +37,7 @@
   justify-content: center;
 
   padding: 16px;
-  background-color: white;
+  background-color: #f4fff1;
   border-radius: 15px;
   width: 100%;
 
@@ -75,7 +76,7 @@
   min-height: 100%;
   width: 76%;
   padding: 10px;
-  background-color: #ffffff;
+  background-color: #f4fff1;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   gap: 10px;
 }
