@@ -122,7 +122,7 @@ export default function AccountMenu() {
               </ListItemIcon>
               Schedule
             </MenuItem>
-            <MenuItem onClick={() => navigate('/redeem')}>
+            <MenuItem onClick={() => navigate('/reward-history')}>
               <ListItemIcon>
                 <EmojiEventsIcon fontSize="small" />
               </ListItemIcon>
