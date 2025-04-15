@@ -51,10 +51,10 @@ def register_user(data):
         # 🔐 插入登录信息
         cursor.execute("""
             INSERT INTO userData 
-            (studentID, email, password, role)
-            VALUES (%s, %s, %s, %s)
+            (studentID, email, password, role, active)
+            VALUES (%s, %s, %s, %s, %s)
         """, (
-            data["studentID"], data["email"], hashed, data["role"]
+            data["studentID"], data["email"], hashed, data["role"], 1
         ))
 
         conn.commit()
