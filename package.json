@@ -12,11 +12,8 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.3",
-<<<<<<< HEAD
     "framer-motion": "^12.7.3",
-=======
     "chart.js": "^4.4.9",
->>>>>>> 08ae6ca2dbac827e8363af3f009136cc6b0ca57e
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
