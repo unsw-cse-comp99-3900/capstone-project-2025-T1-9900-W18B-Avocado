@@ -13,7 +13,7 @@ import Footer from "../../components/Footer/Footer";
 const shortcutsData = [
   { name: "Past Event", icon: <FiSunset />, path: "/reward-history" },
   { name: "Event Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
-  { name: "Redeem Rewards", icon: <RedeemIcon />, path: "/my-rewards" },
+  { name: "Redeem Rewards", icon: <RedeemIcon />, path: "/redeem" },
   { name: "Career Coach", icon: <AiOutlineRadarChart />, path: "/career-coach" },
 ];
 

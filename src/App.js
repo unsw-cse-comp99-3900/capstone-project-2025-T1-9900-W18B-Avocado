@@ -35,7 +35,7 @@ const App = () => {
 
           <Route path="/admin/*" element={<AdminHomePage />} />
 
-          <Route path="/my-rewards" element={<MyRewardsPage />} /> 
+          <Route path="/redeem" element={<MyRewardsPage />} />
           <Route path="/reward-history" element={<RewardHistoryPage />} />
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
