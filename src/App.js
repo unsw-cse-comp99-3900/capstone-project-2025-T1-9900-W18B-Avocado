@@ -11,7 +11,9 @@ import MainHomePage from "./pages/MainHomePage/MainHomePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SchedulePage from "./pages/SchedulePage/SchedulePage";
 import EventDetailPage from "./pages/EventDetailPage/EventDetailPage";
-
+// import SearchPage from "./pages/SearchPage/SearchPage";
+import CoachPage from "./pages/CoachPage/CoachPage"; //coachpage_YJL
+// Add Router for CoachPage (move to user Profile later)
 import AdminHomePage from "./pages/AdminHomePage/AdminHomePage";
 
 import MyRewardsPage from "./pages/MyRewardsPage/MyRewardsPage"; 
@@ -35,8 +37,10 @@ const App = () => {
 
           <Route path="/admin/*" element={<AdminHomePage />} />
 
-          <Route path="/redeem" element={<MyRewardsPage />} />
+          <Route path="/my-rewards" element={<MyRewardsPage />} /> 
           <Route path="/reward-history" element={<RewardHistoryPage />} />
+          {/* <Route path="/search" element={<SearchPage />} /> */}
+          <Route path="/career-coach" element={<CoachPage />} /> 
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/recommend-events" element={<RecommendEventPage />} />
