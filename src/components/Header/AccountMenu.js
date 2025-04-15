@@ -10,7 +10,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import EventIcon from '@mui/icons-material/Event';
@@ -20,6 +19,7 @@ import { AiOutlineRadarChart } from "react-icons/ai";
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
+  const role = localStorage.getItem("userRole");
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ export default function AccountMenu() {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title="Account settings">
+        <Tooltip>
           <IconButton
             onClick={handleClick}
             size="small"
@@ -63,7 +63,6 @@ export default function AccountMenu() {
             >
               <PersonIcon fontSize="small" />
             </Avatar>
-
           </IconButton>
         </Tooltip>
       </Box>
@@ -111,31 +110,40 @@ export default function AccountMenu() {
           </Avatar>
           Profile
         </MenuItem>
+
         <Divider />
-        <MenuItem onClick={() => navigate('/schedule')}>
-          <ListItemIcon>
-            <EventIcon fontSize="small" />
-          </ListItemIcon>
-          Schedule
-        </MenuItem>
-        <MenuItem onClick={() => navigate('/settings')}>
-          <ListItemIcon>
-            <EmojiEventsIcon fontSize="small" />
-          </ListItemIcon>
-          Event & Reward History
-        </MenuItem>
-        <MenuItem onClick={() => navigate('/settings')}>
-          <ListItemIcon>
-            <RedeemIcon fontSize="small" />
-          </ListItemIcon>
-          Redeem Reward
-        </MenuItem>
-        <MenuItem onClick={() => navigate('/settings')}>
-          <ListItemIcon>
-            <AiOutlineRadarChart fontSize="20px" />
-          </ListItemIcon>
-          Career Coach
-        </MenuItem>
+
+        {/* ✅ 非 Admin 时才显示下面这些 */}
+        {role !== "Admin" && (
+          <>
+            <MenuItem onClick={() => navigate('/schedule')}>
+              <ListItemIcon>
+                <EventIcon fontSize="small" />
+              </ListItemIcon>
+              Schedule
+            </MenuItem>
+            <MenuItem onClick={() => navigate('/settings')}>
+              <ListItemIcon>
+                <EmojiEventsIcon fontSize="small" />
+              </ListItemIcon>
+              Event & Reward History
+            </MenuItem>
+            <MenuItem onClick={() => navigate('/settings')}>
+              <ListItemIcon>
+                <RedeemIcon fontSize="small" />
+              </ListItemIcon>
+              Redeem Reward
+            </MenuItem>
+            <MenuItem onClick={() => navigate('/settings')}>
+              <ListItemIcon>
+                <AiOutlineRadarChart fontSize="20px" />
+              </ListItemIcon>
+              Career Coach
+            </MenuItem>
+            <Divider />
+          </>
+        )}
+
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
