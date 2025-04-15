@@ -1,5 +1,5 @@
 .homepage {
-  background-color: white;
+  background-color: #DFF0D8;
   min-height: 100vh;
 }
  /* 主要内容区域 */
@@ -9,6 +9,7 @@
   flex-grow: 1;
   display: flex;
   justify-content: space-between;
+  align-items: stretch;
   padding: 20px;
   /* border: 1px solid red; */
   gap: 20px;
@@ -18,9 +19,9 @@
 .left-shortcuts {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: stretch;
 
-  gap: 20px;
+  gap: 20px; 
   width: 24%; 
   min-height: 100%;
   /* border: 1px solid black; */
@@ -28,17 +29,17 @@
 }
 
 .shortcuts {
-  width: 96%;
-  padding: 15px;
+  flex: 1;                         /* 均分父容器 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 25%;
-  gap: 8px;
-  /* border: 1px solid black; */
-  border-radius: 15px;
+
+  padding: 16px;
   background-color: white;
+  border-radius: 15px;
+  width: 100%;
+
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -48,6 +49,7 @@
 .shortcuts:hover {
   transform: translateY(-3px);
   box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+  background: #e3f2fd;
 }
 
 
