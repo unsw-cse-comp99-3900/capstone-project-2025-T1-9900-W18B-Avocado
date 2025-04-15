@@ -6,7 +6,7 @@ export default function formatDate(dateStr) {
 
   if (isNaN(date)) return "Invalid Date";
 
-  return new Intl.DateTimeFormat("en-AU", {
+  const formatted = new Intl.DateTimeFormat("en-AU", {
     timeZone: "Australia/Sydney",
     year: "numeric",
     month: "short",
@@ -15,4 +15,6 @@ export default function formatDate(dateStr) {
     minute: "2-digit",
     hour12: true,
   }).format(date);
+
+  return formatted.replace(/\b(am|pm)\b/, (match) => match.toUpperCase());
 }

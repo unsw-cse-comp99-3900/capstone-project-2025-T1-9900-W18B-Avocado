@@ -4,7 +4,7 @@ import "./ProfilePage.css";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { FiSunset } from "react-icons/fi";
 import { LuCalendarCheck } from "react-icons/lu";
-import { FaGift } from "react-icons/fa";
+import RedeemIcon from '@mui/icons-material/Redeem';
 import { AiOutlineRadarChart } from "react-icons/ai";
 
 import Header from "../../components/Header/Header";
@@ -13,7 +13,7 @@ import Footer from "../../components/Footer/Footer";
 const shortcutsData = [
   { name: "Past Event", icon: <FiSunset />, path: "/reward-history" },
   { name: "Event Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
-  { name: "Redeem Rewards", icon: <FaGift />, path: "/my-rewards" },
+  { name: "Redeem Rewards", icon: <RedeemIcon />, path: "/my-rewards" },
   { name: "Career Coach", icon: <AiOutlineRadarChart />, path: "/career-coach" },
 ];
 

@@ -1,36 +1,42 @@
-/* 顶部 Header */
 .header {
-    height: 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: white;
-    color: #282c34;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* LOGO 样式 */
-  .logo img {
-    margin-top: 10px;
-    width: 250px; /* 调整大小 */
-    height: auto;
-  }
-  
-  /* 导航 ICON 样式 */
-  .nav-icons {
-    padding-right: 5px;
-    display: flex;
-    gap: 30px;
-  }
-  
-  .icon {
-    color: #282c34;
-    font-size: 22px;
-    text-decoration: none;
-  }
-  
-  .icon:hover {
-    color: #f4b400;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  padding: 10px 20px;
+
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 48px;
+  margin-bottom: 10px;
+  width: auto;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #235858;
+}
+
+.icon:hover {
+  color: #a8e847;
+}

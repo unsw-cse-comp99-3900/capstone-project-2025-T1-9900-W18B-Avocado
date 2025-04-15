@@ -41,6 +41,7 @@ const LoginPage = () => {
         // Save token & id
         localStorage.setItem("token", data.token);
         localStorage.setItem("userID", data.studentID);
+        localStorage.setItem("userRole", data.role);
 
         // ✅ 跳转页面逻辑（保留你的）
         if (data.role === "Student") {

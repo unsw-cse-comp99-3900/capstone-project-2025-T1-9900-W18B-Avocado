@@ -1,8 +1,11 @@
-
+.homepage {
+  background-color: white;
+  min-height: 100vh;
+}
  /* 主要内容区域 */
 .content {
   min-height: 100vh;
-  background-color: #DFF0D8;
+  background-color: transparent;
   flex-grow: 1;
   display: flex;
   justify-content: space-between;

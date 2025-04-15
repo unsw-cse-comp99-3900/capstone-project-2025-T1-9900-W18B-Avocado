@@ -12,7 +12,7 @@ export const SubmitButton = ({ onClick, children = "Submit" }) => (
       borderRadius: "8px",
       minWidth: "120px",
       height: "48px",
-      "&:hover": { backgroundColor: "#333" },
+      "&:hover": { backgroundColor: "#333",color:"#a8e847" },
     }}
   >
     {children}
@@ -31,7 +31,7 @@ export const ResetButton = ({ onClick, children = "Reset" }) => (
       minWidth: "120px",
       height: "48px",
       border: "2.5px solid #ef9a9a",
-      "&:hover": { backgroundColor: "#ef9a9a" },
+      "&:hover": { backgroundColor: "#fddede" },
     }}
   >
     {children}
