@@ -1,0 +1,148 @@
+.event-detail-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 让整个页面填充满屏幕 */
+    background-color: #DFF0D8;
+}
+.event-detail-container {
+    flex: 1;
+    position: relative;
+    max-width: 1200px; 
+    height:73vh;
+    width: 90vw;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+.back-button {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; /* 让 `back-button` 靠左 */
+    padding-bottom: 10px; /* 增加间距，避免它和 `event-layout` 重叠 */
+}
+
+.event-layout {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 左侧 - 图片 */
+.event-image-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.event-detail-container .event-image {
+    width: 100%;
+    height: 90%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.event-booking {
+    text-align: left;
+    color: black;
+    padding: 8px 12px;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+/* 右侧 - 详情 */
+.event-info-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.event-title {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.event-summary {
+    font-size: 18px;
+    color: gray;
+}
+
+.event-tags {
+    margin-top: 10px;
+}
+
+.tag {
+    background: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* 详情信息 */
+.event-details p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* 按钮 */
+.rewards-button, .attend-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.attend-button {
+    background-color: black;
+}
+
+/* 弹出的奖励框 */
+.rewards-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+}
+
+.rewards-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.rewards-content li {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.close-button {
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
