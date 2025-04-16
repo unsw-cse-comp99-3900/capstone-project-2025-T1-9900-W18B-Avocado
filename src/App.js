@@ -8,6 +8,7 @@ import RegisterPage from "./pages/RegisterPage";
 import PasswordRecovery from "./pages/PasswordRecovery/PasswordRecovery";
 
 import MainHomePage from "./pages/MainHomePage/MainHomePage";
+import ExploreEventPage from "./pages/ExploreEventPage/ExploreEventPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SchedulePage from "./pages/SchedulePage/SchedulePage";
 import EventDetailPage from "./pages/EventDetailPage/EventDetailPage";
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/password-recovery" element={<PasswordRecovery />} />
 
           <Route path="/home" element={<MainHomePage />} />
+          <Route path="/events" element={<ExploreEventPage />} /> 
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/schedule/*" element={<SchedulePage />} />
           <Route path="/event/:id" element={<EventDetailPage />} />
@@ -39,14 +41,11 @@ const App = () => {
 
           <Route path="/my-rewards" element={<MyRewardsPage />} /> 
           <Route path="/reward-history" element={<RewardHistoryPage />} />
-          {/* <Route path="/search" element={<SearchPage />} /> */}
+          
           <Route path="/career-coach" element={<CoachPage />} /> 
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/recommend-events" element={<RecommendEventPage />} />
-          <Route path="/past-events" element={<PastEventPage />} />
-          <Route path="/todays-events" element={<TodaysEventPage />} />
-          <Route path="/upcoming-events" element={<UpcomingEventPage />} /> */}
+          <Route path="/recommend-events" element={<RecommendEventPage />} /> */}
 
         </Routes>
       </Router>
