@@ -76,6 +76,14 @@ const NewEventForm = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+
+  const handleTagChange = (e) => {
+    const value = e.target.value;
+    setSelectedValue(value);
+    setFormData({ ...formData, tag: value });
+  };
+  
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
@@ -251,9 +259,10 @@ const NewEventForm = () => {
                   <FormControl fullWidth required>
                     <InputLabel id="tag-label">Tag</InputLabel>
                     <Select
+                      labelId="tag-label"
                       label="Tag"
                       value={selectedValue}
-                      onChange={(e) => setSelectedValue(e.target.value)}
+                      onChange={handleTagChange}
                       MenuProps={{
                         PaperProps: {
                           style: {
