@@ -162,6 +162,7 @@ function EventListTable({ isStatic = false }) {
       const response = await fetch("http://localhost:7000/admin/delete_selected", {
         method: "DELETE",
         headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ eventIDs: selectedEventIDs }),
@@ -194,8 +195,12 @@ function EventListTable({ isStatic = false }) {
       } else {
         const filterType = filterStatus.toLowerCase();
         const response = await fetch(
-          `http://localhost:7000/event_list?filter=${filterType}&page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`
-        );
+          `http://localhost:7000/event_list?filter=${filterType}&page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`, 
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
         if (!response.ok) {
           const data = await response.json();
           setErrorMsg(data.error || `❌ Error ${response.status}: Failed to fetch events.`);
@@ -230,6 +235,9 @@ function EventListTable({ isStatic = false }) {
         `http://localhost:7000/admin/delete_event/${selectedEvent.eventID}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
   
@@ -268,6 +276,9 @@ function EventListTable({ isStatic = false }) {
       const response = await fetch("http://localhost:7000/admin/update_event", {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
   
       if (!response.ok) {
