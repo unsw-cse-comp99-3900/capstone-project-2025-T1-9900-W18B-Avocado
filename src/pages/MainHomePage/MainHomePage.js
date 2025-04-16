@@ -28,7 +28,7 @@ const mockEvents = [
     title: "Mock Event A",
     summary: "Happening now . This event will improve your AC and EC!! it is a both books and art tags! good experience for you ",
     time: "2025-03-28T10:00:00Z",
-    end_time: "2025-04-20T23:59:59Z",
+    end_time: "2025-04-10T23:59:59Z",
     image: require("../../assets/todayevent1.png"),
     location: "Library",
     description: "Come and join mock event A! ",
@@ -41,7 +41,7 @@ const mockEvents = [
     title: "Mock Event B",
     summary: "Happening now",
     time: "2025-03-29T10:00:00Z",
-    end_time: "2025-04-21T23:59:59Z",
+    end_time: "2025-04-11T23:59:59Z",
     image: require("../../assets/todayevent2.png"),
     location: "Library",
     description: "Come and join mock event B!",
@@ -53,7 +53,7 @@ const mockEvents = [
     title: "Mock Event 3",
     summary: "Happening now",
     time: "2025-03-30T10:00:00Z",
-    end_time: "2025-04-22T23:59:59Z",
+    end_time: "2025-04-12T23:59:59Z",
     image: require("../../assets/todayevent3.png"),
     location: "Library",
     description: "Come and join mock event 3!",
@@ -101,8 +101,8 @@ const mockEvents = [
   id: 7,
   title: "Mock Event 7",
   summary: "Up next",
-  time: "2025-04-17T12:00:00Z",
-  end_time: "2025-04-28T14:00:00Z",
+  time: "2025-04-15T12:00:00Z",
+  end_time: "2025-04-15T14:00:00Z",
   image: "",
   location: "Hall",
   description: "Coming soon",
@@ -114,8 +114,8 @@ const mockEvents = [
   id: 8,
   title: "Mock Event D",
   summary: "Up next",
-  time: "2025-04-18T12:00:00Z",
-  end_time: "2025-04-28T14:00:00Z",
+  time: "2025-04-15T12:00:00Z",
+  end_time: "2025-04-15T14:00:00Z",
   image: require("../../assets/pastevent1.png"),
   location: "Hall",
   description: "Came already",
@@ -216,7 +216,7 @@ function EventPopup({ title, events, onClose, page, setPage }) {
   );
 }
 
-function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFindMore, onPastFindMore, shortcutsData }) {
+/*function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFindMore, onPastFindMore, shortcutsData }) {
   return (
     <div className="content">
       <div className="left-shortcuts">
@@ -261,7 +261,6 @@ function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFind
       </div>
 
       <div className="right-cards">
-        {/* Current Events */}
         <div className="cards-container">
           <div className="cards-header">
             <div className="event-module">Current Events</div>
@@ -299,7 +298,7 @@ function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFind
           }}
         >
 
-        {/* Upcoming Events */}
+        
         <div className="cards-container">
           <div className="cards-header">
             <div className="event-module">Upcoming Events</div>
@@ -331,6 +330,7 @@ function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFind
     </div>
   );
 }
+*/
 
 function MainHomePage() {
   const [currentEvents, setCurrentEvents] = useState([]);
@@ -344,8 +344,8 @@ function MainHomePage() {
 
   const shortcutsData = [
     { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
-    { name: "You might like", icon: <BiHappyHeartEyes />, path: "#", onClick: () => setShowRecommendPopup(true)},
-    { name: "Past Events", icon: <FiSunset />, path: "#", onClick: () => setShowPastPopup(true) }, 
+   // { name: "You might like", icon: <FiSunset />, path: "#", onClick: () => setShowRecommendPopup(true)},
+    { name: "Explore", icon: <BiHappyHeartEyes/>, path: "#", onClick: () => setShowPastPopup(true) }, 
   ];
 
 
@@ -431,11 +431,11 @@ function MainHomePage() {
                 variant="contained"
                 sx={{
                   color: "white",
-                  bgcolor:"#333",
+                  bgcolor:"#235858",
                   height: 80,
                   px: 2,
-                  maxWidth: 240,
-                  minWidth:220,
+                  maxWidth: 340,
+                  minWidth:290,
                   textTransform: "none",
                   display: "flex",
                   flexDirection: "column",
@@ -445,7 +445,7 @@ function MainHomePage() {
                   borderRadius: 1,
                   transition: "all 0.3s ease",
                     '&:hover': {
-                      backgroundColor: "#e0e0e0",
+                      backgroundColor: "#a8e847",
                       transform: "scale(1.03)",
                       boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
                     }
@@ -462,11 +462,11 @@ function MainHomePage() {
           ))}
         </Stack>
 
-        {/* Current Events Section */}
-        <Typography variant="h4" fontWeight="bold" textAlign="center"   margin={6}>Current Events</Typography>
-        <Grid container spacing={2} rowSpacing={5}>
-          {currentEvents.map(event => (
-            <Grid item key={event.id} xs={12} sm={6} md={4} lg={3}>
+        {/* only past Events Section */}
+        <Typography variant="h4" fontWeight="bold" textAlign="center"   margin={6}>Past Events</Typography>
+        <Grid container spacing={2} rowSpacing={1}>
+          {pastEvents.map(event => (
+            <Grid item key={event.id} xs={12} sm={6}  lg={3} mb={8}>
               <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
               <EventCard
                 image={event.image}
@@ -483,8 +483,8 @@ function MainHomePage() {
           ))}
         </Grid>
 
-        {/* Upcoming Events Section */}
-        <Typography variant="h4" fontWeight="bold" textAlign="center"  mt={5} margin={6}>Upcoming Events</Typography>
+        {/* Upcoming Events Section 
+        <Typography variant="h4" fontWeight="bold" textAlign="center"  mt={5} margin={6}>Upcoming Events
         <Grid container spacing={2} rowSpacing={5}>
           {upcomingEvents.map(event => (
             <Grid item key={event.id} xs={12} sm={6} md={4} lg={3} mb={8}>
@@ -502,7 +502,7 @@ function MainHomePage() {
               </Link>
             </Grid>
           ))}
-        </Grid>
+        </Grid> */}
       </Container>
 
       {/* Popups */}
