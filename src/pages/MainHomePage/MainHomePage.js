@@ -23,7 +23,7 @@ import Alert from "@mui/material/Alert";
 import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
-const useMockData = true;
+const useMockData = false;
 const mockEvents = [
   {
     id: 1,
