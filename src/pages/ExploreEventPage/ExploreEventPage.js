@@ -157,7 +157,7 @@ const ExploreEventPage = () => {
 
   return (
     <div>
-      <Box className="fixed part">
+      <Box className="fixed part" sx={{backgroundColor:"white"}}>
         <Box sx={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 1000 }}>
           <Header />
           <Box className="event-buttons">
@@ -171,6 +171,7 @@ const ExploreEventPage = () => {
           <Box
             className="specific-text"
             sx={{
+              
               textAlign: "center",
               fontSize: "1.5rem",
               fontWeight: "bold",
