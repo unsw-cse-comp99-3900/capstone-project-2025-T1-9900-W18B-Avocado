@@ -29,56 +29,7 @@ const statusInfoMap = {
   inactive: { label: "Inactive", color: "error" },
 };
 
-const mockUsers = {
-  users: [
-    {
-      id: "5299241",
-      name: "Zach",
-      role: "Student",
-      isArcMember: true,
-      email: "2@knowwhatson.com",
-      faculty: "SCI",
-      degree: "PSYC Postgraduate",
-      graduationYear: "2025",
-      eventHistory: ["Event A", "Event B", "Event C"],
-      rewards: 10,
-      active: true,
-      rewardPointsDetail: {},
-    },
-    {
-      id: "5299242",
-      name: "Hazel",
-      role: "Student",
-      isArcMember: true,
-      email: "3@knowwhatson.com",
-      faculty: "MED",
-      degree: "MEDH Postgraduate",
-      graduationYear: "2028",
-      eventHistory: ["Event A", "Event B", "Event C", "Event D"],
-      rewards: 20,
-      active: true,
-    },
-    {
-      id: "5299243",
-      name: "Diko",
-      role: "Student",
-      isArcMember: true,
-      email: "4@knowwhatson.com",
-      faculty: "ENG",
-      degree: "CIVL Research",
-      graduationYear: "2025",
-      eventHistory: ["Event A", "Event B", "Event C", "Event D", "Event E", "Event F"],
-      rewards: 30,
-      active: false,
-    },
-  ],
-  page: 1,
-  pageSize: 10,
-  totalCount: 100,
-  totalPages: 10,
-};
-
-function UserListTable({ isStatic = true }) {
+function UserListTable({ isStatic = false }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
@@ -89,21 +40,29 @@ function UserListTable({ isStatic = true }) {
   const [pendingUser, setPendingUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
+  const rowsPerPage = 10;
 
   const fetchUsers = async () => {
-    let userList = [];
-    if (isStatic) {
-      userList = mockUsers.users;
-      const filtered = userList.filter(
-        (user) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          String(user.id).includes(searchTerm)
+    try {
+      const response = await fetch(
+        `http://localhost/user_list?page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
-      setUsers(filtered);
-      setTotalCount(mockUsers.totalCount);
+      if (!response.ok) throw new Error("Network error or unauthenticated");
+      const data = await response.json();
+
+      setUsers(data.users);
+      setTotalCount(data.totalCount || data.users.length);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+      setUsers([]);
+      setTotalCount(0);
+      setErrorMsg("❌ Network error: Unable to fetch users.");
     }
-    // 真实请求可补充 else 分支
   };
 
   useEffect(() => {
@@ -120,23 +79,53 @@ function UserListTable({ isStatic = true }) {
   };
 
   const handleConfirmSwitch = async () => {
-    // 省略实际逻辑
-    setConfirmDialogOpen(false);
-    setPendingUser(null);
+    try {
+      const res = await fetch("http://localhost/toggle_user", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+         },
+        body: JSON.stringify({ userID: pendingUser.id }),
+      });
+      if (!res.ok) throw new Error("Single toggle failed");
+      await fetchUsers();
+      setSelectedIDs([]);
+    } catch (err) {
+      console.error("Toggle failed", err);
+      setErrorMsg("❌ Failed to update user.");
+    } finally {
+      setConfirmDialogOpen(false);
+      setPendingUser(null);
+    }
   };
 
-  const handleSelectAll = () => {
-    setSelectedIDs(users.map((u) => u.id));
-  };
-
-  const handleUnselectAll = () => {
-    setSelectedIDs([]);
-  };
+  const handleSelectAll = () => setSelectedIDs(users.map((u) => u.id));
+  const handleUnselectAll = () => setSelectedIDs([]);
 
   const handleToggleCheckbox = (id) => {
     setSelectedIDs((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+  };
+
+  const handleBatchToggle = async () => {
+    try {
+      const res = await fetch("http://localhost/toggle_selected", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ userIDs: selectedIDs }),
+      });
+      if (!res.ok) throw new Error("Batch toggle failed");
+      await fetchUsers();
+      setSelectedIDs([]);
+    } catch (err) {
+      console.error("Batch toggle error", err);
+      setErrorMsg("❌ Failed to update selected user statuses.");
+    }
   };
 
   return (
@@ -156,7 +145,9 @@ function UserListTable({ isStatic = true }) {
           <Box display="flex" gap={1}>
             <Button variant="outlined" size="small" onClick={handleSelectAll}>Select All</Button>
             <Button variant="outlined" size="small" color="error" onClick={handleUnselectAll}>Unselect All</Button>
-            <Button variant="contained" size="small" color="error" disabled={selectedIDs.length === 0}>Change Selected Status</Button>
+            <Button variant="contained" size="small" color="error" disabled={selectedIDs.length === 0} onClick={handleBatchToggle}>
+              Toggle Selected Status
+            </Button>
           </Box>
           <TextField
             size="small"

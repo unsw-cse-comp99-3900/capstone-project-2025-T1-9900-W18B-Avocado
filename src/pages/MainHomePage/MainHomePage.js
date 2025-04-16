@@ -4,7 +4,6 @@ import { LuCalendarCheck } from "react-icons/lu";
 import { BiHappyHeartEyes } from "react-icons/bi";
 import { FiSunset } from "react-icons/fi";
 import "./MainHomePage.css";
-
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import {
@@ -18,6 +17,9 @@ import {
   Tab,
   Pagination
 } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
@@ -33,7 +35,8 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event A! ",
     tags: ["Books", "Art"],
-    rewards: 10
+    rewards: 10,
+    participated: true, 
 
   },
   {
@@ -46,7 +49,8 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event B!",
     tags: ["Books"],
-    rewards: { "AC": 5, "EC": 10 }
+    rewards: { "AC": 5, "EC": 10 },
+    participated: true, 
   },
   {
     id: 3,
@@ -58,7 +62,8 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event 3!",
     tags: ["Books"],
-    rewards: { "AC": 5, "EC": 10 }
+    rewards: { "AC": 5, "EC": 10 },
+    participated: true,
   },
   {
     id: 4,
@@ -70,7 +75,8 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event 4!",
     tags: ["Books"],
-    rewards: { "AC": 5, "EC": 10 }
+    rewards: { "AC": 5, "EC": 10 },
+    participated: true,
   },
   {
     id: 5,
@@ -107,7 +113,8 @@ const mockEvents = [
     location: "Hall",
     description: "Coming soon",
     tags: ["Music"],
-    rewards: { "AC": 0, "EC": 7, "SM": 3 }
+    rewards: { "AC": 0, "EC": 7, "SM": 3 },
+    participated: true,
   },
 
   {
@@ -120,7 +127,8 @@ const mockEvents = [
     location: "Hall",
     description: "Came already",
     tags: ["Music"],
-    rewards: { "EC": 8, "SM": 8 }
+    rewards: { "EC": 8, "SM": 8 },
+    participated: true,
   },
 
   {
@@ -133,7 +141,8 @@ const mockEvents = [
     location: "Hall",
     description: "Came already",
     tags: ["Music"],
-    rewards: { "EC": 8, "SM": 8 }
+    rewards: { "EC": 8, "SM": 8 },
+    participated: true,
   }
 ]
 
@@ -216,122 +225,6 @@ function EventPopup({ title, events, onClose, page, setPage }) {
   );
 }
 
-/*function Home({ currentEvents, upcomingEvents, onCurrentFindMore, onUpcomingFindMore, onPastFindMore, shortcutsData }) {
-  return (
-    <div className="content">
-      <div className="left-shortcuts">
-        {shortcutsData.map((shortcut, index) => {
-          const content = (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                p: 3,
-                borderRadius: 2,
-                transition: "all 0.3s ease",
-                cursor: "pointer",
-                height: "100%",
-                
-              }}
-            >
-              <Box sx={{ fontSize: 48, color: "#1976d2", mb: 1 }}>{shortcut.icon}</Box>
-          
-              <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.25rem", mb: 1, "&:hover": { color: "#1565c0" } }}>
-                {shortcut.name}
-              </Typography>
-          
-              <Typography variant="body2" sx={{ fontSize: "1rem", color: "#555", textAlign: "center" }}>
-                {shortcut.summary}
-              </Typography>
-            </Box>
-          );
-
-          return shortcut.path && shortcut.path !== "#" ? (
-            <Link to={shortcut.path} key={index} className="shortcuts">
-              {content}
-            </Link>
-          ) : (
-            <div key={index} className="shortcuts" onClick={shortcut.onClick}>
-              {content}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="right-cards">
-        <div className="cards-container">
-          <div className="cards-header">
-            <div className="event-module">Current Events</div>
-            <Button variant="outlined" size="small" onClick={onCurrentFindMore}>
-              Find More
-            </Button>
-          </div>
-          <Grid container spacing={2} justifyContent="flex-start" sx={{ padding: '0 16px' }}>
-            {currentEvents.slice(0, 5).map(event => (
-              <Grid item key={event.id} xs={12} sm={6} md={4} lg={2.4}>
-                <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
-                <EventCard
-                  image={event.image}
-                  title={event.title}
-                  summary={event.summary}
-                  time={event.time}
-                  endTime={event.end_time}
-                  location={event.location}
-                  tags={event.tags}
-                  variant="popup"
-                />
-                </Link>
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-
-        <div
-          className="cards-container"
-          style={{
-            borderTop: "2px solid #e0e0e0",
-
-            paddingLeft: "24px",
-            paddingRight: "24px"
-          }}
-        >
-
-        
-        <div className="cards-container">
-          <div className="cards-header">
-            <div className="event-module">Upcoming Events</div>
-            <Button variant="outlined" size="small" onClick={onUpcomingFindMore}>
-              Find More
-            </Button>
-          </div>
-          <Grid container spacing={2} justifyContent="flex-start" sx={{ padding: '0 16px' }}>
-            {upcomingEvents.slice(0, 5).map(event => (
-              <Grid item key={event.id} xs={12} sm={6} md={4} lg={2.4}>
-                <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
-                <EventCard
-                  image={event.image}
-                  title={event.title}
-                  summary={event.summary}
-                  time={event.time}
-                  endTime={event.end_time}
-                  location={event.location}
-                  tags={event.tags}
-                  variant="popup"
-                />
-                </Link>
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      </div>
-    </div>
-    </div>
-  );
-}
-*/
-
 function MainHomePage() {
   const [currentEvents, setCurrentEvents] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -342,7 +235,19 @@ function MainHomePage() {
   const [showRecommendPopup, setShowRecommendPopup] = useState(false);
   const [pastPage, setPastPage] = useState(1);
   const navigate = useNavigate();
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
   
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setShowLoginAlert(true); // 显示提示
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000); // 2秒后跳转
+    }
+  }, []);
+  
+
   const shortcutsData = [
     { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
     // { name: "You might like", icon: <FiSunset />, path: "#", onClick: () => setShowRecommendPopup(true)},
@@ -386,6 +291,55 @@ function MainHomePage() {
     }
   };
 
+  //用户参加历史过的活动
+  const skillMap = {
+    AC: "Adaptability & Cross-Cultural Collaboration",
+    AP: "Analytical & Problem-Solving Abilities",
+    CT: "Creative & Strategic Thinking",
+    EC: "Effective Communication",
+    EI: "Emotional Intelligence & Inclusivity",
+    LT: "Leadership & Team Management",
+    NP: "Negotiation & Persuasion",
+    PM: "Project & Time Management",
+    PR: "Professional Networking & Relationship-Building",
+    SM: "Self-Motivation & Initiative",
+  };
+
+  const fetchMyEvents = async (page = 1) => {
+    try {
+      const res = await fetch(`http://localhost:7000/my_event?filter=previous&page=${page}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
+      const data = await res.json();
+  
+      return (data.events || []).map(event => {
+        const rewards = {};
+        for (const key in event) {
+          if (skillMap[key]) {
+            rewards[skillMap[key]] = Number(event[key] || 0);
+          }
+        }
+  
+        return {
+          id: event.eventID,
+          title: event.name,
+          time: event.startTime,
+          end_time: event.endTime,
+          location: event.location,
+          summary: "You attended this event",
+          image: "/WhatsOnLogo.png",
+          tags: [event.tag || "Attended"],
+          rewards, 
+        };
+      });
+    } catch (err) {
+      console.error(" Failed to fetch my attended events:", err);
+      return [];
+    }
+  };
+
   useEffect(() => {
     const now = new Date();
     if (useMockData) {
@@ -400,8 +354,8 @@ function MainHomePage() {
           current.push(event);
         } else if (start > now) {
           upcoming.push(event);
-        } else {
-          past.push(event);
+        } else if (event.participated) {
+          past.push(event); // 只加入参加过的历史活动
         }
       });
 
@@ -411,7 +365,8 @@ function MainHomePage() {
     } else {
       fetchEventsByFilter("current").then(setCurrentEvents);
       fetchEventsByFilter("upcoming").then(setUpcomingEvents);
-      fetchEventsByFilter("previous", pastPage).then(setPastEvents);
+      //fetchEventsByFilter("previous", pastPage).then(setPastEvents);
+      fetchMyEvents().then(setPastEvents);  // 👈 改这里
     }
   }, [pastPage]);
 
@@ -514,7 +469,17 @@ function MainHomePage() {
 
       </div>
       <Footer />
-    </>
+
+      <Snackbar
+        open={showLoginAlert}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="error"  sx={{ width: "100%" }}>
+          Please login first.
+        </Alert>
+      </Snackbar>
+      </>
   );
 
 }
