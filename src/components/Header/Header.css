@@ -2,12 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 80px;
+  height: 65px;
   padding: 10px 20px;
 
-  background-color: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: white;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -19,7 +17,7 @@
 }
 
 .logo img {
-  height: 48px;
+  height: 40px;
   margin-bottom: 10px;
   width: auto;
 }

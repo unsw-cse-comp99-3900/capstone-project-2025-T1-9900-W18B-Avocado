@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LuCalendarCheck } from "react-icons/lu";
 import { BiHappyHeartEyes } from "react-icons/bi";
 import { FiSunset } from "react-icons/fi";
@@ -18,7 +18,7 @@ import {
   Tab,
   Pagination
 } from "@mui/material";
-import EventCard from "../../components/EventCard"; 
+import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
 const useMockData = true;
@@ -33,8 +33,8 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event A! ",
     tags: ["Books", "Art"],
-    rewards:  10
-    
+    rewards: 10
+
   },
   {
     id: 2,
@@ -85,55 +85,55 @@ const mockEvents = [
     rewards: { "AC": 5, "EC": 10 }
   },
   {
-  id: 6,
-  title: "Mock Event 6",
-  summary: "Happening now IAM MCOK EVENT SIX and come on to have a look!!",
-  time: "2025-04-19T10:00:00Z",
-  end_time: "2025-04-26T23:59:59Z",
-  image: require("../../assets/upevent3.png"),
-  location: "Library",
-  description: "Come and join mock event 6!",
-  tags: ["Books"],
-  rewards: { "AC": 5, "EC": 10 }
+    id: 6,
+    title: "Mock Event 6",
+    summary: "Happening now IAM MCOK EVENT SIX and come on to have a look!!",
+    time: "2025-04-19T10:00:00Z",
+    end_time: "2025-04-26T23:59:59Z",
+    image: require("../../assets/upevent3.png"),
+    location: "Library",
+    description: "Come and join mock event 6!",
+    tags: ["Books"],
+    rewards: { "AC": 5, "EC": 10 }
   },
 
   {
-  id: 7,
-  title: "Mock Event 7",
-  summary: "Up next",
-  time: "2025-04-15T12:00:00Z",
-  end_time: "2025-04-15T14:00:00Z",
-  image: "",
-  location: "Hall",
-  description: "Coming soon",
-  tags: ["Music"],
-  rewards: { "AC": 0, "EC": 7, "SM": 3 }
+    id: 7,
+    title: "Mock Event 7",
+    summary: "Up next",
+    time: "2025-04-15T12:00:00Z",
+    end_time: "2025-04-15T14:00:00Z",
+    image: "",
+    location: "Hall",
+    description: "Coming soon",
+    tags: ["Music"],
+    rewards: { "AC": 0, "EC": 7, "SM": 3 }
   },
 
   {
-  id: 8,
-  title: "Mock Event D",
-  summary: "Up next",
-  time: "2025-04-15T12:00:00Z",
-  end_time: "2025-04-15T14:00:00Z",
-  image: require("../../assets/pastevent1.png"),
-  location: "Hall",
-  description: "Came already",
-  tags: ["Music"],
-  rewards: { "EC": 8, "SM": 8 }
+    id: 8,
+    title: "Mock Event D",
+    summary: "Up next",
+    time: "2025-04-15T12:00:00Z",
+    end_time: "2025-04-15T14:00:00Z",
+    image: require("../../assets/pastevent1.png"),
+    location: "Hall",
+    description: "Came already",
+    tags: ["Music"],
+    rewards: { "EC": 8, "SM": 8 }
   },
 
   {
-  id: 9,
-  title: "Mock Event 8",
-  summary: "Up next",
-  time: "2025-04-07T12:00:00Z",
-  end_time: "2025-04-11T14:00:00Z",
-  image: require("../../assets/current8.png"),
-  location: "Hall",
-  description: "Came already",
-  tags: ["Music"],
-  rewards: { "EC": 8, "SM": 8 }
+    id: 9,
+    title: "Mock Event 8",
+    summary: "Up next",
+    time: "2025-04-07T12:00:00Z",
+    end_time: "2025-04-11T14:00:00Z",
+    image: require("../../assets/current8.png"),
+    location: "Hall",
+    description: "Came already",
+    tags: ["Music"],
+    rewards: { "EC": 8, "SM": 8 }
   }
 ]
 
@@ -153,18 +153,18 @@ function EventPopup({ title, events, onClose, page, setPage }) {
   return (
     <div className="popup-overlay">
       <div
-          className="popup-content"
-          style={{
-            padding: "32px 40px",
-            position: "relative",
-            width: "90%",
-            maxWidth: "1600px",
-            margin: "40px auto",
-            background: "#fff",
-            borderRadius: "10px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-          }}
-        >
+        className="popup-content"
+        style={{
+          padding: "32px 40px",
+          position: "relative",
+          width: "90%",
+          maxWidth: "1600px",
+          margin: "40px auto",
+          background: "#fff",
+          borderRadius: "10px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+        }}
+      >
         <Button
           variant="outlined"
           color="error"
@@ -341,29 +341,29 @@ function MainHomePage() {
   const [showPastPopup, setShowPastPopup] = useState(false);
   const [showRecommendPopup, setShowRecommendPopup] = useState(false);
   const [pastPage, setPastPage] = useState(1);
-
+  const navigate = useNavigate();
+  
   const shortcutsData = [
     { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
-   // { name: "You might like", icon: <FiSunset />, path: "#", onClick: () => setShowRecommendPopup(true)},
-    { name: "Explore", icon: <BiHappyHeartEyes/>, path: "#", onClick: () => setShowPastPopup(true) }, 
+    // { name: "You might like", icon: <FiSunset />, path: "#", onClick: () => setShowRecommendPopup(true)},
+    { name: "Explore", icon: <BiHappyHeartEyes />, path: "#", onClick: () => navigate("/events") },
   ];
-
 
 
   const fetchEventsByFilter = async (filterType, page = 1) => {
     try {
       const res = await fetch(`http://localhost:7000/event_list?filter=${filterType}&page=${page}`);
       const data = await res.json();
-  
+
       const IMAGE_BASE_URL = "http://localhost:7000";
       const categories = ["AC", "AP", "CT", "EC", "EI", "LT", "NP", "PM", "PR", "SM"];
-  
+
       return (data.events || []).map(event => {
         const rewards = {};
         categories.forEach(cat => {
           rewards[cat] = Number(event[cat] || 0);
         });
-  
+
         return {
           id: event.eventID,
           title: event.name,
@@ -372,14 +372,14 @@ function MainHomePage() {
           end_time: event.endTime,
           location: event.location,
           description: event.description,
-          image: event.image && event.image.trim() !== "" 
-            ? `${IMAGE_BASE_URL}${event.image}` 
+          image: event.image && event.image.trim() !== ""
+            ? `${IMAGE_BASE_URL}${event.image}`
             : "/WhatsOnLogo.png",
           tags: event.tags ? event.tags.split(",") : [],
           rewards
         };
       });
-  
+
     } catch (error) {
       console.error(`❌ Failed to fetch ${filterType} events:`, error);
       return []; // 返回空数组，避免 useEffect 设置 null 报错
@@ -392,7 +392,7 @@ function MainHomePage() {
       const current = [];
       const upcoming = [];
       const past = [];
-  
+
       mockEvents.forEach(event => {
         const start = new Date(event.time);
         const end = new Date(event.end_time);
@@ -404,11 +404,11 @@ function MainHomePage() {
           past.push(event);
         }
       });
-  
+
       setCurrentEvents(current);
       setUpcomingEvents(upcoming);
       setPastEvents(past);
-    } else{
+    } else {
       fetchEventsByFilter("current").then(setCurrentEvents);
       fetchEventsByFilter("upcoming").then(setUpcomingEvents);
       fetchEventsByFilter("previous", pastPage).then(setPastEvents);
@@ -418,72 +418,72 @@ function MainHomePage() {
   return (
     <>
       <Header />
-  
+
       <LandingSection />
       <div className="homepage" id="event-section" sx={{ background: "#e6f4e6", minHeight: "100vh" }}>
-      <Container  maxWidth="xl">
-        {/* Shortcuts */}
-        <Stack direction="row" spacing={1} justifyContent="center"  mb={6}>
-          {shortcutsData.map((s, idx) => (
-            <Grid item xs={12} sm={4} key={idx} mt={8}>
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{
-                  color: "white",
-                  bgcolor:"#235858",
-                  height: 80,
-                  px: 2,
-                  maxWidth: 340,
-                  minWidth:290,
-                  textTransform: "none",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  fontSize: "1rem",
-                  fontWeight: "bold",
-                  borderRadius: 1,
-                  transition: "all 0.3s ease",
+        <Container maxWidth="xl">
+          {/* Shortcuts */}
+          <Stack direction="row" spacing={1} justifyContent="center" mb={6}>
+            {shortcutsData.map((s, idx) => (
+              <Grid item xs={12} sm={4} key={idx} mt={8}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    color: "white",
+                    bgcolor: "#235858",
+                    height: 80,
+                    px: 2,
+                    maxWidth: 340,
+                    minWidth: 290,
+                    textTransform: "none",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    borderRadius: 1,
+                    transition: "all 0.3s ease",
                     '&:hover': {
                       backgroundColor: "#a8e847",
                       transform: "scale(1.03)",
                       boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
                     }
-                }}
-                onClick={() => s.path !== "#" ? window.location.href = s.path : s.onClick()}
-              >
-                <Stack direction="column" alignItems="center" spacing={0.5}>
-                  <Box sx={{ fontSize: 28 }}>{s.icon}</Box>
-                  {s.name}
-                </Stack>
+                  }}
+                  onClick={() => s.path !== "#" ? window.location.href = s.path : s.onClick()}
+                >
+                  <Stack direction="column" alignItems="center" spacing={0.5}>
+                    <Box sx={{ fontSize: 28 }}>{s.icon}</Box>
+                    {s.name}
+                  </Stack>
 
-              </Button>
-            </Grid>
-          ))}
-        </Stack>
+                </Button>
+              </Grid>
+            ))}
+          </Stack>
 
-        {/* only past Events Section */}
-        <Typography variant="h4" fontWeight="bold" textAlign="center"   margin={6}>Past Events</Typography>
-        <Grid container spacing={2} rowSpacing={1}>
-          {pastEvents.map(event => (
-            <Grid item key={event.id} xs={12} sm={6}  lg={3} mb={8}>
-              <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
-              <EventCard
-                image={event.image}
-                title={event.title}
-                summary={event.summary}
-                time={event.time}
-                endTime={event.end_time}   
-                location={event.location}
-                tags={event.tags}
-                variant="popup"
-              />
-              </Link>
-            </Grid>
-          ))}
-        </Grid>
+          {/* only past Events Section */}
+          <Typography variant="h4" fontWeight="bold" textAlign="center" margin={6}>Past Events</Typography>
+          <Grid container spacing={2} rowSpacing={1}>
+            {pastEvents.map(event => (
+              <Grid item key={event.id} xs={12} sm={6} lg={3} mb={8}>
+                <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
+                  <EventCard
+                    image={event.image}
+                    title={event.title}
+                    summary={event.summary}
+                    time={event.time}
+                    endTime={event.end_time}
+                    location={event.location}
+                    tags={event.tags}
+                    variant="popup"
+                  />
+                </Link>
+              </Grid>
+            ))}
+          </Grid>
 
-        {/* Upcoming Events Section 
+          {/* Upcoming Events Section 
         <Typography variant="h4" fontWeight="bold" textAlign="center"  mt={5} margin={6}>Upcoming Events
         <Grid container spacing={2} rowSpacing={5}>
           {upcomingEvents.map(event => (
@@ -503,22 +503,20 @@ function MainHomePage() {
             </Grid>
           ))}
         </Grid> */}
-      </Container>
+        </Container>
 
-      {/* Popups */}
-      {showCurrentPopup && <EventPopup title="All Current Events" events={currentEvents} onClose={() => setShowCurrentPopup(false)} page={1} setPage={() => {}} />} 
-      {showUpcomingPopup && <EventPopup title="All Upcoming Events" events={upcomingEvents} onClose={() => setShowUpcomingPopup(false)} page={1} setPage={() => {}} />} 
-      {showRecommendPopup && <EventPopup title="Recommended Events" events={mockEvents.slice(0, 6)} onClose={() => setShowRecommendPopup(false)} page={1} setPage={() => {}} />} 
-      {showPastPopup && <EventPopup title="All Past Events" events={pastEvents} onClose={() => setShowPastPopup(false)} page={pastPage} setPage={setPastPage} />} 
+        {/* Popups */}
+        {showCurrentPopup && <EventPopup title="All Current Events" events={currentEvents} onClose={() => setShowCurrentPopup(false)} page={1} setPage={() => { }} />}
+        {showUpcomingPopup && <EventPopup title="All Upcoming Events" events={upcomingEvents} onClose={() => setShowUpcomingPopup(false)} page={1} setPage={() => { }} />}
+        {showRecommendPopup && <EventPopup title="Recommended Events" events={mockEvents.slice(0, 6)} onClose={() => setShowRecommendPopup(false)} page={1} setPage={() => { }} />}
+        {showPastPopup && <EventPopup title="All Past Events" events={pastEvents} onClose={() => setShowPastPopup(false)} page={pastPage} setPage={setPastPage} />}
 
-      
+
       </div>
       <Footer />
-
-      
     </>
   );
-  
+
 }
 
 export default MainHomePage;

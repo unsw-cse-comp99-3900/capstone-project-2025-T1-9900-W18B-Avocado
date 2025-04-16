@@ -1,0 +1,143 @@
+body {
+  background-color: white;
+}
+
+.fixed-part {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+}
+
+.events-part {
+  padding-top: 100px;
+  background-color: white;
+}
+
+
+.tab-item {
+  height: 100px;
+  min-width: 150px;
+  max-width: 200px;
+  width: 160px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+
+}
+
+.tab-label-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  transition: color 0.2s ease;
+}
+
+/* 非激活状态 */
+.tab-label-box.tab-inactive {
+  color: rgba(35, 88, 88, 0.8);
+}
+
+.tab-label-box.tab-inactive:hover {
+  color: #a8e847;
+}
+
+.tab-label-box.tab-inactive:hover svg {
+  color: #a8e847;
+  transition: color 0.2s ease;
+}
+
+/* 激活状态 */
+.tab-label-box.tab-active {
+  color: black;
+}
+
+.tab-label-box.tab-active svg {
+  color: black;
+}
+
+.tab-text {
+  font-weight: bold;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  text-align: center;
+  width: 100%;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-scroll-btn {
+  color: #235858;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: -24px;
+  margin-right: -24px;
+  z-index: 2;
+}
+
+.custom-scroll-btn:hover {
+  color: #a8e847;
+  transition: color 0.2s ease;
+}
+
+.event-buttons {
+  width: 100%;
+  background-color: white;
+}
+
+.today-button.MuiButton-contained {
+  height: 50px;
+  width: 200px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #a8e847;
+  color: #202020;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.today-button.MuiButton-contained:hover {
+  background-color: #94d43c;
+  color: #235858;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.coming-button.MuiButton-contained {
+  height: 50px;
+  width: 200px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #235858;
+  color: #94d43c;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.coming-button.MuiButton-contained:hover {
+  background-color: #1c4747;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.event-buttons{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
