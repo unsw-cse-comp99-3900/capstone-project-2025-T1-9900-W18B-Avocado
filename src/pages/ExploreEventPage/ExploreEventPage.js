@@ -21,18 +21,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-const skillMap = {
-  AC: "Analytical & Problem-Solving Abilities",
-  AP: "Adaptability & Cross-Cultural Collaboration",
-  CT: "Creative & Strategic Thinking",
-  EC: "Effective Communication",
-  EI: "Emotional Intelligence & Inclusivity",
-  LT: "Leadership & Team Management",
-  NP: "Negotiation & Persuasion",
-  PM: "Project & Time Management",
-  PR: "Professional Networking & Relationship-Building",
-  SM: "Self-Motivation & Initiative",
-};
+import skillMap from "../../components/Functions/skillMap";
 
 const reverseSkillMap = Object.fromEntries(
   Object.entries(skillMap).map(([key, label]) => [label, key])
