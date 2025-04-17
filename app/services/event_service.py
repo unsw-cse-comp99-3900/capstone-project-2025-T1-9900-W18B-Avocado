@@ -76,7 +76,7 @@ def create_event(form, files):
         cursor = conn.cursor()
 
         sql = """
-            INSERT INTO EventData (
+            INSERT INTO Eventdata (
                 name, location, externalLink, startTime, endTime,
                 summary, description, tag, organizer, image,
                 EC, LT, AP, PR, AC, CT, PM, EI, NP, SM
@@ -107,7 +107,7 @@ def create_event(form, files):
             conn.close()
 
 
-def get_event_list(filter_type, page, search=None, tag=None):
+def get_event_list(filter_type, page, search=None, tag=None, category=None):
     conn = get_db_connection()
     if not conn:
         return {"error": "DB connection failed"}
@@ -117,8 +117,8 @@ def get_event_list(filter_type, page, search=None, tag=None):
         offset = (page - 1) * PAGE_SIZE
         now = datetime.now()
 
-        base_query = "SELECT * FROM EventData"
-        count_query = "SELECT COUNT(*) as total FROM EventData"
+        base_query = "SELECT * FROM Eventdata"
+        count_query = "SELECT COUNT(*) as total FROM Eventdata"
         where_clauses = []
         values = []
         count_values = []
@@ -149,12 +149,16 @@ def get_event_list(filter_type, page, search=None, tag=None):
             values.append(f"%{tag}%")
             count_values.append(f"%{tag}%")
 
-        # 拼接 WHERE 语句
+        # ✅ category 小分字段过滤（如 EC、LT 等）
+        if category and category in ["EC", "LT", "AP", "PR", "AC", "CT", "PM", "EI", "NP", "SM"]:
+            where_clauses.append(f"{category} > 0")
+
+        # 拼接 WHERE 子句
         where_clause = ""
         if where_clauses:
             where_clause = "WHERE " + " AND ".join(where_clauses)
 
-        # 1️⃣ 查询总数
+        # 1️⃣ 查询总条数
         count_sql = f"{count_query} {where_clause}"
         cursor.execute(count_sql, count_values)
         total_count = cursor.fetchone()['total']
@@ -166,7 +170,7 @@ def get_event_list(filter_type, page, search=None, tag=None):
         cursor.execute(sql, values)
         rows = cursor.fetchall()
 
-        # 时间格式化
+        # 格式化时间
         for row in rows:
             if isinstance(row.get('startTime'), datetime):
                 row['startTime'] = row['startTime'].strftime("%Y-%m-%d %H:%M:%S")
@@ -187,14 +191,13 @@ def get_event_list(filter_type, page, search=None, tag=None):
         cursor.close()
         conn.close()
 
-
 def update_event(event_id, form, image_file):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
         # 获取旧图路径
-        cursor.execute("SELECT image FROM EventData WHERE eventID = %s", (event_id,))
+        cursor.execute("SELECT image FROM Eventdata WHERE eventID = %s", (event_id,))
         result = cursor.fetchone()
         if not result:
             return {"error": "Event not found"}, 404
@@ -258,7 +261,7 @@ def update_event(event_id, form, image_file):
         set_clause = ", ".join(f"{k} = %s" for k in update_data)
         values = list(update_data.values()) + [event_id]
 
-        sql = f"UPDATE EventData SET {set_clause} WHERE eventID = %s"
+        sql = f"UPDATE Eventdata SET {set_clause} WHERE eventID = %s"
         cursor.execute(sql, values)
         conn.commit()
 
@@ -281,7 +284,7 @@ def delete_event(event_id):
         cursor = conn.cursor()
 
         # 查询图片路径（如：static/uploads/xxx.jpg）
-        cursor.execute("SELECT image FROM EventData WHERE eventID = %s", (event_id,))
+        cursor.execute("SELECT image FROM Eventdata WHERE eventID = %s", (event_id,))
         result = cursor.fetchone()
         if not result:
             return {"error": "Event not found"}, 404
@@ -289,7 +292,7 @@ def delete_event(event_id):
         image_path = result[0]  # e.g. static/uploads/xxx.jpg
 
         # 删除数据库记录
-        cursor.execute("DELETE FROM EventData WHERE eventID = %s", (event_id,))
+        cursor.execute("DELETE FROM Eventdata WHERE eventID = %s", (event_id,))
         conn.commit()
         if image_path is not None:
             image_path = image_path.lstrip("/")
@@ -330,14 +333,14 @@ def delete_selected_events(event_ids):
         # 查询所有对应的图片路径
         format_strings = ','.join(['%s'] * len(event_ids))
         cursor.execute(
-            f"SELECT eventID, image FROM EventData WHERE eventID IN ({format_strings})",
+            f"SELECT eventID, image FROM Eventdata WHERE eventID IN ({format_strings})",
             tuple(event_ids)
         )
         results = cursor.fetchall()
 
         # 删除数据库记录
         cursor.execute(
-            f"DELETE FROM EventData WHERE eventID IN ({format_strings})",
+            f"DELETE FROM Eventdata WHERE eventID IN ({format_strings})",
             tuple(event_ids)
         )
         conn.commit()
@@ -387,14 +390,14 @@ def register_event(data):
 
         # 检查是否已报名（防重复）
         cursor.execute("""
-            SELECT * FROM AttendanceData WHERE eventID = %s AND studentID = %s
+            SELECT * FROM Attendancedata WHERE eventID = %s AND studentID = %s
         """, (event_id, student_id))
         if cursor.fetchone():
             return {"error": "You have already registered for this event."}, 409
 
         # 插入新的 ticket
         cursor.execute("""
-            INSERT INTO AttendanceData (eventID, studentID, checkIn)
+            INSERT INTO Attendancedata (eventID, studentID, checkIn)
             VALUES (%s, %s, %s)
         """, (event_id, student_id, 0))
 
@@ -415,28 +418,36 @@ def get_student_events(student_id, page, filter_type):
 
         # 获取该学生报名的所有 eventID 和 checkIn
         cursor.execute(
-            "SELECT eventID, checkIn FROM AttendanceData WHERE studentID = %s",
+            "SELECT eventID, checkIn FROM Attendancedata WHERE studentID = %s",
             (student_id,)
         )
         records = cursor.fetchall()
         if not records:
             return {
-                "events": [],
                 "page": page,
                 "pageSize": PAGE_SIZE,
                 "totalCount": 0,
-                "totalPages": 0
+                "totalPages": 0,
+                "events": []
             }, 200
 
         event_checkin_map = {r["eventID"]: r["checkIn"] for r in records}
         all_event_ids = list(event_checkin_map.keys())
 
-        # 动态构建 SQL 的 IN 子句
+        if not all_event_ids:
+            return {
+                "page": page,
+                "pageSize": PAGE_SIZE,
+                "totalCount": 0,
+                "totalPages": 0,
+                "events": []
+            }, 200
+
         format_strings = ','.join(['%s'] * len(all_event_ids))
 
-        # 处理时间过滤
+        # 时间过滤
         time_filter = ""
-        now = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        now = datetime.utcnow()
         if filter_type == "current":
             time_filter = "AND startTime <= %s AND endTime >= %s"
             filter_values = [now, now]
@@ -451,7 +462,7 @@ def get_student_events(student_id, page, filter_type):
 
         # 查询总数
         count_sql = f"""
-            SELECT COUNT(*) as total FROM EventData 
+            SELECT COUNT(*) as total FROM Eventdata 
             WHERE eventID IN ({format_strings}) {time_filter}
         """
         cursor.execute(count_sql, all_event_ids + filter_values)
@@ -461,34 +472,27 @@ def get_student_events(student_id, page, filter_type):
 
         # 查询分页数据
         query_sql = f"""
-            SELECT * FROM EventData
+            SELECT * FROM Eventdata
             WHERE eventID IN ({format_strings}) {time_filter}
             ORDER BY startTime DESC
             LIMIT %s OFFSET %s
         """
         cursor.execute(query_sql, all_event_ids + filter_values + [PAGE_SIZE, offset])
         event_rows = cursor.fetchall()
-
-        # 添加 checkIn 字段
-        enriched_events = []
+        # 构造返回值，并统一时间格式
         for ev in event_rows:
             ev["checkIn"] = event_checkin_map.get(str(ev["eventID"]), 0)
-            # 可选：只返回需要的字段
-            enriched_events.append({
-                "eventID": ev["eventID"],
-                "name": ev["name"],
-                "location": ev["location"],
-                "startTime": ev["startTime"],
-                "endTime": ev["endTime"],
-                "checkIn": ev["checkIn"],
-                "tag": ev.get("tag")
-            })
+            if isinstance(ev.get('startTime'), datetime):
+                ev['startTime'] = ev['startTime'].strftime("%Y-%m-%d %H:%M:%S")
+            if isinstance(ev.get('endTime'), datetime):
+                ev['endTime'] = ev['endTime'].strftime("%Y-%m-%d %H:%M:%S")
+
         return {
-            "events": enriched_events,
             "page": page,
             "pageSize": PAGE_SIZE,
             "totalCount": total_count,
-            "totalPages": total_pages
+            "totalPages": total_pages,
+            "events": event_rows  # 全字段返回（含 checkIn）
         }, 200
 
     except Exception as e:
@@ -499,32 +503,60 @@ def get_student_events(student_id, page, filter_type):
         if 'conn' in locals(): conn.close()
 
 
+
 def checkin_event(student_id, event_id):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
-        # 检查是否存在报名记录
+        # 1. 检查是否存在报名记录，且未签到
         cursor.execute(
-            "SELECT * FROM AttendanceData WHERE studentID = %s AND eventID = %s",
+            "SELECT * FROM Attendancedata WHERE studentID = %s AND eventID = %s",
             (student_id, event_id)
         )
-        if not cursor.fetchone():
+        record = cursor.fetchone()
+        if not record:
             return {"error": "No registration found for this event"}, 404
+        elif record["checkIn"] == 1:
+            return {"error": "You have already checked in"}, 400
 
-        # 执行签到更新
+        # 2. 更新签到状态
         cursor.execute(
-            "UPDATE AttendanceData SET checkIn = 1 WHERE studentID = %s AND eventID = %s",
+            "UPDATE Attendancedata SET checkIn = 1 WHERE studentID = %s AND eventID = %s",
             (student_id, event_id)
         )
+
+        # 3. 查询此 eventID 的 10 项软技能得分
+        skill_fields = ["AC", "AP", "CT", "EC", "EI", "LT", "NP", "PM", "PR", "SM"]
+        cursor.execute(
+            f"SELECT {', '.join(skill_fields)} FROM eventdata WHERE eventID = %s",
+            (event_id,)
+        )
+        event_skills = cursor.fetchone()
+        if not event_skills:
+            return {"error": "Event not found in eventdata"}, 404
+
+        total_reward = sum(event_skills.get(skill, 0) or 0 for skill in skill_fields)
+
+        # 4. 更新 studentdata 的积分
+        cursor.execute(
+            "UPDATE studentdata SET points = points + %s WHERE studentID = %s",
+            (total_reward, student_id)
+        )
+
         conn.commit()
-        return {"message": "Check-in successful"}, 200
+        return {
+            "message": "Check-in successful",
+            "points_earned": total_reward
+        }, 200
 
     except Exception as e:
         return {"error": str(e)}, 500
+
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
+
 
 
 REWARD_COST = {
@@ -541,7 +573,7 @@ def redeem_reward(student_id, reward_id):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         # 获取当前学生积分
-        cursor.execute("SELECT points FROM studentData WHERE studentID = %s", (student_id,))
+        cursor.execute("SELECT points FROM studentdata WHERE studentID = %s", (student_id,))
         row = cursor.fetchone()
         if not row:
             return {"error": "Student not found"}, 404
@@ -554,13 +586,13 @@ def redeem_reward(student_id, reward_id):
         # 记录兑换记录
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cursor.execute("""
-            INSERT INTO rewardData (studentID, rewardID, timestamp)
+            INSERT INTO rewarddata (studentID, rewardID, timestamp)
             VALUES (%s, %s, %s)
         """, (student_id, reward_id, now))
 
         # 更新学生积分
         cursor.execute("""
-            UPDATE studentData SET points = points - %s WHERE studentID = %s
+            UPDATE studentdata SET points = points - %s WHERE studentID = %s
         """, (cost, student_id))
 
         conn.commit()
@@ -583,7 +615,7 @@ def attend_event(event_id, student_id):
 
         # 判断是否已报名
         cursor.execute(
-            "SELECT 1 FROM AttendanceData WHERE studentID = %s AND eventID = %s",
+            "SELECT 1 FROM Attendancedata WHERE studentID = %s AND eventID = %s",
             (student_id, event_id)
         )
         if cursor.fetchone():
@@ -591,7 +623,7 @@ def attend_event(event_id, student_id):
 
         # 插入新报名记录，默认 checkIn = 0
         cursor.execute(
-            "INSERT INTO AttendanceData (studentID, eventID, checkIn) VALUES (%s, %s, 0)",
+            "INSERT INTO Attendancedata (studentID, eventID, checkIn) VALUES (%s, %s, 0)",
             (student_id, event_id)
         )
         ticket_id = cursor.lastrowid  # ✅ 获取刚插入的 ticket ID

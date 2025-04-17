@@ -1,5 +1,5 @@
 # app/routes/event_routes.py
-
+from app.utils.auth import check_admin
 from flask import Blueprint, request, jsonify
 from app.services.event_service import create_event
 from app.services.event_service import get_event_list
@@ -16,10 +16,15 @@ event_bp = Blueprint("event_bp", __name__)
 
 
 @event_bp.route("/admin/create_event", methods=["POST"])
+@jwt_required()
 def create_event_route():
     """
     管理端：创建 Event，接收 form 表单数据
     """
+    auth_error = check_admin()
+    if auth_error:
+        return auth_error  # ✅ 权限错误，提前返回
+
     print(request.files)
     try:
         response, status = create_event(request.form, request.files)
@@ -29,28 +34,23 @@ def create_event_route():
 
 
 @event_bp.route("/event_list", methods=["GET"])
+@jwt_required()
 def get_event_list_route():
-    """
-    获取事件列表，支持分页、时间过滤、名称搜索、标签筛选
-    参数:
-        ?filter=all|current|previous|upcoming
-        ?page=1
-        ?search=keyword        # 可选，模糊匹配 name 字段
-        ?tag=someTag           # 可选，模糊匹配 tag 字段
-    """
     filter_type = request.args.get("filter", "all")
     page = int(request.args.get("page", 1))
-    search = request.args.get("search")  # 可为 None
-    tag = request.args.get("tag")        # 可为 None
+    search = request.args.get("search")
+    tag = request.args.get("tag")
+    category = request.args.get("category")  # ⬅️ 新增字段
 
     try:
-        result = get_event_list(filter_type, page, search, tag)
+        result = get_event_list(filter_type, page, search, tag, category)
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 @event_bp.route("/admin/update_event", methods=["POST"])
+@jwt_required()
 def update_event_route():
     form = request.form
     new_image = request.files.get("image")  # 可为空
@@ -68,12 +68,21 @@ def update_event_route():
 
 
 @event_bp.route("/admin/delete_event/<int:event_id>", methods=["DELETE"])
-
+@jwt_required()
 def delete_event_route(event_id):
     """
     管理端：删除指定 eventID 的活动
     """
     response, status = delete_event(event_id)
+    return jsonify(response), status
+
+@event_bp.route("/admin/delete_selected", methods=["POST"])
+@jwt_required()
+def delete_selected_events_route():
+    data = request.get_json()
+    event_ids = data.get("eventIDs")
+
+    response, status = delete_selected_events(event_ids)
     return jsonify(response), status
 
 @event_bp.route("/register_event", methods=["POST"])
@@ -142,11 +151,3 @@ def attend_event_route():
     response, status = attend_event(event_id, student_id)
     return jsonify(response), status
 
-
-@event_bp.route("/admin/delete_selected", methods=["POST"])
-def delete_selected_events_route():
-    data = request.get_json()
-    event_ids = data.get("eventIDs")
-
-    response, status = delete_selected_events(event_ids)
-    return jsonify(response), status
