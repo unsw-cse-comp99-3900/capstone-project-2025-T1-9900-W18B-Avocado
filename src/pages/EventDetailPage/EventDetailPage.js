@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link,useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import "./EventDetailPage.css";
 import { AiOutlineArrowLeft, AiOutlineClockCircle } from "react-icons/ai";
 
@@ -20,7 +20,9 @@ import {
     Snackbar,
     Alert,
     Paper,
-    Backdrop,Divider,Stack
+    Backdrop,
+    Divider,
+    Stack
 } from "@mui/material";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -59,17 +61,16 @@ function EventDetailPage() {
             if (savedEvent) {
                 const parsed = JSON.parse(savedEvent);
                 if (parsed && parsed.id === numericId) {
-                    // Convert reward keys to full names if needed
                     if (parsed.rewards && typeof parsed.rewards === "object") {
-                      const keys = Object.keys(parsed.rewards);
-                      const isAbbr = keys.every(k => k.length <= 3 && skillMap[k]);
-                      if (isAbbr) {
-                        const fullRewards = {};
-                        for (const [abbr, val] of Object.entries(parsed.rewards)) {
-                          fullRewards[skillMap[abbr] || abbr] = val;
+                        const keys = Object.keys(parsed.rewards);
+                        const isAbbr = keys.every(k => k.length <= 3 && skillMap[k]);
+                        if (isAbbr) {
+                            const fullRewards = {};
+                            for (const [abbr, val] of Object.entries(parsed.rewards)) {
+                                fullRewards[skillMap[abbr] || abbr] = val;
+                            }
+                            parsed.rewards = fullRewards;
                         }
-                        parsed.rewards = fullRewards;
-                      }
                     }
                     setEvent(parsed);
                 } else {
@@ -114,18 +115,33 @@ function EventDetailPage() {
     };
 
     const handleAttend = async () => {
+        if (!event) {
+            setSnackbarMsg("Event data not loaded yet.");
+            setOpenSnackbar(true);
+            return;
+        }
+
         const now = new Date();
-        const end = new Date(event.end_time);
-        if (end < now) {
+        const start = new Date(event.time);
+        const end = new Date(event.endTime);
+
+        if (now < start) {
+            setSnackbarMsg("This event hasn't started yet.");
+            setOpenSnackbar(true);
+            return;
+        }
+
+        if (now > end) {
             setSnackbarMsg("This event has already ended.");
             setOpenSnackbar(true);
             return;
         }
+
         sendRegistrationsToBackend(numericId);
     };
 
-    if (loading) return <Typography>Loading...</Typography>;
-    if (error) return <Typography color="error">Error: {error}</Typography>;
+    if (loading) return <Box display="flex" justifyContent="center" alignItems="center" height="50vh"><Typography>Loading...</Typography></Box>;
+    if (error) return <Box display="flex" justifyContent="center" alignItems="center" height="50vh"><Typography color="error">Error: {error}</Typography></Box>;
 
     return (
         <Box sx={{ minHeight: "100vh", backgroundColor: "#f4fff1", display: "flex", flexDirection: "column" }}>
@@ -147,14 +163,14 @@ function EventDetailPage() {
                             <Grid container spacing={4} alignItems="center">
                                 <Grid item xs={12} md={6.5}>
                                     <Box sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
-                                        <img src={event.image && event.image.trim() !== "" ? event.image : "/WhatsOnLogo.png"} alt={event.title} style={{ width: "100%", borderRadius: 12, objectFit: "cover", marginTop: "10px" }} />
+                                        <img src={event.image?.trim?.().length > 0 ? event.image : "/WhatsOnLogo.png"} alt={event.title} style={{ width: "100%", borderRadius: 12, objectFit: "cover", marginTop: "10px" }} />
                                     </Box>
                                 </Grid>
 
                                 <Grid item xs={12} md={5}>
                                     <Box display="flex" flexDirection="column" justifyContent="center" height="100%" gap={2} mt={2}>
                                         <Box display="flex" justifyContent="center">
-                                            <Typography variant="h5" fontWeight="bold" sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>{event.title}</Typography>
+                                            <Typography variant="h5" fontWeight="bold">{event.title}</Typography>
                                         </Box>
 
                                         <Typography variant="body1" color="text.secondary">{event.summary || ""}</Typography>
@@ -165,17 +181,17 @@ function EventDetailPage() {
                                             ))}
                                         </Stack>
 
-                                        <Box display="flex" alignItems="center" mb={1} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
+                                        <Box display="flex" alignItems="center" mb={1}>
                                             <LocationOnIcon sx={{ mr: 1 }} />
                                             <Typography variant="body1"><strong>Location:</strong> {event.location || "TBD"}</Typography>
                                         </Box>
 
-                                        <Box display="flex" alignItems="center" mb={2} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
+                                        <Box display="flex" alignItems="center" mb={2}>
                                             <AccessTimeIcon sx={{ mr: 1 }} />
-                                            <Typography variant="body1"><strong>Time:</strong> {new Date(event.time).toLocaleString()} - {new Date(event.end_time).toLocaleString()}</Typography>
+                                            <Typography variant="body1">{new Date(event.time).toLocaleString()} - {new Date(event.endTime).toLocaleString()}</Typography>
                                         </Box>
 
-                                        <Typography variant="body1" mb={3} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>{event.description || "Join us for a great event!"}</Typography>
+                                        <Typography variant="body1" mb={3}>{event.description || "Join us for a great event!"}</Typography>
 
                                         <Button variant="contained" sx={{ mt: 2, mb: 3, color: "white", fontWeight: "bold", fontSize: "1rem", transition: "transform 0.2s", '&:hover': { backgroundColor: "#333", transform: "scale(1.02)" } }} onClick={() => setShowRewards(true)}>
                                             View Earnable Rewards
@@ -186,13 +202,13 @@ function EventDetailPage() {
                                         <DialogTitle fontWeight="bold">Earnable Rewards</DialogTitle>
                                         <DialogContent>
                                             <ul>
-                                                {typeof event.rewards === "object" ? (
-                                                    Object.entries(event.rewards).map(([cat, pts], idx) => (
+                                                {typeof event.rewards === "object"
+                                                    ? Object.entries(event.rewards).map(([cat, pts], idx) => (
                                                         <li key={idx}><strong>{cat}</strong>: {pts} pts</li>
                                                     ))
-                                                ) : (
-                                                    <li><strong>Reward</strong>: {event.rewards} pts</li>
-                                                )}
+                                                    : [
+                                                        <li key="single"><strong>Reward</strong>: {event.rewards} pts</li>
+                                                    ]}
                                             </ul>
                                         </DialogContent>
                                         <DialogActions>

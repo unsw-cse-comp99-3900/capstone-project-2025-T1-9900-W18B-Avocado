@@ -113,36 +113,38 @@ export default function AccountMenu() {
 
         <Divider />
 
-        {/* ✅ 非 Admin 时才显示下面这些 */}
-        {role !== "Admin" && (
-          <>
-            <MenuItem onClick={() => navigate('/schedule')}>
-              <ListItemIcon>
-                <EventIcon fontSize="small" />
-              </ListItemIcon>
-              Schedule
-            </MenuItem>
-            <MenuItem onClick={() => navigate('/reward-history')}>
-              <ListItemIcon>
-                <EmojiEventsIcon fontSize="small" />
-              </ListItemIcon>
-              Event & Reward History
-            </MenuItem>
-            <MenuItem onClick={() => navigate('/redeem')}>
-              <ListItemIcon>
-                <RedeemIcon fontSize="small" />
-              </ListItemIcon>
-              Redeem Reward
-            </MenuItem>
-            <MenuItem onClick={() => navigate('/settings')}>
-              <ListItemIcon>
-                <AiOutlineRadarChart fontSize="20px" />
-              </ListItemIcon>
-              Career Coach
-            </MenuItem>
-            <Divider />
-          </>
-        )}
+        {/* ✅ 非 Admin 用户显示这些选项 */}
+        {role !== "Admin" && ([
+          <MenuItem key="schedule" onClick={() => navigate('/schedule')}>
+            <ListItemIcon>
+              <EventIcon fontSize="small" />
+            </ListItemIcon>
+            Schedule
+          </MenuItem>,
+
+          <MenuItem key="reward-history" onClick={() => navigate('/reward-history')}>
+            <ListItemIcon>
+              <EmojiEventsIcon fontSize="small" />
+            </ListItemIcon>
+            Event & Reward History
+          </MenuItem>,
+
+          <MenuItem key="redeem" onClick={() => navigate('/redeem')}>
+            <ListItemIcon>
+              <RedeemIcon fontSize="small" />
+            </ListItemIcon>
+            Redeem Reward
+          </MenuItem>,
+
+          <MenuItem key="career-coach" onClick={() => navigate('/settings')}>
+            <ListItemIcon>
+              <AiOutlineRadarChart fontSize="20px" />
+            </ListItemIcon>
+            Career Coach
+          </MenuItem>,
+
+          <Divider key="divider-bottom" />
+        ])}
 
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

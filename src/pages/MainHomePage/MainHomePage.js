@@ -30,7 +30,7 @@ const mockEvents = [
     title: "Mock Event A",
     summary: "Happening now . This event will improve your AC and EC!! it is a both books and art tags! good experience for you ",
     time: "2025-03-28T10:00:00Z",
-    end_time: "2025-04-10T23:59:59Z",
+    endTime: "2025-04-10T23:59:59Z",
     image: require("../../assets/todayevent1.png"),
     location: "Library",
     description: "Come and join mock event A! ",
@@ -44,7 +44,7 @@ const mockEvents = [
     title: "Mock Event B",
     summary: "Happening now",
     time: "2025-03-29T10:00:00Z",
-    end_time: "2025-04-11T23:59:59Z",
+    endTime: "2025-04-11T23:59:59Z",
     image: require("../../assets/todayevent2.png"),
     location: "Library",
     description: "Come and join mock event B!",
@@ -57,7 +57,7 @@ const mockEvents = [
     title: "Mock Event 3",
     summary: "Happening now",
     time: "2025-03-30T10:00:00Z",
-    end_time: "2025-04-12T23:59:59Z",
+    endTime: "2025-04-12T23:59:59Z",
     image: require("../../assets/todayevent3.png"),
     location: "Library",
     description: "Come and join mock event 3!",
@@ -70,7 +70,7 @@ const mockEvents = [
     title: "Mock Event 4",
     summary: "Happening now",
     time: "2025-04-11T10:00:00Z",
-    end_time: "2025-04-23T23:59:59Z",
+    endTime: "2025-04-23T23:59:59Z",
     image: require("../../assets/upevent1.png"),
     location: "Library",
     description: "Come and join mock event 4!",
@@ -83,7 +83,7 @@ const mockEvents = [
     title: "Mock Event 5",
     summary: "Happening now IAM MCOK EVENT 5 and come on to have a look!!",
     time: "2025-04-15T10:00:00Z",
-    end_time: "2025-04-26T23:59:59Z",
+    endTime: "2025-04-26T23:59:59Z",
     image: require("../../assets/upevent2.png"),
     location: "Library",
     description: "Come and join mock event B!",
@@ -95,7 +95,7 @@ const mockEvents = [
     title: "Mock Event 6",
     summary: "Happening now IAM MCOK EVENT SIX and come on to have a look!!",
     time: "2025-04-19T10:00:00Z",
-    end_time: "2025-04-26T23:59:59Z",
+    endTime: "2025-04-26T23:59:59Z",
     image: require("../../assets/upevent3.png"),
     location: "Library",
     description: "Come and join mock event 6!",
@@ -108,7 +108,7 @@ const mockEvents = [
     title: "Mock Event 7",
     summary: "Up next",
     time: "2025-04-15T12:00:00Z",
-    end_time: "2025-04-15T14:00:00Z",
+    endTime: "2025-04-15T14:00:00Z",
     image: "",
     location: "Hall",
     description: "Coming soon",
@@ -122,7 +122,7 @@ const mockEvents = [
     title: "Mock Event D",
     summary: "Up next",
     time: "2025-04-15T12:00:00Z",
-    end_time: "2025-04-15T14:00:00Z",
+    endTime: "2025-04-15T14:00:00Z",
     image: require("../../assets/pastevent1.png"),
     location: "Hall",
     description: "Came already",
@@ -136,7 +136,7 @@ const mockEvents = [
     title: "Mock Event 8",
     summary: "Up next",
     time: "2025-04-07T12:00:00Z",
-    end_time: "2025-04-11T14:00:00Z",
+    endTime: "2025-04-11T14:00:00Z",
     image: require("../../assets/current8.png"),
     location: "Hall",
     description: "Came already",
@@ -199,7 +199,7 @@ function EventPopup({ title, events, onClose, page, setPage }) {
                   title={event.title}
                   summary={event.summary}
                   time={event.time}
-                  endTime={event.end_time}
+                  endTime={event.endTime}
                   location={event.location}
                   tags={event.tags}
                   variant="popup"
@@ -257,7 +257,11 @@ function MainHomePage() {
 
   const fetchEventsByFilter = async (filterType, page = 1) => {
     try {
-      const res = await fetch(`http://localhost:7000/event_list?filter=${filterType}&page=${page}`);
+      const res = await fetch(`http://localhost:7000/event_list?filter=${filterType}&page=${page}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
       const data = await res.json();
 
       const IMAGE_BASE_URL = "http://localhost:7000";
@@ -274,11 +278,11 @@ function MainHomePage() {
           title: event.name,
           summary: event.summary,
           time: event.startTime,
-          end_time: event.endTime,
+          endTime: event.endTime,
           location: event.location,
           description: event.description,
           image: event.image && event.image.trim() !== ""
-            ? `${IMAGE_BASE_URL}${event.image}`
+            ? `http://localhost:7000${event.image}`
             : "/WhatsOnLogo.png",
           tags: event.tags ? event.tags.split(",") : [],
           rewards
@@ -326,10 +330,12 @@ function MainHomePage() {
           id: event.eventID,
           title: event.name,
           time: event.startTime,
-          end_time: event.endTime,
+          endTime: event.endTime,
           location: event.location,
-          summary: "You attended this event",
-          image: "/WhatsOnLogo.png",
+          summary: event.summary,
+          image: event.image && event.image.trim() !== ""
+            ? `http://localhost:7000${event.image}`
+            : "/WhatsOnLogo.png",
           tags: [event.tag || "Attended"],
           rewards, 
         };
@@ -349,7 +355,7 @@ function MainHomePage() {
 
       mockEvents.forEach(event => {
         const start = new Date(event.time);
-        const end = new Date(event.end_time);
+        const end = new Date(event.endTime);
         if (start <= now && end >= now) {
           current.push(event);
         } else if (start > now) {
@@ -418,7 +424,7 @@ function MainHomePage() {
           </Stack>
 
           {/* only past Events Section */}
-          <Typography variant="h4" fontWeight="bold" textAlign="center" margin={6}>Past Events</Typography>
+          <Typography variant="h4" fontWeight="bold" textAlign="center" margin={6}>My Past Events</Typography>
           <Grid container spacing={2} rowSpacing={1}>
             {pastEvents.map(event => (
               <Grid item key={event.id} xs={12} sm={6} lg={3} mb={8}>
@@ -428,7 +434,7 @@ function MainHomePage() {
                     title={event.title}
                     summary={event.summary}
                     time={event.time}
-                    endTime={event.end_time}
+                    endTime={event.endTime}
                     location={event.location}
                     tags={event.tags}
                     variant="popup"
@@ -449,7 +455,7 @@ function MainHomePage() {
                 title={event.title}
                 summary={event.summary}
                 time={event.time}
-                endTime={event.end_time}   
+                endTime={event.endTime}   
                 location={event.location}
                 tags={event.tags}
                 variant="popup"
