@@ -310,6 +310,8 @@ const NewEventForm = () => {
                   <TextField
                     fullWidth label="External Link (Optional)" name="externalLink"
                     value={formData.externalLink} onChange={handleChange} multiline sx={fieldStyle}
+                    placeholder="Enter up to 25 characters"
+                    inputProps={{ maxLength: 25 }}
                   />
                 </Grid>
 

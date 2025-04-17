@@ -5,129 +5,158 @@ import {
     Typography,
     CardActionArea,
     CardActions,
-    CardHeader,
-    Avatar,
     Box,
     Chip,
     Stack,
-    Divider,
-} from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import PlaceIcon from "@mui/icons-material/Place";
-
-function EventCard({ image, title, summary, variant, time, endTime, location, tags }) {
-    const finalTags = Array.isArray(tags) ? tags : tags ? [tags] : [];
+  } from "@mui/material";
+  import AccessTimeIcon from "@mui/icons-material/AccessTime";
+  import PlaceIcon from "@mui/icons-material/Place";
+  import formatDate from "./Functions/formatDate";
+  
+  function EventCard({ image, title, summary, variant, time, endTime, location, tags }) {
     const isPopup = variant === "popup";
-
+  
     return (
-        <Card
-            sx={{
-            width: "100%",
-            maxWidth: 320, // ✅ 弹窗卡片更窄
-            height: 380,
-            borderRadius: 2,
-            boxShadow: 3,
-            overflow: "hidden",
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: 350,
+          height: 300,
+          boxShadow: 0,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          transition: "transform 0.2s ease, box-shadow 0.2s",
+          "&:hover": {
+            transform: "scale(1.03)",
+            boxShadow: 4,
+          },
+        }}
+      >
+        <CardActionArea
+          sx={{
             display: "flex",
             flexDirection: "column",
-            transition: "transform 0.2s ease, box-shadow 0.2s",
-            "&:hover": {
-                transform: "scale(1.03)",
-                boxShadow: 6,
-            },
-            }}
+            alignItems: "stretch",
+            height: "100%",
+          }}
         >
-            <CardActionArea
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "stretch",
-                padding: 0,
-                height: "100%", 
-            }}
+          {/* Image + Floating Tag */}
+          <Box sx={{ height: 160, width: "100%", position: "relative" }}>
+            <CardMedia
+              component="img"
+              image={image || "/WhatsOnLogo.png"}
+              alt={title}
+              sx={{
+                height: "100%",
+                width: "100%",
+                padding:"15px",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            {tags && (
+              <Box
+              sx={{
+                position: "absolute",
+                bottom: 20,
+                right: 20,
+                px: 1,
+                py: "2px",
+                fontSize: "0.9rem",
+                fontStyle: "italic",
+                fontWeight: 500,
+                backgroundColor: "black",
+                color: "#a8e847",
+                borderRadius: "4px",
+                zIndex: 2,
+                boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.4)",
+                display: "inline-block",
+              }}
             >
-            {/* Image */}
-            <Box sx={{ height: 160, width: "100%" }}>
-                <CardMedia
-                component="img"
-                image={image || "/WhatsOnLogo.png"}
-                alt={title}
-                sx={{
-                    height: "100%",
-                    width: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                }}
-                />
-            </Box>
-        
-            
-            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-
-                <CardContent sx={{ px: 2, py: 1.5 }}>
-                <Typography gutterBottom variant="h6" fontWeight="bold" fontSize="1.1rem">
-                    {title}
-                </Typography>
-        
-                {/* Time */}
-                {time && (
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: isPopup ? "0.75rem" : "0.8rem", color: "text.secondary" }}>
-                    <AccessTimeIcon fontSize="small" />
-                    <span>{new Date(time).toLocaleString()} – {new Date(endTime).toLocaleString()}</span>
-                    </Stack>
-                )}
-        
-                {/* Location */}
-                {location && (
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ fontSize: "0.8rem", color: "text.secondary", mt: 0.5 }}>
-                    <PlaceIcon fontSize="small" />
-                    <span>{location}</span>
-                    </Stack>
-                )}
-        
-                {/* Summary*/}
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                    mt: 0.8,
-                    fontSize: "0.85rem",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    minHeight: "2.7em",
-                    }}
+              {tags}
+            </Box>            
+            )}
+          </Box>
+  
+          {/* Content */}
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <CardContent sx={{ px: 2, pt: 0 }}>
+              <Typography
+                gutterBottom
+                variant="h1"
+                fontWeight="bold"
+                fontSize="1.2rem"
+              >
+                {title}
+              </Typography>
+  
+              {/* Time */}
+              {time && (
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{
+                    fontSize: isPopup ? "0.95rem" : "1rem",
+                    color: "text.secondary",
+                  }}
                 >
-                    {summary}
-                </Typography>
-                </CardContent>
-        
-                
-                <Box sx={{ px: 2, pb: 1.5 }}>
-                <Divider sx={{ mb: 1.2 }} />
-                <CardActions sx={{ p: 0 }}>
-                    <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
-                    {finalTags.slice(0, 2).map((tag, idx) => (
-                        <Chip
-                        key={idx}
-                        label={tag}
-                        size="small"
-                        sx={{
-                            fontSize: "0.75rem",
-                            height: 22,
-                            backgroundColor: "#e3f2fd",
-                            color: "#1565c0",
-                        }}
-                        />
-                    ))}
-                    </Stack>
-                </CardActions>
-                </Box>
-            </Box>
-            </CardActionArea>
-        </Card>
-        );
-}
-export default EventCard;
+                  <AccessTimeIcon fontSize="small" />
+                  <span>
+                    {formatDate(time)}
+                  </span>
+                </Stack>
+              )}
+  
+              {/* Location */}
+              {location && (
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{
+                    fontSize: "1rem",
+                    color: "text.secondary",
+                    mt: 0.5,
+                  }}
+                >
+                  <PlaceIcon fontSize="small" />
+                  <span>{location}</span>
+                </Stack>
+              )}
+  
+              {/* Summary */}
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mt: 1,
+                  pl:0.3,
+                  fontSize: "1.1rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical",
+                  minHeight: "2.7em",
+                }}
+              >
+                {summary}
+              </Typography>
+            </CardContent>
+          </Box>
+        </CardActionArea>
+      </Card>
+    );
+  }
+  
+  export default EventCard;
+  

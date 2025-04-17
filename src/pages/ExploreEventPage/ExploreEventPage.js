@@ -5,6 +5,10 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import EventCard from "../../components/EventCard";
 import "./ExploreEventPage.css";
+import image1 from "../../assets/pastevent1.png"
+import image2 from "../../assets/todayevent1.png"
+import image3 from "../../assets/todayevent2.png"
+import image4 from "../../assets/todayevent3.png"
 
 // Icons
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
@@ -42,9 +46,9 @@ const mockEvents = {
       summary: "Happening now",
       startTime: "2025-04-08T10:00:00Z",
       endTime: "2025-04-20T23:59:59Z",
-      image: "/static/uploads/sample1.png",
+      image: image1,
       location: "Library",
-      tags: ["Books", "Art"],
+      tags: ["Books"],
       AC: 5, EC: 10
     },
     {
@@ -53,10 +57,54 @@ const mockEvents = {
       summary: "Happening now",
       startTime: "2025-04-09T10:00:00Z",
       endTime: "2025-04-21T23:59:59Z",
-      image: "/static/uploads/sample2.png",
+      image: image2,
       location: "Library",
       tags: ["Books"],
       AC: 2, EC: 3
+    },
+    {
+      eventID: 3,
+      name: "Mock Event C",
+      summary: "Upcoming",
+      startTime: "2025-04-25T10:00:00Z",
+      endTime: "2025-04-30T23:59:59Z",
+      image: image3,
+      location: "Auditorium",
+      tags: ["Music"],
+      PM: 4
+    },
+    {
+      eventID: 4,
+      name: "Mock Event D",
+      summary: "Focus on progress, not perfection, every single day.",
+      startTime: "2025-04-08T10:00:00Z",
+      endTime: "2025-04-20T23:59:59Z",
+      image: image4,
+      location: "Library",
+      tags: ["Books"],
+      AC: 5, EC: 10
+    },
+    {
+      eventID: 5,
+      name: "Mock Event E",
+      summary: "Happening now",
+      startTime: "2025-04-09T10:00:00Z",
+      endTime: "2025-04-21T23:59:59Z",
+      image: image1,
+      location: "Library",
+      tags: ["Books"],
+      SM: 2, PM: 3
+    },
+    {
+      eventID: 6,
+      name: "Mock Event F",
+      summary: "Upcoming",
+      startTime: "2025-04-25T10:00:00Z",
+      endTime: "2025-04-30T23:59:59Z",
+      image: "/static/uploads/sample3.png",
+      location: "Auditorium",
+      tags: ["Music"],
+      EI: 7
     },
     {
       eventID: 3,
@@ -77,7 +125,7 @@ const mockEvents = {
       endTime: "2025-04-20T23:59:59Z",
       image: "/static/uploads/sample1.png",
       location: "Library",
-      tags: ["Books", "Art"],
+      tags: ["Books"],
       AC: 5, EC: 10
     },
     {
@@ -116,7 +164,7 @@ const ExploreEventPage = () => {
 
   const [tabIndex, setTabIndex] = useState(0);
   const [skillEvents, setSkillEvents] = useState({});
-  const isLoading = true;
+  const isLoading = false;
 
 
   useEffect(() => {
@@ -260,8 +308,8 @@ const ExploreEventPage = () => {
           <Box sx={{ pt: 14, px: 2 }}>
             <Grid container spacing={2}>
               {isLoading
-                ? Array.from(new Array(8)).map((_, index) => (
-                  <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+                ? Array.from(new Array(10)).map((_, index) => (
+                  <Grid item key={index} xs={12} sm={6} md={4} lg={2.4} sx={{ flexBasis: "20%", maxWidth: "20%" }}>
                     <Box sx={{ borderRadius: 2, overflow: "hidden" }}>
                       <Skeleton variant="rectangular" height={180} />
                       <Skeleton variant="text" sx={{ mt: 1 }} width="80%" />
@@ -271,7 +319,7 @@ const ExploreEventPage = () => {
                   </Grid>
                 ))
                 : currentEvents.map((event) => (
-                  <Grid item key={event.eventID} xs={12} sm={6} md={4} lg={3}>
+                  <Grid item key={event.eventID} xs={12} sm={6} md={4} lg={2.4} sx={{ flexBasis: "20%", maxWidth: "20%" }}>
                     <Link
                       to={`/event/${event.eventID}`}
                       style={{ textDecoration: "none" }}
