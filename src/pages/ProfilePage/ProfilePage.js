@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Box, Typography, Button, Chip } from "@mui/material";
-import { deepPurple, grey } from '@mui/material/colors';
+import { Avatar, Box, Typography, Button, Chip, CircularProgress } from "@mui/material";
+import { deepPurple } from '@mui/material/colors';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { LuCalendarCheck } from "react-icons/lu";
 import RedeemIcon from '@mui/icons-material/Redeem';
+import { AiOutlineRadarChart } from "react-icons/ai";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -15,10 +18,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
 import "./ProfilePage.css";
 
+// Registering chart.js components
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -28,12 +30,15 @@ ChartJS.register(
   Legend
 );
 
+// Data for the shortcut buttons
 const shortcutsData = [
   { name: "Event & Reward History", icon: <EmojiEventsIcon />, path: "/reward-history" },
   { name: "Event Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
   { name: "Redeem Rewards", icon: <RedeemIcon />, path: "/redeem" },
+  { name: "Recommend Events", icon: <AiOutlineRadarChart />, path: "/recommend-events" }, // New button
 ];
 
+// Function to create an avatar with initials
 function stringAvatar(name) {
   const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('');
   return {
@@ -96,17 +101,17 @@ function ProfilePage() {
   }, []);
 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-    if (confirmLogout) {
-      navigate("/login");
-    }
+    navigate("/login");
   };
 
-  if (!userData) return (
-    <div className="loading">
-      <div className="spinner"></div> Loading...
-    </div>
-  );
+  if (!userData) {
+    // Show loading spinner while user data is being fetched
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress size={80} />
+      </Box>
+    );
+  }
 
   const skillLabels = Object.keys(userData.skillScores || {});
   const skillValues = Object.values(userData.skillScores || {});
@@ -150,7 +155,7 @@ function ProfilePage() {
         </div>
       </Header>
       <div className="profile-container">
-        {/* 左侧信息 */}
+        {/* Left profile section */}
         <div className="left-profile" style={{ width: "30%" }}>
           <div className="avatar" style={{ marginBottom: "10px" }}>
             <Avatar {...stringAvatar(userData.name || 'U N')} />
@@ -188,7 +193,7 @@ function ProfilePage() {
           </div>
         </div>
 
-        {/* 右侧内容：雷达图 + 快捷方式 */}
+        {/* Right profile section with chart */}
         <div className="right-profile">
           <Box className="career-coach-box" p={3} borderRadius={2} boxShadow={2} bgcolor="white">
             <Typography variant="h6" fontWeight="bold" mb={2}>
@@ -202,6 +207,7 @@ function ProfilePage() {
             </Typography>
           </Box>
 
+          {/* Shortcuts buttons */}
           <div className="profile-shortcuts" style={{ flexWrap: "nowrap", justifyContent: "space-between", marginTop: "30px" }}>
             {shortcutsData.map((shortcut, index) => (
               <Link to={shortcut.path} key={index} className="shortcut-link" style={{ width: "22%" }}>
