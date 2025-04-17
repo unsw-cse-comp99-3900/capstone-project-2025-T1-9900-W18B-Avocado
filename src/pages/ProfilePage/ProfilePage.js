@@ -96,10 +96,17 @@ function ProfilePage() {
   }, []);
 
   const handleLogout = () => {
-    navigate("/login");
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      navigate("/login");
+    }
   };
 
-  if (!userData) return <div>Loading...</div>;
+  if (!userData) return (
+    <div className="loading">
+      <div className="spinner"></div> Loading...
+    </div>
+  );
 
   const skillLabels = Object.keys(userData.skillScores || {});
   const skillValues = Object.values(userData.skillScores || {});
