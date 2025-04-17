@@ -185,7 +185,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
     }
   
     formDataToSend.append("skillPoints", JSON.stringify(skillAbbr));
-  
+
     if (image instanceof File) {
       formDataToSend.append("image", image);
     } else if (imagePreview) {
