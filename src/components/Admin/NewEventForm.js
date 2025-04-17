@@ -106,8 +106,8 @@ const NewEventForm = () => {
 
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const targetWidth = 300;
-        const targetHeight = 200;
+        const targetWidth = 900;
+        const targetHeight = 600;
         canvas.width = targetWidth;
         canvas.height = targetHeight;
         const ctx = canvas.getContext("2d");
@@ -172,6 +172,9 @@ const NewEventForm = () => {
 
     try {
       const response = await fetch("http://localhost:7000/admin/create_event", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
         method: "POST",
         body: multipartData,
       });
