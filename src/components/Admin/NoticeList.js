@@ -152,7 +152,6 @@ const NoticeListTable = () => {
             onChange={(_, newPage) => setPage(newPage - 1)}
             color="primary"
             variant="outlined"
-            shape="rounded"
           />
         </Box>
       </Paper>

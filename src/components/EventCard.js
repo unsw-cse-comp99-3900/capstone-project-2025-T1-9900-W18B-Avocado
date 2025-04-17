@@ -4,9 +4,7 @@ import {
     CardMedia,
     Typography,
     CardActionArea,
-    CardActions,
     Box,
-    Chip,
     Stack,
   } from "@mui/material";
   import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -15,7 +13,6 @@ import {
   
   function EventCard({ image, title, summary, variant, time, endTime, location, tags }) {
     const isPopup = variant === "popup";
-  
     return (
       <Card
         sx={{
@@ -93,7 +90,7 @@ import {
                 gutterBottom
                 variant="h1"
                 fontWeight="bold"
-                fontSize="1.2rem"
+                fontSize="1.1rem"
               >
                 {title}
               </Typography>

@@ -29,7 +29,7 @@ const statusInfoMap = {
   inactive: { label: "Inactive", color: "error" },
 };
 
-function UserListTable({ isStatic = false }) {
+function UserListTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
@@ -68,7 +68,7 @@ function UserListTable({ isStatic = false }) {
   useEffect(() => {
     fetchUsers();
     setErrorMsg("");
-  }, [searchTerm, page, isStatic]);
+  }, [searchTerm, page]);
 
   const handleChangePage = (_, newPage) => setPage(newPage - 1);
   const totalPages = Math.ceil(totalCount / 10);
@@ -86,7 +86,7 @@ function UserListTable({ isStatic = false }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
          },
-        body: JSON.stringify({ userID: pendingUser.id }),
+        body: JSON.stringify({ userID: pendingUser.studentID }),
       });
       if (!res.ok) throw new Error("Single toggle failed");
       await fetchUsers();
@@ -100,7 +100,7 @@ function UserListTable({ isStatic = false }) {
     }
   };
 
-  const handleSelectAll = () => setSelectedIDs(users.map((u) => u.id));
+  const handleSelectAll = () => setSelectedIDs(users.map((u) => u.studentID));
   const handleUnselectAll = () => setSelectedIDs([]);
 
   const handleToggleCheckbox = (id) => {
@@ -185,17 +185,17 @@ function UserListTable({ isStatic = false }) {
                 const { label, color } = statusInfoMap[currentStatus];
                 return (
                   <TableRow
-                    key={user.id}
+                    key={user.studentID}
                     hover
                     sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={selectedIDs.includes(user.id)}
-                        onChange={() => handleToggleCheckbox(user.id)}
+                        checked={selectedIDs.includes(user.studentID)}
+                        onChange={() => handleToggleCheckbox(user.studentID)}
                       />
                     </TableCell>
-                    <FixedCell width="15%" minWidth={120}>{user.id}</FixedCell>
+                    <FixedCell width="15%" minWidth={120}>{user.studentID}</FixedCell>
                     <FixedCell width="20%" minWidth={150}>{user.name}</FixedCell>
                     <FixedCell width="30%" minWidth={200}>{user.email}</FixedCell>
                     <FixedCell width="15%" minWidth={120}>

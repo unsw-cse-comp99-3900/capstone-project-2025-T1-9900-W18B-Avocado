@@ -1,6 +1,6 @@
 const skillMap = {
-    AC: "Analytical & Problem-Solving Abilities",
-    AP: "Adaptability & Cross-Cultural Collaboration",
+    AC: "Adaptability & Cross-Cultural Collaboration",
+    AP: "Analytical & Problem-Solving Abilities",
     CT: "Creative & Strategic Thinking",
     EC: "Effective Communication",
     EI: "Emotional Intelligence & Inclusivity",

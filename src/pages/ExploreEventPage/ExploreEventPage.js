@@ -309,9 +309,11 @@ const ExploreEventPage = ({ isStatic = false }) => {
                 <Box
                   sx={{ textDecoration: "none", cursor: "pointer" }}
                   onClick={() => {
+
                     // const newEvent = { ...event, image: image1 };
                     // localStorage.setItem("eventDetail", JSON.stringify(newEvent));
                     localStorage.setItem("eventDetail", JSON.stringify(event));
+
                     navigate(`/event/${event.eventID}`);
                   }}
                 >
@@ -319,7 +321,6 @@ const ExploreEventPage = ({ isStatic = false }) => {
                     image={event.image && event.image.trim() !== ""
                       ? `http://localhost:7000${event.image}`
                       : "/WhatsOnLogo.png"}
-                    
                     // image={image1}
                     title={event.name}
                     summary={event.summary}
