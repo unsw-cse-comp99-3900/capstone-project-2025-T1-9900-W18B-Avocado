@@ -112,9 +112,11 @@ const MyRewardsPage = () => {
         },
         body: JSON.stringify({ rewardID: selectedReward.id }),
       });
+  
       const data = await res.json();
-      if (data.success) {
-        setUserPoints(data.points);
+      // Assuming that data.message contains the success or failure message
+      if (res.ok && data.message === "Reward redeemed successfully") {
+        setUserPoints(data.points); // Update user points
         const now = new Date();
         const timestamp = now.toISOString().slice(0, 19).replace("T", " ");
         setFullRecords((prev) => [
@@ -128,6 +130,7 @@ const MyRewardsPage = () => {
         setCurrentPage(1);
         setAlertMessage(`🎉 Successfully redeemed "${selectedReward.name}"!`);
       } else {
+        // If the message is not "Reward redeemed successfully"
         setAlertMessage(`❌ ${data.message || "Redemption failed."}`);
       }
     } catch (err) {
@@ -137,8 +140,13 @@ const MyRewardsPage = () => {
       setAlertOpen(true);
       setDialogOpen(false);
       setSelectedReward(null);
+  
+      // Automatically refresh the page after successful redemption
+      window.location.reload();  // Refresh the page to reflect the updated points and records
     }
   };
+  
+  
 
   const displayedRecords = fullRecords.slice(
     (currentPage - 1) * recordsPerPage,
