@@ -17,15 +17,19 @@ import {
   Chip,
   Grow,
   Fade,
-  Zoom
+  Zoom,
+  List,
+  ListItem,
+  ListItemText,
+  LinearProgress
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { BarChart } from "@mui/x-charts/BarChart";
-import { green } from "@mui/material/colors";
 import { motion } from "framer-motion";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { green } from "@mui/material/colors";
+import { BarChart } from "@mui/x-charts/BarChart";
 
+// Skill Map for abbreviations
 const skillMap = {
   AC: "Adaptability & Cross-Cultural Collaboration",
   AP: "Analytical & Problem-Solving Abilities",
@@ -77,8 +81,6 @@ const RewardHistoryPage = () => {
   const endIndex = startIndex + eventsPerPage;
   const currentRows = events.slice(startIndex, endIndex);
 
-  const navigate = useNavigate();
-
   const handleToggleRow = (eventName) => {
     setExpandedRow((prev) => (prev === eventName ? null : eventName));
   };
@@ -90,7 +92,7 @@ const RewardHistoryPage = () => {
 
   const renderChart = (event) => {
     const dataset = Object.entries(event.scores).map(([code, score]) => ({
-      skill: code,
+      skill: code, // Display abbreviation in the chart
       score,
     }));
 
@@ -193,27 +195,51 @@ const RewardHistoryPage = () => {
               <Table size="small">
                 <TableHead sx={{ backgroundColor: "#f1f5f2" }}>
                   <TableRow>
-                    <TableCell><Typography variant="body2" fontWeight={600}>Event Name</Typography></TableCell>
-                    <TableCell><Typography variant="body2" fontWeight={600}>Total Points</Typography></TableCell>
-                    <TableCell align="right"><Typography variant="body2" fontWeight={600}>Details</Typography></TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight={600}>
+                        Event Name
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight={600}>
+                        Total Points
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2" fontWeight={600}>
+                        Details
+                      </Typography>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {currentRows.map((row, index) => (
                     <React.Fragment key={index}>
                       <TableRow hover sx={{ transition: 'all 0.3s ease' }}>
-                        <TableCell><Typography variant="body2">{row.name}</Typography></TableCell>
+                        <TableCell>
+                          <Typography variant="body2">{row.name}</Typography>
+                        </TableCell>
                         <TableCell>
                           <Zoom in>
                             <Chip
                               label={`${row.totalPoints}`}
-                              sx={{ backgroundColor: green[100], color: green[800], fontWeight: "bold", fontSize: "0.85rem" }}
+                              sx={{
+                                backgroundColor: green[100],
+                                color: green[800],
+                                fontWeight: "bold",
+                                fontSize: "0.85rem",
+                              }}
                             />
                           </Zoom>
                         </TableCell>
                         <TableCell align="right">
                           <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button variant="outlined" size="small" onClick={() => handleToggleRow(row.name)} sx={{ fontWeight: "bold" }}>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => handleToggleRow(row.name)}
+                              sx={{ fontWeight: "bold" }}
+                            >
                               {expandedRow === row.name ? "Hide" : "View"}
                             </Button>
                           </motion.div>
@@ -234,29 +260,23 @@ const RewardHistoryPage = () => {
               </Table>
             </TableContainer>
 
+            {/* Pagination Button Below Event Breakdown */}
             <Box display="flex" justifyContent="center" mt={4}>
               <Pagination count={totalPages} page={page} onChange={handlePageChange} color="primary" shape="rounded" />
             </Box>
 
-            <Box textAlign="center" mt={5}>
-              <motion.div whileTap={{ scale: 0.96 }}>
-                <Button
-                  variant="contained"
-                  onClick={() => navigate("/my-rewards")}
-                  sx={{
-                    bgcolor: "#43a047",
-                    color: "white",
-                    borderRadius: 2,
-                    fontWeight: "bold",
-                    fontSize: "0.95rem",
-                    px: 5,
-                    py: 1.5,
-                    "&:hover": { bgcolor: "#2e7d32" },
-                  }}
-                >
-                  Redeem Points →
-                </Button>
-              </motion.div>
+            {/* Skill Abbreviations Legend Below Pagination */}
+            <Box mt={3}>
+              <Typography variant="h6" fontWeight={700} gutterBottom>
+              Skill Description:
+              </Typography>
+              <List>
+                {Object.entries(skillMap).map(([abbreviation, fullName]) => (
+                  <ListItem key={abbreviation}>
+                    <ListItemText primary={`${abbreviation}: ${fullName}`} />
+                  </ListItem>
+                ))}
+              </List>
             </Box>
           </Paper>
         </Box>
