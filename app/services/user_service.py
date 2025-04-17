@@ -26,11 +26,11 @@ def register_user(data):
         cursor = conn.cursor()
 
         # ⚠️ 检查邮箱和学号是否重复
-        cursor.execute("SELECT 1 FROM userData WHERE email = %s", (data['email'],))
+        cursor.execute("SELECT 1 FROM userdata WHERE email = %s", (data['email'],))
         if cursor.fetchone():
             return {"error": "Email already exists."}, 400
 
-        cursor.execute("SELECT 1 FROM userData WHERE studentID = %s", (data['studentID'],))
+        cursor.execute("SELECT 1 FROM userdata WHERE studentID = %s", (data['studentID'],))
         if cursor.fetchone():
             return {"error": "Student ID already exists."}, 400
 
@@ -39,7 +39,7 @@ def register_user(data):
 
         # 📝 插入 student 数据（含 points = 0）
         cursor.execute("""
-            INSERT INTO studentData
+            INSERT INTO studentdata
             (studentID, email, name, faculty, degree, citizenship, isArcMember, graduationYear, role, points)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
@@ -50,7 +50,7 @@ def register_user(data):
 
         # 🔐 插入登录信息
         cursor.execute("""
-            INSERT INTO userData 
+            INSERT INTO userdata 
             (studentID, email, password, role, active)
             VALUES (%s, %s, %s, %s, %s)
         """, (
@@ -77,7 +77,7 @@ def login_user(email, password):
         return {"error": "DB failed"}, 500
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT studentID, password, role FROM userData WHERE email = %s", (email,))
+        cursor.execute("SELECT studentID, password, role FROM userdata WHERE email = %s", (email,))
         user = cursor.fetchone()
         if not user:
             return {"error": "Invalid credentials"}, 401
@@ -100,7 +100,7 @@ def check_email_exists(email):
         return False
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM userData WHERE email = %s", (email,))
+        cursor.execute("SELECT 1 FROM userdata WHERE email = %s", (email,))
         return cursor.fetchone() is not None
     finally:
         cursor.close()
@@ -146,7 +146,7 @@ def handle_password_reset(email, code_input, new_password):
         cursor = conn.cursor()
 
         # 2. 查询旧密码
-        cursor.execute("SELECT password FROM userData WHERE email = %s", (email,))
+        cursor.execute("SELECT password FROM userdata WHERE email = %s", (email,))
         result = cursor.fetchone()
         if not result:
             return {"error": "Email not found."}, 400
@@ -159,7 +159,7 @@ def handle_password_reset(email, code_input, new_password):
 
         # 4. 更新密码
         new_hashed = hash_password(new_password)
-        cursor.execute("UPDATE userData SET password = %s WHERE email = %s", (new_hashed, email))
+        cursor.execute("UPDATE userdata SET password = %s WHERE email = %s", (new_hashed, email))
         conn.commit()
 
         # 5. 清除验证码
@@ -179,7 +179,7 @@ def get_all_users():
         return {"error": "Database connection failed"}, 500
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM studentData")
+        cursor.execute("SELECT * FROM studentdata")
         users = cursor.fetchall()
         return {"users": users}, 200
     except Exception as e:
@@ -197,7 +197,7 @@ def get_user(user):
         print(user)
         studentID = user["studentID"]
         role = user["role"]
-        cursor.execute("SELECT * FROM studentData WHERE studentID = %s", (studentID,))
+        cursor.execute("SELECT * FROM studentdata WHERE studentID = %s", (studentID,))
         user_data = cursor.fetchone()
         
         return user_data, 201
@@ -214,7 +214,7 @@ def get_reward_status(student_id):
         cursor = conn.cursor(dictionary=True)
 
         # 查询学生积分
-        cursor.execute("SELECT points FROM studentData WHERE studentID = %s", (student_id,))
+        cursor.execute("SELECT points FROM studentdata WHERE studentID = %s", (student_id,))
         student = cursor.fetchone()
         if not student:
             return {"error": "Student not found"}, 404
@@ -222,7 +222,7 @@ def get_reward_status(student_id):
         # 查询全部兑换记录（按时间降序）
         cursor.execute("""
             SELECT rewardID, timestamp
-            FROM rewardData
+            FROM rewarddata
             WHERE studentID = %s
             ORDER BY timestamp DESC
         """, (student_id,))
