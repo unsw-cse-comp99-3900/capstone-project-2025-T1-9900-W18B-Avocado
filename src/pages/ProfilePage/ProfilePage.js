@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Box, Typography, Button, Chip, CircularProgress } from "@mui/material";
+import { Avatar, Box, Typography, Chip, CircularProgress } from "@mui/material";
 import { deepPurple } from '@mui/material/colors';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { LuCalendarCheck } from "react-icons/lu";
@@ -122,13 +122,13 @@ function ProfilePage() {
       {
         label: "Your Skill Levels",
         data: skillValues,
-        backgroundColor: "rgba(255, 206, 86, 0.2)",
-        borderColor: "rgba(255, 206, 86, 1)",
+        backgroundColor: "rgba(94, 242, 14, 0.2)",
+        borderColor: "rgb(106, 195, 46)",
         borderWidth: 2,
-        pointBackgroundColor: "rgba(255, 206, 86, 1)",
+        pointBackgroundColor: "rgb(106, 195, 46)",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgba(255, 206, 86, 1)",
+        pointHoverBorderColor: "rgb(106, 195, 46)",
       },
     ],
   };
@@ -139,8 +139,8 @@ function ProfilePage() {
         suggestedMin: 0,
         suggestedMax: 10,
         angleLines: { display: true },
-        grid: { color: "rgba(0, 0, 0, 0.1)" },
-        pointLabels: { font: { size: 12 } },
+        grid: { color: "rgba(239, 10, 21, 0.24)" },
+        pointLabels: { font: { size: 15 } },
       },
     },
     plugins: { legend: { position: "bottom" } },
@@ -197,7 +197,7 @@ function ProfilePage() {
         <div className="right-profile">
           <Box className="career-coach-box" p={3} borderRadius={2} boxShadow={2} bgcolor="white">
             <Typography variant="h6" fontWeight="bold" mb={2}>
-              Career Coach
+            Skill Visualisation
             </Typography>
             <Box height={400}>
               <Radar data={chartData} options={chartOptions} />

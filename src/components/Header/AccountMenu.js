@@ -136,7 +136,7 @@ export default function AccountMenu() {
             Redeem Reward
           </MenuItem>,
 
-          <MenuItem key="career-coach" onClick={() => navigate('/settings')}>
+          <MenuItem key="career-coach" onClick={() => navigate('/recommend-events')}>
             <ListItemIcon>
               <AiOutlineRadarChart fontSize="20px" />
             </ListItemIcon>
