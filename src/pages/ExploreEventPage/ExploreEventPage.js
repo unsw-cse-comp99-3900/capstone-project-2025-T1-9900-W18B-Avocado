@@ -309,7 +309,6 @@ const ExploreEventPage = ({ isStatic = false }) => {
                 <Box
                   sx={{ textDecoration: "none", cursor: "pointer" }}
                   onClick={() => {
-
                     // const newEvent = { ...event, image: image1 };
                     // localStorage.setItem("eventDetail", JSON.stringify(newEvent));
                     localStorage.setItem("eventDetail", JSON.stringify(event));
