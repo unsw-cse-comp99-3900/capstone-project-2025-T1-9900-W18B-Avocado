@@ -49,7 +49,9 @@ const LoginPage = () => {
         } else if (data.role === "admin") {
           navigate("/admin");
         }
-      } else {
+      } else if(response.status === 403){
+        setError(data.message || "Your account has been disabled.");
+      }else {
         setError(data.message || "This Password unvalid, please try again");
       }
     } catch (err) {
