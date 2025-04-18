@@ -82,7 +82,7 @@ const NewEventForm = () => {
     setSelectedValue(value);
     setFormData({ ...formData, tag: value });
   };
-  
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -240,7 +240,8 @@ const NewEventForm = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth label="Event Name" name="name" value={formData.name}
-                onChange={handleChange} required sx={fieldStyle}
+                onChange={handleChange} required sx={fieldStyle} placeholder="Enter up to 25 characters"
+                inputProps={{ maxLength: 25 }}
               />
             </Grid>
 
@@ -313,8 +314,6 @@ const NewEventForm = () => {
                   <TextField
                     fullWidth label="External Link (Optional)" name="externalLink"
                     value={formData.externalLink} onChange={handleChange} multiline sx={fieldStyle}
-                    placeholder="Enter up to 25 characters"
-                    inputProps={{ maxLength: 25 }}
                   />
                 </Grid>
 
@@ -379,8 +378,17 @@ const NewEventForm = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth required label="Description" name="description" value={formData.description}
-                onChange={handleChange} multiline rows={4} placeholder="Enter up to 100 characters"
-                inputProps={{ maxLength: 100 }} sx={fieldStyle}
+                onChange={handleChange} multiline rows={4} placeholder="Enter up to 800 characters"
+                inputProps={{ maxLength: 800 }}
+                InputProps={{
+                  sx: {
+                    '& textarea': {
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                    },
+                  },
+                }}
+                sx={fieldStyle}
               />
             </Grid>
 
