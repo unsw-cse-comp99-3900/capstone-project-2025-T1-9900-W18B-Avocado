@@ -75,22 +75,43 @@ def login_user(email, password):
     conn = get_db_connection()
     if not conn:
         return {"error": "DB failed"}, 500
+
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT studentID, password, role FROM userdata WHERE email = %s", (email,))
+        cursor.execute(
+            "SELECT studentID, password, role, active FROM userdata WHERE email = %s",
+            (email,)
+        )
         user = cursor.fetchone()
+
         if not user:
             return {"error": "Invalid credentials"}, 401
-        studentID, hashed, role = user
+
+        studentID, hashed, role, active = user
+
+        # 检查是否被禁用
+        if active == 0:
+            return {"error": "Account is disabled. Please contact admin."}, 403
+
+        # 验证密码
         if verify_password(hashed, password):
             userData = {"studentID": studentID, "role": role}
-            return {"message": "Login successful", "studentID": studentID, "role": role, "token": create_access_token(identity=userData)}, 200
+            return {
+                "message": "Login successful",
+                "studentID": studentID,
+                "role": role,
+                "token": create_access_token(identity=userData)
+            }, 200
+
         return {"error": "Invalid credentials"}, 401
+
     except Exception as e:
         return {"error": str(e)}, 500
+
     finally:
         cursor.close()
         conn.close()
+
 
 
 def check_email_exists(email):
