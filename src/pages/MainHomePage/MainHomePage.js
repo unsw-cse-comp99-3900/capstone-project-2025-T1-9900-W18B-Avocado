@@ -24,7 +24,7 @@ import PastEventCard from "../../components/PastEventCard";
 import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
-const useMockData = true;
+const useMockData = false;
 const mockEvents = [
   {
     id: 1,
@@ -70,6 +70,7 @@ const mockEvents = [
     tags: ["Books"],
     rewards: { "AC": 5, "EC": 10 , "NP":1, "PR":2 },
     participated: true,
+    organizer: "Music Club", 
   },
   {
     id: 4,
@@ -83,6 +84,7 @@ const mockEvents = [
     tags: ["Books"],
     rewards: { "AC": 5, "EC": 10 },
     participated: true,
+    organizer: "Music Club", 
   },
   {
     id: 5,
@@ -121,6 +123,7 @@ const mockEvents = [
     tags: ["Music"],
     rewards: { "AC": 0, "EC": 7, "SM": 3 },
     participated: true,
+    organizer: "Music Club", 
   },
 
   {
@@ -135,6 +138,7 @@ const mockEvents = [
     tags: ["Music"],
     rewards: { "EC": 8, "SM": 8 },
     participated: true,
+    organizer: "Music Club", 
   },
 
   {
@@ -149,6 +153,7 @@ const mockEvents = [
     tags: ["Music"],
     rewards: { "EC": 8, "SM": 8 },
     participated: true,
+    organizer: "Music Club", 
   }
 ]
 
