@@ -9,12 +9,23 @@ import {
   TextField,
   Grid,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import StarIcon from "@mui/icons-material/Star";
 import SkillPointsDialog from "../Dialogs/SkillPointsDialog";
 import { uploadButtonStyle, pointsButtonStyle } from "../Styles/EventFormStyles";
 import CloseIconButton from "../../Buttons/CloseIconButton";
+import skillMap from "../../Functions/skillMap";
+
+const options = [
+  "Social", "Networking", "Games", "Startups", "Technology",
+  "Cultural", "Careers", "Sustainability", "Books", "Art",
+  "Coding", "Movies", "Entrepreneurship", "Food", "Volunteering", "Music", "Debate"
+];
 
 const getPreviousImage = async (url, filename, mimeType) => {
   try {
@@ -32,63 +43,27 @@ const getPreviousImage = async (url, filename, mimeType) => {
   }
 };
 
-
-
-const skills = [
-  "Effective Communication",
-  "Leadership & Team Management",
-  "Analytical & Problem-Solving Abilities",
-  "Professional Networking & Relationship-Building",
-  "Adaptability & Cross-Cultural Collaboration",
-  "Creative & Strategic Thinking",
-  "Project & Time Management",
-  "Emotional Intelligence & Inclusivity",
-  "Negotiation & Persuasion",
-  "Self-Motivation & Initiative",
-];
+const skills = Object.values(skillMap);
 
 const mapSkills = (data) => {
-  const map = {
-    AC: "Analytical & Problem-Solving Abilities",
-    AP: "Adaptability & Cross-Cultural Collaboration",
-    CT: "Creative & Strategic Thinking",
-    EC: "Effective Communication",
-    EI: "Emotional Intelligence & Inclusivity",
-    LT: "Leadership & Team Management",
-    NP: "Negotiation & Persuasion",
-    PM: "Project & Time Management",
-    PR: "Professional Networking & Relationship-Building",
-    SM: "Self-Motivation & Initiative",
-  };
   const result = {};
-  for (const [short, full] of Object.entries(map)) {
-    result[full] = data[short] ?? 0;
+  for (const [abbr, label] of Object.entries(skillMap)) {
+    result[label] = data[abbr] ?? 0;
   }
   return result;
 };
 
 const unmapSkills = (skillsObj) => {
-    const reverseMap = {
-      "Analytical & Problem-Solving Abilities": "AC",
-      "Adaptability & Cross-Cultural Collaboration": "AP",
-      "Creative & Strategic Thinking": "CT",
-      "Effective Communication": "EC",
-      "Emotional Intelligence & Inclusivity": "EI",
-      "Leadership & Team Management": "LT",
-      "Negotiation & Persuasion": "NP",
-      "Project & Time Management": "PM",
-      "Professional Networking & Relationship-Building": "PR",
-      "Self-Motivation & Initiative": "SM",
-    };
-  
-    const result = {};
-    for (const [label, value] of Object.entries(skillsObj)) {
-      const short = reverseMap[label];
-      if (short) result[short] = Number(value);
-    }
-    return result;
-  };
-  
+  const reverseMap = Object.fromEntries(
+    Object.entries(skillMap).map(([abbr, label]) => [label, abbr])
+  );
+  const result = {};
+  for (const [label, value] of Object.entries(skillsObj)) {
+    const short = reverseMap[label];
+    if (short) result[short] = Number(value);
+  }
+  return result;
+};
 
 const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
   const [formData, setFormData] = useState({});
@@ -109,7 +84,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
       setImageError("");
     }
   }, [open, event]);
-  
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -118,7 +93,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
       [name]: value,
     }));
   };
-  
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -138,7 +113,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
       ...prev,
       image: null,
     }));
-  };  
+  };
 
   const handleReset = () => {
     setFormData({
@@ -154,12 +129,12 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
       description: "",
       image: null,
     });
-  
+
     setSkillPoints(skills.reduce((acc, skill) => ({ ...acc, [skill]: 0 }), {}));
     setImage(null);
     setImagePreview("");
   };
-  
+
 
   const handleSkillChange = (skill) => (e) => {
     const value = Number(e.target.value);
@@ -175,7 +150,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
     const skillAbbr = unmapSkills(skillPoints);
     const formDataToSend = new FormData();
     setImageError("");
-  
+
     for (const key of [
       "eventID", "name", "location", "organizer",
       "startTime", "endTime", "tag", "externalLink",
@@ -183,7 +158,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
     ]) {
       formDataToSend.append(key, formData[key] || "");
     }
-  
+
     formDataToSend.append("skillPoints", JSON.stringify(skillAbbr));
 
     if (image instanceof File) {
@@ -197,18 +172,18 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
         return;
       }
     }
-  
+
     onConfirm?.(formDataToSend);
-    console.log("🧪 Submitting edited event...", formData);
+    console.log("Submitting edited event...", formData);
   };
-  
-  
+
+
   const handleDiscardChanges = () => {
     if (originalEvent) {
-        setFormData({ ...originalEvent });
-        setSkillPoints(mapSkills(originalEvent));
-        setImage(null);
-        setImagePreview(originalEvent.image ? `http://localhost:7000${originalEvent.image}` : "");
+      setFormData({ ...originalEvent });
+      setSkillPoints(mapSkills(originalEvent));
+      setImage(null);
+      setImagePreview(originalEvent.image ? `http://localhost:7000${originalEvent.image}` : "");
     }
   };
 
@@ -220,7 +195,8 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
         <Box mt={1}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField required fullWidth label="Event Name" name="name" value={formData.name || ""} onChange={handleChange} />
+              <TextField required fullWidth label="Event Name" name="name" value={formData.name || ""} onChange={handleChange} placeholder="Enter up to 25 characters"
+                inputProps={{ maxLength: 25 }}/>
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField required fullWidth label="Location" name="location" value={formData.location || ""} onChange={handleChange} />
@@ -235,7 +211,31 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
               <TextField required fullWidth label="End Time" type="datetime-local" name="endTime" value={formData.endTime || ""} onChange={handleChange} InputLabelProps={{ shrink: true }} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <TextField required fullWidth label="Tag" name="tag" value={formData.tag || ""} onChange={handleChange} />
+              <FormControl required fullWidth>
+                <InputLabel id="edit-tag-label">Tag</InputLabel>
+                <Select
+                  labelId="edit-tag-label"
+                  name="tag"
+                  label="Tag"
+                  value={formData.tag || ""}
+                  onChange={handleChange}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 200,
+                        overflowY: "auto",
+                      },
+                    },
+                  }}
+                >
+                  {options.map((opt) => (
+                    <MenuItem key={opt} value={opt}>
+                      {opt}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
             </Grid>
             <Grid item xs={12} md={4}>
               <Button variant="outlined" component="label" fullWidth startIcon={<UploadFileIcon />} sx={{ ...uploadButtonStyle, height: 56 }}>
@@ -246,7 +246,7 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
                 <Box mt={1}>
                   {image instanceof File && (
                     <Typography variant="body2">{image.name}</Typography>
-                    )}
+                  )}
                   <Box component="img" src={imagePreview} alt="Preview" width={150} mt={1} sx={{ border: "1px solid #ccc", borderRadius: 1 }} />
                   <Button size="small" color="error" onClick={handleImageReset} sx={{ mt: 1 }}>
                     Reset Image
@@ -261,17 +261,24 @@ const EditEventDialog = ({ open, onClose, onConfirm, event }) => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Button fullWidth startIcon={<StarIcon />} onClick={() => setDialogOpen(true)} sx={{ ...pointsButtonStyle, height: 56 }}>
-              Set Earnable Points
+                Set Earnable Points
               </Button>
             </Grid>
             <Grid item xs={12}>
               <TextField fullWidth label="External Link" name="externalLink" value={formData.externalLink || ""} onChange={handleChange} />
             </Grid>
             <Grid item xs={12}>
-              <TextField required fullWidth label="Summary" name="summary" value={formData.summary || ""} onChange={handleChange} multiline rows={2} inputProps={{ maxLength: 50 }} />
+              <TextField required fullWidth label="Summary" name="summary" value={formData.summary || ""} onChange={handleChange} multiline rows={2} inputProps={{ maxLength: 100 }} placeholder="Enter up to 100 characters" />
             </Grid>
             <Grid item xs={12}>
-              <TextField required fullWidth label="Description" name="description" value={formData.description || ""} onChange={handleChange} multiline rows={4} inputProps={{ maxLength: 100 }} />
+              <TextField required fullWidth label="Description" name="description" value={formData.description || ""} onChange={handleChange} multiline rows={4} inputProps={{ maxLength: 800 }} InputProps={{
+                  sx: {
+                    '& textarea': {
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                    },
+                  },
+                }}placeholder="Enter up to 800 characters"/>
             </Grid>
           </Grid>
         </Box>
