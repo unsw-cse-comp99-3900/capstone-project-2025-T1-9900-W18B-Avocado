@@ -41,28 +41,49 @@ function EventDetailPage() {
             const savedEvent = localStorage.getItem("eventDetail");
             if (savedEvent) {
                 const raw = JSON.parse(savedEvent);
-                if (raw && raw.eventID === numericId) {
-                    const rewardKeys = Object.keys(raw).filter(k => skillMap[k]);
-                    const rewards = rewardKeys.map((abbr) => ({
-                        abbr,
-                        full: skillMap[abbr],
-                        value: raw[abbr],
-                    }));
-
+                if (raw && (raw.eventID === numericId || raw.id === numericId)) {
+                    let rewards = [];
+    
+                    if (typeof raw.rewards === "object" && !Array.isArray(raw.rewards)) {
+                        // mock数据：rewards是 { AC: 5, EC: 10 }
+                        rewards = Object.entries(raw.rewards)
+                            .filter(([abbr]) => skillMap[abbr])
+                            .map(([abbr, value]) => ({
+                                abbr,
+                                full: skillMap[abbr],
+                                value: Number(value),
+                            }));
+                    } else if (Array.isArray(raw.rewards)) {
+                        // 后端可能已经返回了完整的结构，但为了保险给它补 full 名称
+                        rewards = raw.rewards.map(({ abbr, value }) => ({
+                            abbr,
+                            full: skillMap[abbr] || abbr,
+                            value: Number(value),
+                        }));
+                    } else {
+                        // rewards不存在，尝试直接从raw里提取各个技能
+                        const rewardKeys = Object.keys(raw).filter(k => skillMap[k]);
+                        rewards = rewardKeys.map((abbr) => ({
+                            abbr,
+                            full: skillMap[abbr],
+                            value: Number(raw[abbr]),
+                        }));
+                    }
+    
                     const transformed = {
-                        id: raw.eventID,
-                        title: raw.name,
+                        id: raw.eventID || raw.id,
+                        title: raw.name || raw.title,
                         summary: raw.summary,
-                        time: raw.startTime,
-                        end_time: raw.endTime,
+                        time: raw.startTime || raw.time,
+                        end_time: raw.endTime || raw.end_time,
                         image: raw.image,
                         location: raw.location,
-                        tags: raw.tag,
+                        tags: Array.isArray(raw.tag) ? raw.tag : (Array.isArray(raw.tags) ? raw.tags : [raw.tag || "Attended"]),
                         description: raw.description || "",
                         rewards: rewards,
-                        organizer: raw.organizer
+                        organizer: raw.organizer || "",
                     };
-
+    
                     setEvent(transformed);
                 } else {
                     setError("Event data mismatch or not found.");

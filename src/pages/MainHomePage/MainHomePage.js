@@ -24,7 +24,7 @@ import PastEventCard from "../../components/PastEventCard";
 import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
-const useMockData = false;
+const useMockData = true;
 const mockEvents = [
   {
     id: 1,
@@ -40,7 +40,8 @@ const mockEvents = [
       AC: 5,
       EC: 10
     },
-    participated: true, 
+    participated: true,
+    organizer: "Music Club", 
 
   },
   {
@@ -55,6 +56,7 @@ const mockEvents = [
     tags: ["Books"],
     rewards: { "AC": 5, "EC": 10 },
     participated: true, 
+    organizer: "secondbook",
   },
   {
     id: 3,
