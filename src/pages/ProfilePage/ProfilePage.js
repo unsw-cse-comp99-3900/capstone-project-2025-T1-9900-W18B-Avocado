@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./ProfilePage.css";
-import { IoPersonCircleOutline } from "react-icons/io5";
+import { Avatar, Box, Typography, Button, Chip, CircularProgress } from "@mui/material";
+import { deepPurple } from '@mui/material/colors';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { LuCalendarCheck } from "react-icons/lu";
 import RedeemIcon from '@mui/icons-material/Redeem';
 import { AiOutlineRadarChart } from "react-icons/ai";
-import { Box, Typography, Button } from "@mui/material";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -17,10 +18,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import "./ProfilePage.css";
 
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-
+// Registering chart.js components
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -30,11 +30,27 @@ ChartJS.register(
   Legend
 );
 
+// Data for the shortcut buttons
 const shortcutsData = [
   { name: "Event & Reward History", icon: <EmojiEventsIcon />, path: "/reward-history" },
   { name: "Event Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
   { name: "Redeem Rewards", icon: <RedeemIcon />, path: "/redeem" },
+  { name: "Recommend Events", icon: <AiOutlineRadarChart />, path: "/recommend-events" }, // New button
 ];
+
+// Function to create an avatar with initials
+function stringAvatar(name) {
+  const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('');
+  return {
+    sx: {
+      bgcolor: deepPurple[500],
+      width: 100,
+      height: 100,
+      fontSize: 36,
+    },
+    children: initials.toUpperCase(),
+  };
+}
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -88,7 +104,14 @@ function ProfilePage() {
     navigate("/login");
   };
 
-  if (!userData) return <div>Loading...</div>;
+  if (!userData) {
+    // Show loading spinner while user data is being fetched
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress size={80} />
+      </Box>
+    );
+  }
 
   const skillLabels = Object.keys(userData.skillScores || {});
   const skillValues = Object.values(userData.skillScores || {});
@@ -115,24 +138,12 @@ function ProfilePage() {
       r: {
         suggestedMin: 0,
         suggestedMax: 10,
-        angleLines: {
-          display: true,
-        },
-        grid: {
-          color: "rgba(0, 0, 0, 0.1)",
-        },
-        pointLabels: {
-          font: {
-            size: 12,
-          },
-        },
+        angleLines: { display: true },
+        grid: { color: "rgba(0, 0, 0, 0.1)" },
+        pointLabels: { font: { size: 12 } },
       },
     },
-    plugins: {
-      legend: {
-        position: "bottom",
-      },
-    },
+    plugins: { legend: { position: "bottom" } },
     maintainAspectRatio: false,
   };
 
@@ -144,14 +155,20 @@ function ProfilePage() {
         </div>
       </Header>
       <div className="profile-container">
-        {/* 左侧信息 */}
+        {/* Left profile section */}
         <div className="left-profile" style={{ width: "30%" }}>
           <div className="avatar" style={{ marginBottom: "10px" }}>
-            <IoPersonCircleOutline className="avatar-icon" style={{ fontSize: "120px" }} />
+            <Avatar {...stringAvatar(userData.name || 'U N')} />
           </div>
-          <div className="arcmember-box">
-            {userData.isArcMember === "1" ? "ArcMember" : "Guest"}
-          </div>
+          <Box mt={1}>
+            <Chip
+              label={userData.isArcMember === "1" ? "Arc Member" : "Not Arc Member"}
+              color={userData.isArcMember === "1" ? "success" : "default"}
+              variant={userData.isArcMember === "1" ? "filled" : "outlined"}
+              sx={{ fontWeight: "bold", fontSize: "0.85rem" }}
+            />
+          </Box>
+
           <div className="left-profile-info" style={{ marginTop: "20px", fontSize: "14px", lineHeight: "1.6" }}>
             <div><strong>ID:</strong> {userData.studentID}</div>
             <div><strong>Role:</strong> {userData.role}</div>
@@ -176,9 +193,8 @@ function ProfilePage() {
           </div>
         </div>
 
-        {/* 右侧内容：雷达图 + 快捷方式 */}
+        {/* Right profile section with chart */}
         <div className="right-profile">
-          {/* Career Coach Section 放顶部 */}
           <Box className="career-coach-box" p={3} borderRadius={2} boxShadow={2} bgcolor="white">
             <Typography variant="h6" fontWeight="bold" mb={2}>
               Career Coach
@@ -191,7 +207,7 @@ function ProfilePage() {
             </Typography>
           </Box>
 
-          {/* 快捷方式按钮放底部 */}
+          {/* Shortcuts buttons */}
           <div className="profile-shortcuts" style={{ flexWrap: "nowrap", justifyContent: "space-between", marginTop: "30px" }}>
             {shortcutsData.map((shortcut, index) => (
               <Link to={shortcut.path} key={index} className="shortcut-link" style={{ width: "22%" }}>

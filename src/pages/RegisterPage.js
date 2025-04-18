@@ -28,7 +28,7 @@ const RegisterPage = () => {
     citizenship: "",
     isArcMember: "TRUE",
     graduationYear: "2025",
-    role: "Student",
+    role: "student",
     password: "",
     confirmPassword: "",
     emailCode: "",
@@ -91,37 +91,34 @@ const RegisterPage = () => {
     event.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
-
+  
+    const finalData = { ...formData, role: "student" }; // 强制确保是 student
+  
     if (
-      !formData.studentID ||
-      !formData.email ||
-      !formData.name ||
-      !formData.faculty ||
-      !formData.degree ||
-      !formData.citizenship ||
-      !formData.password ||
-      !formData.role ||
-      !formData.emailCode
+      !finalData.studentID ||
+      !finalData.email ||
+      !finalData.name ||
+      !finalData.faculty ||
+      !finalData.degree ||
+      !finalData.citizenship ||
+      !finalData.password ||
+      !finalData.emailCode
     ) {
       setErrorMsg("❌ All fields are required, including the verification code.");
       return;
     }
-    if (formData.password !== formData.confirmPassword) {
+    if (finalData.password !== finalData.confirmPassword) {
       setErrorMsg("❌ Passwords do not match.");
       return;
     }
-    if (!["Student", "Admin"].includes(formData.role)) {
-      setErrorMsg("❌ Invalid role selected.");
-      return;
-    }
-
+  
     try {
       let response = await fetch("http://localhost:5000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(finalData), // 👈 用的是 finalData
       });
-
+  
       let data = await response.json();
       if (response.ok) {
         setSuccessMsg("✅ " + (data.message || "Registration successful!"));
@@ -265,7 +262,7 @@ const RegisterPage = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                {/* <Grid item xs={12} md={3}>
                   <FormControl fullWidth required>
                     <InputLabel id="role-label">Role</InputLabel>
                     <Select
@@ -275,11 +272,11 @@ const RegisterPage = () => {
                       onChange={handleChange}
                       label="Role"
                     >
-                      <MenuItem value="Student">Student</MenuItem>
-                      <MenuItem value="Admin">Admin</MenuItem>
+                      <MenuItem value="student">Student</MenuItem>
+                      <MenuItem value="admin">Admin</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid> */}
 
               </Grid>
 

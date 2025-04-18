@@ -15,6 +15,7 @@ import {
   Pagination,
   Select,
   MenuItem,
+  Alert,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ const TAGS = [
   "Movies", "Music", "Social", "Cultural", "Foods", "Volunteering"
 ];
 
-const useMock = false; // Add flag for using mock data
+const useMock = true; // Add flag for using mock data
 
 export default function SearchPopup({ open, onClose }) {
   const [query, setQuery] = useState("");
@@ -204,9 +205,9 @@ export default function SearchPopup({ open, onClose }) {
         )}
 
         {error && (
-          <Typography color="error" align="center" mt={2}>
+          <Alert severity="error" sx={{ mt: 2 }}>
             {error}
-          </Typography>
+          </Alert>
         )}
 
         <Box sx={{ maxHeight: '55vh', overflowY: 'auto', mt: 2 }}>

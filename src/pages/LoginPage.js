@@ -44,9 +44,9 @@ const LoginPage = () => {
         localStorage.setItem("userRole", data.role);
 
         // ✅ 跳转页面逻辑（保留你的）
-        if (data.role === "Student") {
+        if (data.role === "student") {
           navigate("/home");
-        } else if (data.role === "Admin") {
+        } else if (data.role === "admin") {
           navigate("/admin");
         }
       } else {

@@ -7,6 +7,10 @@ import {
   Grid,
   Paper,
   Divider,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Select
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import StarIcon from "@mui/icons-material/Star";
@@ -41,6 +45,12 @@ const skills = [
   "Self-Motivation & Initiative",
 ];
 
+const options = [
+  "Social", "Networking", "Games", "Startups", "Technology",
+  "Cultural", "Careers", "Sustainability", "Books", "Art",
+  "Coding", "Movies", "Entrepreneurship", "Food", "Volunteering", "Music", "Debate"
+];
+
 const NewEventForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -61,9 +71,18 @@ const NewEventForm = () => {
   const [skillPoints, setSkillPoints] = useState(
     skills.reduce((acc, skill) => ({ ...acc, [skill]: 0 }), {})
   );
+  const [selectedValue, setSelectedValue] = useState("");
 
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+
+
+  const handleTagChange = (e) => {
+    const value = e.target.value;
+    setSelectedValue(value);
+    setFormData({ ...formData, tag: value });
+  };
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -200,7 +219,7 @@ const NewEventForm = () => {
           borderRadius: 2,
           p: 2,
           width: "100%",
-          maxWidth:"1000px",
+          maxWidth: "1000px",
           overflow: "hidden",
           backgroundColor: "#fff",
         }}
@@ -223,18 +242,43 @@ const NewEventForm = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={5}>
                   <TextField
                     fullWidth label="Organizer" name="organizer" value={formData.organizer}
                     onChange={handleChange} required sx={fieldStyle}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={5}>
                   <TextField
                     fullWidth label="Location" name="location" value={formData.location}
                     onChange={handleChange} required sx={fieldStyle}
                   />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <FormControl fullWidth required>
+                    <InputLabel id="tag-label">Tag</InputLabel>
+                    <Select
+                      labelId="tag-label"
+                      label="Tag"
+                      value={selectedValue}
+                      onChange={handleTagChange}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 200,
+                            overflowY: "auto",
+                          },
+                        },
+                      }}
+                    >
+                      {options.map((opt) => (
+                        <MenuItem key={opt} value={opt}>
+                          {opt}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
               </Grid>
             </Grid>
@@ -259,16 +303,19 @@ const NewEventForm = () => {
             </Grid>
 
             <Divider sx={{ width: "100%", my: 3 }} />
+
             <Grid item xs={12}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={5}>
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
                   <TextField
-                    fullWidth label="Tag" required name="tag" value={formData.tag}
-                    onChange={handleChange} inputProps={{ maxLength: 50 }} sx={fieldStyle}
+                    fullWidth label="External Link (Optional)" name="externalLink"
+                    value={formData.externalLink} onChange={handleChange} multiline sx={fieldStyle}
+                    placeholder="Enter up to 25 characters"
+                    inputProps={{ maxLength: 25 }}
                   />
                 </Grid>
 
-                <Grid item xs={12} md={3.5}>
+                <Grid item xs={12} md={3}>
                   <Button
                     variant="outlined" component="label" fullWidth
                     startIcon={<UploadFileIcon />}
@@ -306,7 +353,7 @@ const NewEventForm = () => {
                   )}
                 </Grid>
 
-                <Grid item xs={12} md={3.5}>
+                <Grid item xs={12} md={3}>
                   <Button
                     fullWidth startIcon={<StarIcon />} onClick={() => setDialogOpen(true)}
                     sx={{ ...pointsButtonStyle, height: "56px" }}
@@ -317,12 +364,6 @@ const NewEventForm = () => {
               </Grid>
             </Grid>
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth label="External Link (Optional)" name="externalLink"
-                value={formData.externalLink} onChange={handleChange} multiline sx={fieldStyle}
-              />
-            </Grid>
 
             <Grid item xs={12}>
               <TextField
