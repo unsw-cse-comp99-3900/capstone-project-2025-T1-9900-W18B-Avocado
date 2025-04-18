@@ -503,6 +503,94 @@ def get_student_events(student_id, page, filter_type):
         if 'conn' in locals(): conn.close()
 
 
+def get_previous_events(student_id, page, filter_type):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 获取 eventID、checkIn、ticketID
+        cursor.execute(
+            "SELECT eventID, checkIn, ticketID FROM AttendanceData WHERE studentID = %s",
+            (student_id,)
+        )
+        records = cursor.fetchall()
+        if not records:
+            return {
+                "events": [],
+                "page": page,
+                "pageSize": PAGE_SIZE,
+                "totalCount": 0,
+                "totalPages": 0
+            }, 200
+
+        event_checkin_map = {
+            r["eventID"]: {"checkIn": r["checkIn"], "ticketID": r["ticketID"]}
+            for r in records
+        }
+        all_event_ids = list(event_checkin_map.keys())
+        format_strings = ','.join(['%s'] * len(all_event_ids))
+
+        now = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        if filter_type == "current":
+            time_filter = "AND startTime <= %s AND endTime >= %s"
+            filter_values = [now, now]
+        elif filter_type == "previous":
+            time_filter = "AND endTime < %s"
+            filter_values = [now]
+        elif filter_type == "upcoming":
+            time_filter = "AND startTime > %s"
+            filter_values = [now]
+        else:
+            time_filter = ""
+            filter_values = []
+
+        count_sql = f"""
+            SELECT COUNT(*) as total FROM EventData 
+            WHERE eventID IN ({format_strings}) {time_filter}
+        """
+        cursor.execute(count_sql, all_event_ids + filter_values)
+        total_count = cursor.fetchone()['total']
+        total_pages = (total_count + PAGE_SIZE - 1) // PAGE_SIZE
+        offset = (page - 1) * PAGE_SIZE
+
+        query_sql = f"""
+            SELECT * FROM EventData
+            WHERE eventID IN ({format_strings}) {time_filter}
+            ORDER BY startTime DESC
+            LIMIT %s OFFSET %s
+        """
+        cursor.execute(query_sql, all_event_ids + filter_values + [PAGE_SIZE, offset])
+        event_rows = cursor.fetchall()
+
+        enriched_events = []
+        for ev in event_rows:
+            event_id = ev["eventID"]
+            info = event_checkin_map.get(str(event_id), {})
+            enriched_events.append({
+                "eventID": event_id,
+                "name": ev["name"],
+                "location": ev["location"],
+                "startTime": ev["startTime"],
+                "endTime": ev["endTime"],
+                "checkIn": info.get("checkIn", 0),
+                "ticketID": info.get("ticketID"),
+                "tag": ev.get("tag")
+            })
+
+        return {
+            "events": enriched_events,
+            "page": page,
+            "pageSize": PAGE_SIZE,
+            "totalCount": total_count,
+            "totalPages": total_pages
+        }, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
 
 def checkin_event(student_id, event_id):
     try:

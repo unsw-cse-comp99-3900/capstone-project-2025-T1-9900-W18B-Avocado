@@ -8,6 +8,7 @@ from app.services.event_service import delete_event
 from app.services.event_service import register_event
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services.event_service import get_student_events
+from app.services.event_service import get_previous_events
 from app.services.event_service import checkin_event
 from app.services.event_service import redeem_reward
 from app.services.event_service import attend_event
@@ -105,10 +106,24 @@ def my_event():
 
     # 接收分页和过滤参数
     page = request.args.get("page", default=1, type=int)
-    filter_type = request.args.get("filter", default="all", type=str)
+    filter_type = request.args.get("filter", default="previous", type=str)
 
     result, status = get_student_events(student_id, page, filter_type)
     return jsonify(result), status
+
+@event_bp.route("/past_event", methods=["GET"])
+@jwt_required()
+def get_my_events_route():
+    try:
+        identity = get_jwt_identity()
+        student_id = identity.get("studentID")
+        page = int(request.args.get("page", 1))
+        filter_type = request.args.get("filter", "all")
+
+        response, status = get_previous_events(student_id, page, filter_type)
+        return jsonify(response), status
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @event_bp.route("/checkin/<int:event_id>", methods=["PATCH"])
 @jwt_required()
