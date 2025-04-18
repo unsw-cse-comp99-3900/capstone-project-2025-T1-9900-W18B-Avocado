@@ -24,7 +24,7 @@ import PastEventCard from "../../components/PastEventCard";
 import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
-const useMockData = true;
+const useMockData = false;
 const mockEvents = [
   {
     id: 1,
@@ -36,7 +36,10 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event A! ",
     tags: ["Books", "Art"],
-    rewards: 10,
+    rewards: {
+      AC: 5,
+      EC: 10
+    },
     participated: true, 
 
   },
@@ -326,7 +329,7 @@ function MainHomePage() {
             rewards[skillMap[key]] = Number(event[key] || 0);
           }
         }
-  
+
         return {
           id: event.eventID,
           title: event.name,
