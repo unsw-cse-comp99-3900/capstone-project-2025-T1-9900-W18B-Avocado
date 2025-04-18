@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./EventDetailPage.css";
-import { AiOutlineArrowLeft, AiOutlineClockCircle } from "react-icons/ai";
+import formatDate from "../../components/Functions/formatDate";
 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
     Box,
     Typography,
-    Container,
     Grid,
     Button,
     Chip,
@@ -19,7 +17,6 @@ import {
     DialogActions,
     Snackbar,
     Alert,
-    Paper,
     Stack
 } from "@mui/material";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -32,7 +29,6 @@ function EventDetailPage() {
     const navigate = useNavigate();
 
     const [event, setEvent] = useState(null);
-    const [showRewards, setShowRewards] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [snackbarMsg, setSnackbarMsg] = useState("");
@@ -47,13 +43,13 @@ function EventDetailPage() {
             if (savedEvent) {
                 const raw = JSON.parse(savedEvent);
                 if (raw && raw.eventID === numericId) {
-                    // 转换字段结构
                     const rewardKeys = Object.keys(raw).filter(k => skillMap[k]);
-                    const rewards = rewardKeys.reduce((acc, k) => {
-                        acc[skillMap[k]] = raw[k];
-                        return acc;
-                    }, {});
-    
+                    const rewards = rewardKeys.map((abbr) => ({
+                        abbr,
+                        full: skillMap[abbr],
+                        value: raw[abbr],
+                    }));
+
                     const transformed = {
                         id: raw.eventID,
                         title: raw.name,
@@ -66,7 +62,7 @@ function EventDetailPage() {
                         description: raw.description || "",
                         rewards: rewards
                     };
-    
+
                     setEvent(transformed);
                 } else {
                     setError("Event data mismatch or not found.");
@@ -124,108 +120,154 @@ function EventDetailPage() {
     if (error) return <Typography color="error">Error: {error}</Typography>;
 
     return (
-        <Box sx={{ minHeight: "100vh", backgroundColor: "#f4fff1", display: "flex", flexDirection: "column" }}>
-            <Header />
-            <Box sx={{ flexGrow: 1 }}>
-                <Container maxWidth="xl" sx={{ py: 5, px: { xs: 2, sm: 4 }, maxWidth: { xs: "100%", sm: "100%", md: "960px", lg: "1300px" } }}>
-                    <Button
-                        startIcon={<ArrowBackIcon />}
-                        variant="contained"
-                        onClick={() => navigate("/home")}
-                        sx={{ mb: 3, textTransform: "none", fontWeight: "bold", color: "primary", "&:hover": { borderColor: "#1565c0" } }}
-                    >
-                        Back to Home
-                    </Button>
+        <>
+            <Box className="event-detail-page">
+                <Header />
+                <Box className="event-detail-wrapper">
+                    <Box className="event-detail-content" >
+                        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+                            <Button
+                                variant="contained"
+                                onClick={() => navigate("/home")}
+                                className="back-to-dashboard-button"
+                            >
+                                Dashboard
+                            </Button>
+                            <Button
+                                variant="contained"
+                                onClick={() => navigate("/events")}
+                                className="back-to-events-button"
+                            >
+                                Explore Events
+                            </Button>
+                        </Box>
+                        <Box className="event-detail-part1">
+                            <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+                                {event.title}
+                            </Typography>
 
-                    <Paper elevation={4} sx={{ borderRadius: 4, p: 6, bgcolor: "white", minHeight: "72vh", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
-                        <Typography variant="h5" fontWeight="bold" mb={4}>Booking the event</Typography>
-                        <Box sx={{ flexGrow: 1 }}>
-                            <Grid container spacing={4} alignItems="center">
-                                <Grid item xs={12} md={6.5}>
-                                    <Box sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
-                                        <img src={event.image && event.image.trim() !== "" ? `http://localhost:7000${event.image}`: "/WhatsOnLogo.png"} alt={event.title} style={{ width: "100%", borderRadius: 12, objectFit: "cover", marginTop: "10px" }} />
-                                    </Box>
-                                </Grid>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" sx={{ mt: 1, gap: 2, mb: 1, pl: 0.3 }}>
+                                {/* Left: Summary */}
+                                <Typography
+                                    variant="h6"
+                                    color="text.secondary"
+                                    sx={{ flexGrow: 1, minWidth: 200 }}
+                                >
+                                    {event.summary || ""}
+                                </Typography>
 
-                                <Grid item xs={12} md={5}>
-                                    <Box display="flex" flexDirection="column" justifyContent="center" height="100%" gap={2} mt={2}>
-                                        <Box display="flex" justifyContent="center">
-                                            <Typography variant="h5" fontWeight="bold" sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>{event.title}</Typography>
-                                        </Box>
-
-                                        <Typography variant="body1" color="text.secondary">{event.summary || ""}</Typography>
-
-                                        <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
-                                            {(Array.isArray(event.tags) ? event.tags : event.tag ? [event.tag] : []).map((tag, idx) => (
-                                                <Chip key={idx} label={tag} size="big" sx={{ fontSize: "0.7rem", height: "20px", backgroundColor: "#e3f2fd", color: "#1565c0", transition: "0.3s", '&:hover': { backgroundColor: "#bbdefb", transform: "scale(1.1)" } }} />
-                                            ))}
-                                        </Stack>
-
-                                        <Box display="flex" alignItems="center" mb={1} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
-                                            <LocationOnIcon sx={{ mr: 1 }} />
-                                            <Typography variant="body1"><strong>Location:</strong> {event.location || "TBD"}</Typography>
-                                        </Box>
-
-                                        <Box display="flex" alignItems="center" mb={2} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
-                                            <AccessTimeIcon sx={{ mr: 1 }} />
-                                            <Typography variant="body1"><strong>Time:</strong> {new Date(event.time).toLocaleString()} - {new Date(event.end_time).toLocaleString()}</Typography>
-                                        </Box>
-
-                                        <Typography variant="body1" mb={3} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>{event.description || "Join us for a great event!"}</Typography>
-
-                                        <Button variant="contained" sx={{ mt: 2, mb: 3, color: "white", fontWeight: "bold", fontSize: "1rem", transition: "transform 0.2s", '&:hover': { backgroundColor: "#333", transform: "scale(1.02)" } }} onClick={() => setShowRewards(true)}>
-                                            View Earnable Rewards
-                                        </Button>
-                                    </Box>
-
-                                    <Dialog open={showRewards} onClose={() => setShowRewards(false)} BackdropProps={{ sx: { backdropFilter: "blur(3px)" } }} PaperProps={{ sx: { borderRadius: 3, px: 3, py: 2, minWidth: 320 } }}>
-                                        <DialogTitle fontWeight="bold">Earnable Rewards</DialogTitle>
-                                        <DialogContent>
-                                            <ul>
-                                                {typeof event.rewards === "object" ? (
-                                                    Object.entries(event.rewards).map(([cat, pts], idx) => (
-                                                        <li key={idx}><strong>{cat}</strong>: {pts} pts</li>
-                                                    ))
-                                                ) : (
-                                                    <li><strong>Reward</strong>: {event.rewards} pts</li>
-                                                )}
-                                            </ul>
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={() => setShowRewards(false)} variant="outlined">OK</Button>
-                                        </DialogActions>
-                                    </Dialog>
-                                </Grid>
-                            </Grid>
-
-                            <Box mt={7}>
-                                <Button fullWidth variant="contained" sx={{ backgroundColor: "#000", color: "white", fontWeight: "bold", fontSize: "1rem", transition: "transform 0.2s", '&:hover': { backgroundColor: "#333", transform: "scale(1.02)" } }} onClick={handleAttend}>
-                                    Attend
-                                </Button>
+                                {/* Right: Tags */}
+                                <Box display="flex" alignItems="center" flexWrap="wrap" sx={{ gap: 1 }}>
+                                    <Typography variant="body2" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
+                                        <strong>Tag:</strong>
+                                    </Typography>
+                                    <Stack
+                                        direction="row"
+                                        spacing={0.5}
+                                        useFlexGap
+                                        flexWrap="wrap"
+                                        sx={{ flexShrink: 0 }}
+                                    >
+                                        {(Array.isArray(event.tags) ? event.tags : event.tag ? [event.tag] : []).map((tag, idx) => (
+                                            <Chip
+                                                className="event-detail-tag-chip"
+                                                key={`tag-${idx}`}
+                                                label={tag}
+                                                size="small"
+                                            />
+                                        ))}
+                                    </Stack>
+                                </Box>
                             </Box>
                         </Box>
-                    </Paper>
-                </Container>
+                        <Grid container spacing={4} alignItems="center" sx={{ padding: 0.5 }}>
+                            <Grid item xs={12} md={7.5}>
+                                <Box className="event-detail-image-container">
+                                    <img
+                                        src={event.image && event.image.trim() !== "" ? event.image : "/WhatsOnLogo.png"}
+                                        alt={event.title}
+                                        className="event-detail-image"
+                                    />
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={4.5}>
+                                <Box display="flex" flexDirection="column" justifyContent="center" height="100%" gap={2} mt={2}>
+                                    <Box className="event-info-group">
+                                        {/* Time */}
+                                        <Box className="event-info-block">
+                                            <AccessTimeIcon className="event-info-icon" />
+                                            <Box className="event-info-text">
+                                                <Typography variant="subtitle1" sx={{ padding: "5px", fontWeight: "bold", color: " #616161" }}>
+                                                    {formatDate(event.time)} — {formatDate(event.end_time)} AEST
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                        {/* Location */}
+                                        <Box className="event-info-block">
+                                            <LocationOnIcon className="event-info-icon" />
+                                            <Box className="event-info-text">
+                                                <Typography variant="subtitle1" sx={{ padding: "5px", fontWeight: "bold", color: " #616161" }}>
+                                                    {event.location}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Typography variant="body1" className="event-description">
+                                        {event.description || "Join us for a great event!"}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 2, pl: 0.3 }}>
+                            {Array.isArray(event.rewards) &&
+                                event.rewards.map((reward, idx) => (
+                                    <Box
+                                        key={`reward-${idx}`}
+                                        className={`event-reward-label ${reward.abbr}`}
+                                    >
+                                        {reward.full} + {reward.value}
+                                    </Box>
+                                ))}
+                        </Stack>
+                        <Box mt={4} sx={{display:"flex", justifyContent:"center"}}>
+                            <Button variant="contained" className="attend-button" onClick={handleAttend}>
+                                Attend
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
 
                 <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
                     <DialogTitle>{dialogMsg}</DialogTitle>
                     <DialogContent>
-                        {ticketId && <Box sx={{ mt: 1 }}><strong>Ticket Number:</strong> {ticketId}</Box>}
+                        {ticketId && (
+                            <Box sx={{ mt: 1 }}>
+                                <strong>Ticket Number:</strong> {ticketId}
+                            </Box>
+                        )}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setDialogOpen(false)}>Close</Button>
                         {ticketId && (
-                            <Button onClick={() => navigate("/schedule/today")} variant="contained" color="primary">View My Schedule</Button>
+                            <Button onClick={() => navigate("/schedule/today")} variant="contained" color="success">
+                                View My Schedule
+                            </Button>
                         )}
                     </DialogActions>
                 </Dialog>
-
-                <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-                    <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>{snackbarMsg}</Alert>
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={3000}
+                    onClose={() => setOpenSnackbar(false)}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                    <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
+                        {snackbarMsg}
+                    </Alert>
                 </Snackbar>
+                <Footer />
             </Box>
-            <Footer />
-        </Box>
+        </>
     );
 }
 

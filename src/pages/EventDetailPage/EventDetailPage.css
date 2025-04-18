@@ -1,148 +1,232 @@
 .event-detail-page {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* 让整个页面填充满屏幕 */
-    background-color: #DFF0D8;
-}
-.event-detail-container {
-    flex: 1;
-    position: relative;
-    max-width: 1200px; 
-    height:73vh;
-    width: 90vw;
-    margin: 40px auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    min-height: 100vh;
+    background-color: #fff;
     display: flex;
     flex-direction: column;
 }
-.back-button {
+
+.event-detail-wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    padding: 30px 16px 40px;
+}
+
+.event-detail-content {
     width: 100%;
-    display: flex;
-    justify-content: flex-start; /* 让 `back-button` 靠左 */
-    padding-bottom: 10px; /* 增加间距，避免它和 `event-layout` 重叠 */
-}
-
-.event-layout {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-}
-
-/* 左侧 - 图片 */
-.event-image-container {
-    flex: 1;
-    position: relative;
+    max-width: 1000px;
     display: flex;
     flex-direction: column;
+}
 
+/* buttons */
+.back-to-dashboard-button.MuiButton-contained {
+    height: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #a8e847;
+    color: #202020;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .back-to-dashboard-button.MuiButton-contained:hover {
+    background-color: #94d43c;
+    color: azure;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .back-to-events-button.MuiButton-contained {
+    height: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #235858;
+    color: #94d43c;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .back-to-events-button.MuiButton-contained:hover {
+    background-color: #1c4747;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+
+  .event-detail-image-container {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+  }
+  
+  .event-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+
+.event-detail-part1 {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
-.event-detail-container .event-image {
-    width: 100%;
-    height: 90%;
-    object-fit: cover;
-    border-radius: 10px;
+.event-detail-tag-chip {
+    font-size: 0.7rem;
+    height: 20px;
+    background-color: #e3f2fd;
+    color: #1565c0;
+    transition: 0.3s;
 }
-.event-booking {
-    text-align: left;
-    color: black;
-    padding: 8px 12px;
-    font-size: 22px;
-    font-weight: bold;
-    border-radius: 5px;
-    margin-bottom: 20px;
+
+.event-detail-tag-chip:hover {
+    background-color: #bbdefb;
+    transform: scale(1.1);
 }
-/* 右侧 - 详情 */
-.event-info-container {
-    flex: 1;
+
+.event-info-group {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 10px;
+    margin-top: 5px;
+  }
+  
+  .event-info-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .event-info-icon {
+    color: #616161;
+    margin-top: 5.5px;
+    font-size: 19px;
+  }
+
+  
+  .event-info-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+
+.event-description {
+    margin-bottom: 24px;
 }
 
-.event-title {
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-
-.event-summary {
-    font-size: 18px;
-    color: gray;
-}
-
-.event-tags {
-    margin-top: 10px;
-}
-
-.tag {
-    background: #007bff;
+.reward-button {
+    margin-top: 16px;
+    margin-bottom: 24px;
     color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #1976d2;
+    transition: transform 0.2s;
 }
 
-/* 详情信息 */
-.event-details p {
-    font-size: 16px;
-    margin: 5px 0;
+.reward-button:hover {
+    background-color: #333;
+    transform: scale(1.02);
 }
 
-/* 按钮 */
-.rewards-button, .attend-button {
-    width: 100%;
-    padding: 10px;
-    font-size: 18px;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.attend-button {
+.attend-button.MuiButton-contained {
+    width: 40%;
+    height: 48px;
+    font-weight: bold;
+    font-size: 1.4rem;
     background-color: black;
+    color: #a8e847;
+    transition: transform 0.2s;
 }
 
-/* 弹出的奖励框 */
-.rewards-popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    width: 400px;
-    text-align: center;
+.attend-button.MuiButton-contained:hover { 
+    border: 2px solid black;
+    color: black;
+    background-color: #a8e847;
+    transform: scale(1.02);
 }
 
-.rewards-content ul {
-    list-style: none;
-    padding: 0;
+.event-detail-tag-chip {
+    background-color: #a8e847 !important;
+    color: #235858 !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    height: 26px !important;
+    border: 1px solid #a8e847 !important;
+    border-radius: 8px !important;
+  }
+  
+.event-detail-tag-chip:hover {
+    transform: scale(1.05);
 }
 
-.rewards-content li {
-    font-size: 18px;
-    margin: 10px 0;
-}
-
-.close-button {
-    padding: 10px;
-    font-size: 16px;
+.event-reward-label {
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: black;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    line-height: 1.6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: background-color 0.2s ease;
+  }
+  
+  
+  .event-reward-label.AC {
+    background-color: #184e77;
     color: white;
-    background-color: red;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
+  }
+  
+  .event-reward-label.AP {
+    background-color: #1e6091;
+    color: white;
+  }
+  
+  .event-reward-label.CT {
+    background-color: #1a759f;
+    color: white;
+  }
+  
+  .event-reward-label.EC {
+    background-color: #168aad;
+    color: white;
+  }
+  
+  .event-reward-label.EI {
+    background-color: #34a0a4;
+    color: white;
+  }
+  
+  .event-reward-label.LT {
+    background-color: #52b69a;
+  }
+  
+  .event-reward-label.NP {
+    background-color: #76c893;
+  }
+  
+  .event-reward-label.PM {
+    background-color: #99d98c;
+  }
+  
+  .event-reward-label.PR {
+    background-color: #b5e48c;
+  }
+  
+  .event-reward-label.SM {
+    background-color: #d9ed92;
+  }
+  
+
+.event-reward-label:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
 }
