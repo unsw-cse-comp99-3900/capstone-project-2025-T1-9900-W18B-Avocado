@@ -23,6 +23,8 @@ import FixedCell from "./FixedCell";
 import SwitchUserStatusDialog from "./Dialogs/SwitchUserStatusDialog";
 import UserInfoDialog from "./Dialogs/UserInfoDialog";
 import HorizontalScrollBox from "./Styles/HorizontalScrollBox";
+import { ErrAlert, SuccessAlert } from "../AlertFormats";
+import { getErrorMessage } from "../Functions/getErrorMessage";
 
 const statusInfoMap = {
   active: { label: "Active", color: "success" },
@@ -35,7 +37,7 @@ function UserListTable() {
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedIDs, setSelectedIDs] = useState([]);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, type: "", message: "" });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [pendingUser, setPendingUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -52,8 +54,24 @@ function UserListTable() {
           },
         }
       );
-      if (!response.ok) throw new Error("Network error or unauthenticated");
-      const data = await response.json();
+
+      const status = response.status;
+      let data = {};
+      let message = "";
+
+      try {
+        data = await response.json();
+      } catch {
+        message = `Unexpected error (${status})`;
+      }
+
+      if (!response.ok) {
+        message = getErrorMessage(status, data);
+        setSnackbar({ open: true, type: "error", message });
+        setUsers([]);
+        setTotalCount(0);
+        return;
+      }
 
       setUsers(data.users);
       setTotalCount(data.totalCount || data.users.length);
@@ -61,13 +79,17 @@ function UserListTable() {
       console.error("Failed to fetch users", err);
       setUsers([]);
       setTotalCount(0);
-      setErrorMsg("❌ Network error: Unable to fetch users.");
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Network error. Please try again.",
+      });
     }
   };
 
+
   useEffect(() => {
     fetchUsers();
-    setErrorMsg("");
   }, [searchTerm, page]);
 
   const handleChangePage = (_, newPage) => setPage(newPage - 1);
@@ -82,18 +104,32 @@ function UserListTable() {
     try {
       const res = await fetch("http://localhost/toggle_user", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-         },
+        },
         body: JSON.stringify({ userID: pendingUser.studentID }),
       });
-      if (!res.ok) throw new Error("Single toggle failed");
+      const status = res.status;
+      if (!res.ok) {
+        const message = getErrorMessage(status, {});
+        setSnackbar({ open: true, type: "error", message });
+        return;
+      }
+      setSnackbar({
+        open: true,
+        type: "success",
+        message: "User status updated successfully!",
+      });
       await fetchUsers();
       setSelectedIDs([]);
     } catch (err) {
       console.error("Toggle failed", err);
-      setErrorMsg("❌ Failed to update user.");
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Network error. Please try again.",
+      });
     } finally {
       setConfirmDialogOpen(false);
       setPendingUser(null);
@@ -119,12 +155,27 @@ function UserListTable() {
         },
         body: JSON.stringify({ userIDs: selectedIDs }),
       });
-      if (!res.ok) throw new Error("Batch toggle failed");
+      const status = res.status;
+
+      if (!res.ok) {
+        const message = getErrorMessage(status, {});
+        setSnackbar({ open: true, type: "error", message });
+        return;
+      }
+      setSnackbar({
+        open: true,
+        type: "success",
+        message: "Users status updated successfully!",
+      });
       await fetchUsers();
       setSelectedIDs([]);
     } catch (err) {
-      console.error("Batch toggle error", err);
-      setErrorMsg("❌ Failed to update selected user statuses.");
+      console.error("Toggle failed", err);
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Network error. Please try again.",
+      });
     }
   };
 
@@ -133,11 +184,6 @@ function UserListTable() {
       <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
         <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
           <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Manage Users</Typography>
-          {errorMsg && (
-            <Typography variant="body2" color="error" sx={{ maxWidth: 400, wordBreak: "break-word" }}>
-              {errorMsg}
-            </Typography>
-          )}
         </Box>
         <Divider sx={{ my: 2 }} />
 
@@ -242,6 +288,8 @@ function UserListTable() {
           />
         </Box>
       </Paper>
+      {snackbar.type === "error" && <ErrAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
+      {snackbar.type === "success" && <SuccessAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
 
       <SwitchUserStatusDialog
         open={confirmDialogOpen}

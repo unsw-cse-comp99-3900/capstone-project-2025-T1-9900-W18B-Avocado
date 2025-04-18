@@ -17,20 +17,23 @@ import StarIcon from "@mui/icons-material/Star";
 import { SubmitButton, ResetButton } from "./FormButtons";
 import SkillPointsDialog from "./Dialogs/SkillPointsDialog";
 import { fieldStyle, uploadButtonStyle, pointsButtonStyle } from "./Styles/EventFormStyles";
+import { ErrAlert, SuccessAlert } from "../AlertFormats";
+import { getErrorMessage } from "../Functions/getErrorMessage";
 
 
-const validateTimes = (formData, setErrorMsg) => {
+const validateTimes = (formData, setError) => {
   const now = new Date();
   const startTime = new Date(formData.start);
   const endTime = new Date(formData.end);
 
   if (endTime <= startTime) {
-    setErrorMsg("❌ End time must be after start time.");
+    setError("End time must be after start time.");
     return false;
   }
 
   return true;
 };
+
 
 const skills = [
   "Effective Communication",
@@ -72,9 +75,7 @@ const NewEventForm = () => {
     skills.reduce((acc, skill) => ({ ...acc, [skill]: 0 }), {})
   );
   const [selectedValue, setSelectedValue] = useState("");
-
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, type: "", message: "" });
 
 
   const handleTagChange = (e) => {
@@ -86,12 +87,10 @@ const NewEventForm = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrorMsg("");
   };
 
   const handleSkillChange = (skill) => (e) => {
     setSkillPoints({ ...skillPoints, [skill]: e.target.value });
-    setErrorMsg("");
   };
 
   const handleFileUpload = (e) => {
@@ -140,9 +139,9 @@ const NewEventForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
-    if (!validateTimes(formData, setErrorMsg)) return;
+    setSnackbar({ open: false, type: "", message: "" });
+
+    if (!validateTimes(formData, (msg) => setSnackbar({ open: true, type: "error", message: msg }))) return;
 
     const fullFormData = {
       ...formData,
@@ -180,17 +179,19 @@ const NewEventForm = () => {
       });
 
       const data = await response.json();
+      const status = response.status;
+      
       if (response.ok) {
-        setSuccessMsg("✅ " + (data.message || "Event created successfully!"));
-        setTimeout(() => console.log("navigate to somewhere"), 2000);
+        setSnackbar({ open: true, type: "success", message: data.message || "Event created successfully!" });
         handleReset();
       } else {
-        setErrorMsg("❌ " + (data.error || "An error occurred."));
+        const message = getErrorMessage(status, data);
+        setSnackbar({ open: true, type: "error", message });
       }
     } catch (error) {
-      setErrorMsg("❌ Network error. Please try again.");
+      setSnackbar({ open: true, type: "error", message: "Network error. Please try again." });
     }
-  };
+  }
 
   const handleReset = () => {
     setFormData({
@@ -232,8 +233,8 @@ const NewEventForm = () => {
         </Typography>
         <Divider sx={{ my: 2 }} />
 
-        {errorMsg && <Typography color="error" mb={2}>{errorMsg}</Typography>}
-        {successMsg && <Typography color="success.main" mb={2}>{successMsg}</Typography>}
+        {snackbar.type === "error" && <ErrAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
+        {snackbar.type === "success" && <SuccessAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
 
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>

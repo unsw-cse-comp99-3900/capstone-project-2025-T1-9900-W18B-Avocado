@@ -29,6 +29,8 @@ import EditEventDialog from "./Dialogs/EditEventDialog";
 import HorizontalScrollBox from "./Styles/HorizontalScrollBox";
 
 import formatDate from "../Functions/formatDate";
+import { ErrAlert, SuccessAlert } from "../AlertFormats";
+import { getErrorMessage } from "../Functions/getErrorMessage";
 
 const mockData = {
   events: [
@@ -124,8 +126,8 @@ function getEventStatus(start, end) {
 }
 
 const processEvent = (e, filterStatus) => {
-  const status = filterStatus === "All" ? getEventStatus(e.startTime, e.endTime) : statusInfoMap[filterStatus.toLowerCase()];
-  return { ...e, status };
+  const statusInfo = filterStatus === "All" ? getEventStatus(e.startTime, e.endTime) : statusInfoMap[filterStatus.toLowerCase()];
+  return { ...e, statusInfo };
 };
 
 function EventListTable({ isStatic = false }) {
@@ -135,7 +137,7 @@ function EventListTable({ isStatic = false }) {
   const rowsPerPage = 10;
   const [events, setEvents] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, type: "", message: "" });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -167,19 +169,31 @@ function EventListTable({ isStatic = false }) {
         },
         body: JSON.stringify({ eventIDs: selectedEventIDs }),
       });
-  
+
+      const status = response.status;
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        const message = getErrorMessage(status, data);
+        setSnackbar({ open: true, type: "error", message });
+      } else {
+        setSnackbar({
+          open: true,
+          type: "success",
+          message: data.message || "Selected events deleted successfully.",
+        });
+        setSelectedEventIDs([]);
+        await fetchEvents();
       }
-  
-      setSelectedEventIDs([]);
-      await fetchEvents();
     } catch (error) {
-      console.error("Batch delete failed:", error);
-      alert("Failed to delete events. Please try again.");
+      console.error("Network error:", error);
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Network error. Please try again.",
+      });
     }
-  };  
+  };
 
   const fetchEvents = async () => {
     try {
@@ -195,19 +209,24 @@ function EventListTable({ isStatic = false }) {
       } else {
         const filterType = filterStatus.toLowerCase();
         const response = await fetch(
-          `http://localhost:7000/event_list?filter=${filterType}&page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`, 
+          `http://localhost:7000/event_list?filter=${filterType}&page=${page + 1}&limit=${rowsPerPage}&search=${searchTerm}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           });
         if (!response.ok) {
+          const status = response.status;
           const data = await response.json();
-          setErrorMsg(data.error || `❌ Error ${response.status}: Failed to fetch events.`);
+
+          const message = getErrorMessage(status, data);
+          setSnackbar({ open: true, type: "error", message });
+
           setEvents([]);
           setTotalCount(0);
           return;
         }
+
         const data = await response.json();
         const processed = data.events.map((e) => processEvent(e, filterStatus));
         setEvents(processed);
@@ -217,19 +236,17 @@ function EventListTable({ isStatic = false }) {
       console.error("Failed to fetch events", err);
       setEvents([]);
       setTotalCount(0);
-      setErrorMsg("❌ Network error: Unable to fetch events.");
+      setSnackbar({ open: true, type: "error", message: "Network error. Please try again." });
     }
   };
 
   useEffect(() => {
     fetchEvents();
-    setErrorMsg("");
   }, [filterStatus, page, isStatic, searchTerm]);
-  
+
   // delete event
   const handleDeleteConfirm = async () => {
     if (!selectedEvent?.eventID) return;
-  
     try {
       const response = await fetch(
         `http://localhost:7000/admin/delete_event/${selectedEvent.eventID}`,
@@ -240,21 +257,23 @@ function EventListTable({ isStatic = false }) {
           },
         }
       );
-  
+      const status = response.status;
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("❌ Failed to delete event:", errorData);
+        const message = getErrorMessage(status, data);
+        setSnackbar({ open: true, type: "error", message });
       } else {
-        console.log("✅ Event deleted:", selectedEvent.eventID);
+        setSnackbar({ open: true, type: "success", message: "Event deleted successfully." });
         await fetchEvents();
       }
     } catch (error) {
-      console.error("❌ Network error:", error);
+      console.error("Network error:", error);
+      setSnackbar({ open: true, type: "error", message: "Network error. Please try again." });
     }
-  
     setDeleteDialogOpen(false);
     setSelectedEvent(null);
-  };  
+  };
 
   // edit event
   const handleEditConfirm = async (formData, eventID) => {
@@ -266,79 +285,78 @@ function EventListTable({ isStatic = false }) {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-  
+
+      const status = response.status;
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("❌ Failed to update event:", errorData);
+        const message = getErrorMessage(status, data);
+        setSnackbar({ open: true, type: "error", message });
       } else {
-        console.log("✅ Event updated:", eventID);
+        setSnackbar({ open: true, type: "success", message: data.message || "Event updated successfully!" });
         await fetchEvents();
       }
     } catch (error) {
-      console.error("❌ Network error:", error);
+      console.error("Network error:", error);
+      setSnackbar({ open: true, type: "error", message: "Network error. Please try again." });
     }
-  
+
     setEditDialogOpen(false);
     setSelectedEvent(null);
   };
-  
+
 
   return (
     <Box>
       <Paper elevation={3} sx={{ borderRadius: 2, p: 2, width: "100%", overflow: "hidden" }}>
         {/* Title + Divider + Error */}
-          <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-            <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Manage Events</Typography>
-            {errorMsg && (
-              <Typography variant="body2" color="error" sx={{ maxWidth: 400, wordBreak: "break-word" }}>
-                {errorMsg}
-              </Typography>
-            )}
-          </Box>
-          <Divider sx={{ my: 2 }} />
-  
-        {/* Filter Row + Buttons */} 
+        <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Manage Events</Typography>
+        </Box>
+        <Divider sx={{ my: 2 }} />
+
+        {/* Filter Row + Buttons */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={2}>
           <Box display="flex" gap={1}>
-              <Button size="small" variant="outlined" onClick={handleSelectAll}>Select All</Button>
-              <Button size="small" variant="outlined" color="error" onClick={handleUnselectAll}>Unselect All</Button>
-              <Button
-                size="small"
-                variant="contained"
-                color="error"
-                onClick={handleBatchDelete}
-                disabled={selectedEventIDs.length === 0}
+            <Button size="small" variant="outlined" onClick={handleSelectAll}>Select All</Button>
+            <Button size="small" variant="outlined" color="error" onClick={handleUnselectAll}>Unselect All</Button>
+            <Button
+              size="small"
+              variant="contained"
+              color="error"
+              onClick={handleBatchDelete}
+              disabled={selectedEventIDs.length === 0}
+            >
+              Delete Selected
+            </Button>
+          </Box>
+          <Box display="flex" gap={2}>
+            <TextField
+              size="small"
+              label="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Event Name"
+            />
+            <FormControl size="small" sx={{ minWidth: 140 }}>
+              <InputLabel>Status</InputLabel>
+              <Select
+                label="Status"
+                value={filterStatus}
+                onChange={(e) => {
+                  setFilterStatus(e.target.value);
+                  setPage(0);
+                }}
               >
-                Delete Selected
-              </Button>
-            </Box>
-            <Box display="flex" gap={2}>
-              <TextField
-                size="small"
-                label="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Event Name"
-              />
-              <FormControl size="small" sx={{ minWidth: 140 }}>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  label="Status"
-                  value={filterStatus}
-                  onChange={(e) => {
-                    setFilterStatus(e.target.value);
-                    setPage(0);
-                  }}
-                >
-                  <MenuItem value="All">All</MenuItem>
-                  <MenuItem value="Upcoming">Upcoming</MenuItem>
-                  <MenuItem value="Current">Current</MenuItem>
-                  <MenuItem value="Previous">Previous</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Upcoming">Upcoming</MenuItem>
+                <MenuItem value="Current">Current</MenuItem>
+                <MenuItem value="Previous">Previous</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
-  
+
         {/* Table */}
         <HorizontalScrollBox>
           <Table size="small" sx={{ minWidth: "950px", width: "100%" }}>
@@ -373,7 +391,7 @@ function EventListTable({ isStatic = false }) {
                   <FixedCell width="20%" minWidth={150}>{formatDate(event.startTime)}</FixedCell>
                   <FixedCell width="20%" minWidth={150}>{formatDate(event.endTime)}</FixedCell>
                   <FixedCell width="15%" minWidth={100}>
-                    <Chip label={event.status.label} color={event.status.color} size="small" variant="outlined" />
+                    <Chip label={event.statusInfo.label} color={event.statusInfo.color} size="small" variant="outlined" />
                   </FixedCell>
                   <FixedCell width="10%" minWidth={80} align="center">
                     <Tooltip title="Edit">
@@ -402,7 +420,7 @@ function EventListTable({ isStatic = false }) {
             </TableBody>
           </Table>
         </HorizontalScrollBox>
-  
+
         {/* Pagination */}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination
@@ -415,7 +433,9 @@ function EventListTable({ isStatic = false }) {
           />
         </Box>
       </Paper>
-  
+      {snackbar.type === "error" && <ErrAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
+      {snackbar.type === "success" && <SuccessAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
+
       {/* Dialogs */}
       <DeleteEventDialog
         open={deleteDialogOpen}
@@ -431,7 +451,7 @@ function EventListTable({ isStatic = false }) {
       />
     </Box>
   );
-  
+
 }
 
 export default EventListTable;

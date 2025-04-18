@@ -5,6 +5,8 @@ import formatDate from "../../components/Functions/formatDate";
 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { ErrAlert, SuccessAlert } from "../../components/AlertFormats";
+
 import {
     Box,
     Typography,
@@ -15,8 +17,6 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Snackbar,
-    Alert,
     Stack
 } from "@mui/material";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -31,8 +31,7 @@ function EventDetailPage() {
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [snackbarMsg, setSnackbarMsg] = useState("");
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbar, setSnackbar] = useState({ open: false, type: "", message: "" });
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState("");
     const [ticketId, setTicketId] = useState(null);
@@ -96,13 +95,11 @@ function EventDetailPage() {
                 setTicketId(result.ticketId || "N/A");
                 setDialogOpen(true);
             } else {
-                setSnackbarMsg(result.error || "Registration failed.");
-                setOpenSnackbar(true);
+                setSnackbar({ open: true, type: "error", message: "Registration failed." });
             }
         } catch (error) {
             console.error("Network error:", error);
-            setSnackbarMsg("Network error. Please try again later.");
-            setOpenSnackbar(true);
+            setSnackbar({ open: true, type: "error", message: "Network error. Please try again." });
         }
     };
 
@@ -110,8 +107,7 @@ function EventDetailPage() {
         const now = new Date();
         const end = new Date(event.end_time);
         if (end < now) {
-            setSnackbarMsg("This event has already ended.");
-            setOpenSnackbar(true);
+            setSnackbar({ open: true, type: "error", message: "This event has already ended." });
             return;
         }
         sendRegistrationsToBackend(numericId);
@@ -269,16 +265,7 @@ function EventDetailPage() {
                         )}
                     </DialogActions>
                 </Dialog>
-                <Snackbar
-                    open={openSnackbar}
-                    autoHideDuration={3000}
-                    onClose={() => setOpenSnackbar(false)}
-                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                >
-                    <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
-                        {snackbarMsg}
-                    </Alert>
-                </Snackbar>
+                {snackbar.type === "error" && <ErrAlert open={snackbar.open} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />}
                 <Footer />
             </Box>
         </>
