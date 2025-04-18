@@ -145,42 +145,30 @@ function EventDetailPage() {
                             <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
                                 {event.title}
                             </Typography>
-
-                            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" sx={{ mt: 1, gap: 2, mb: 1, pl: 0.3 }}>
-                                {/* Left: Summary */}
-                                <Typography
-                                    variant="h6"
-                                    color="text.secondary"
-                                    sx={{ flexGrow: 1, minWidth: 200 }}
-                                >
-                                    {event.summary || ""}
+                            {/* Right: Tags */}
+                            <Box display="flex" alignItems="center" justifyContent="flex-end" flexWrap="wrap" sx={{ gap: 1, pr: 0.5, mb: 1 }}>
+                                <Typography variant="body2" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
+                                    <strong>Tag:</strong>
                                 </Typography>
-
-                                {/* Right: Tags */}
-                                <Box display="flex" alignItems="center" flexWrap="wrap" sx={{ gap: 1 }}>
-                                    <Typography variant="body2" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
-                                        <strong>Tag:</strong>
-                                    </Typography>
-                                    <Stack
-                                        direction="row"
-                                        spacing={0.5}
-                                        useFlexGap
-                                        flexWrap="wrap"
-                                        sx={{ flexShrink: 0 }}
-                                    >
-                                        {(Array.isArray(event.tags) ? event.tags : event.tag ? [event.tag] : []).map((tag, idx) => (
-                                            <Chip
-                                                className="event-detail-tag-chip"
-                                                key={`tag-${idx}`}
-                                                label={tag}
-                                                size="small"
-                                            />
-                                        ))}
-                                    </Stack>
-                                </Box>
+                                <Stack
+                                    direction="row"
+                                    spacing={0.5}
+                                    useFlexGap
+                                    flexWrap="wrap"
+                                    sx={{ flexShrink: 0 }}
+                                >
+                                    {(Array.isArray(event.tags) ? event.tags : event.tag ? [event.tag] : []).map((tag, idx) => (
+                                        <Chip
+                                            className="event-detail-tag-chip"
+                                            key={`tag-${idx}`}
+                                            label={tag}
+                                            size="small"
+                                        />
+                                    ))}
+                                </Stack>
                             </Box>
                         </Box>
-                        <Grid container spacing={4} alignItems="center" sx={{ padding: 0.5 }}>
+                        <Grid container spacing={4} alignItems="flex-start" sx={{ padding: 0.5 }}>
                             <Grid item xs={12} md={7.5}>
                                 <Box className="event-detail-image-container">
                                     <img
@@ -191,7 +179,7 @@ function EventDetailPage() {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} md={4.5}>
-                                <Box display="flex" flexDirection="column" justifyContent="center" height="100%" gap={2} mt={2}>
+                                <Box className="event-detail-part2">
                                     <Box className="event-info-group">
                                         {/* Time */}
                                         <Box className="event-info-block">
@@ -212,24 +200,31 @@ function EventDetailPage() {
                                             </Box>
                                         </Box>
                                     </Box>
-                                    <Typography variant="body1" className="event-description">
-                                        {event.description || "Join us for a great event!"}
+                                    <Typography
+                                        variant="h5"
+                                        color="text.secondary"
+                                        sx={{ minWidth: "300px", mt: 3,mb:3, display: "flex", justifyContent: "center", alignItems: "center" }}
+                                    >
+                                        {event.summary || ""}
                                     </Typography>
+                                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1, pl: 0.3 }}>
+                                        {Array.isArray(event.rewards) &&
+                                            event.rewards.map((reward, idx) => (
+                                                <Box
+                                                    key={`reward-${idx}`}
+                                                    className={`event-reward-label ${reward.abbr}`}
+                                                >
+                                                    {reward.full} + {reward.value}
+                                                </Box>
+                                            ))}
+                                    </Stack>
                                 </Box>
                             </Grid>
                         </Grid>
-                        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 2, pl: 0.3 }}>
-                            {Array.isArray(event.rewards) &&
-                                event.rewards.map((reward, idx) => (
-                                    <Box
-                                        key={`reward-${idx}`}
-                                        className={`event-reward-label ${reward.abbr}`}
-                                    >
-                                        {reward.full} + {reward.value}
-                                    </Box>
-                                ))}
-                        </Stack>
-                        <Box mt={4} sx={{display:"flex", justifyContent:"center"}}>
+                        <Typography variant="h6" className="event-description">
+                            {event.description || "Join us for a great event!"}
+                        </Typography>
+                        <Box mt={4} sx={{ display: "flex", justifyContent: "center" }}>
                             <Button variant="contained" className="attend-button" onClick={handleAttend}>
                                 Attend
                             </Button>
