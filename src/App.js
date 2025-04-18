@@ -20,6 +20,8 @@ import AdminHomePage from "./pages/AdminHomePage/AdminHomePage";
 import MyRewardsPage from "./pages/MyRewardsPage/MyRewardsPage"; 
 import RewardHistoryPage from "./pages/RewardHistoryPage/RewardHistoryPage";
 
+import RecommendEventPage from './pages/RecommendEventsPage/RecommendEventsPage'; // Recommend Page - YJL
+
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
@@ -43,9 +45,10 @@ const App = () => {
           <Route path="/reward-history" element={<RewardHistoryPage />} />
           
           <Route path="/career-coach" element={<CoachPage />} /> 
+          <Route path="/recommend-events" element={<RecommendEventPage />} />
           {/* <Route path="/search" element={<SearchPage />} />
           <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/recommend-events" element={<RecommendEventPage />} /> */}
+           */}
 
         </Routes>
       </Router>
