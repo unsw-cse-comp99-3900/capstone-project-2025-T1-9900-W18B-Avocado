@@ -96,7 +96,7 @@ function SchedulePage() {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://localhost:7000/my_event?filter=${category}&page=${page}`,
+          `http://localhost:7000/past_event?filter=${category}&page=${page}`,
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("token"),
@@ -222,7 +222,7 @@ function SchedulePage() {
                       "&:nth-of-type(odd)": { backgroundColor: "#fafafa" },
                     }}
                   >
-                    <TableCell>{event.eventID}</TableCell>
+                    <TableCell>{event.ticketID}</TableCell>
                     <TableCell>{event.name}</TableCell>
                     <TableCell>{formatDate(event.startTime)}</TableCell>
                     <TableCell>{formatDate(event.endTime)}</TableCell>
