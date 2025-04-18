@@ -20,10 +20,11 @@ import {
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
+import PastEventCard from "../../components/PastEventCard";
 import EventCard from "../../components/EventCard";
 import LandingSection from "../../components/LandingSection";
 
-const useMockData = false;
+const useMockData = true;
 const mockEvents = [
   {
     id: 1,
@@ -62,7 +63,7 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event 3!",
     tags: ["Books"],
-    rewards: { "AC": 5, "EC": 10 },
+    rewards: { "AC": 5, "EC": 10 , "NP":1, "PR":2 },
     participated: true,
   },
   {
@@ -237,7 +238,7 @@ function MainHomePage() {
   const navigate = useNavigate();
   const [showLoginAlert, setShowLoginAlert] = useState(false);
   
-  useEffect(() => {
+  /*useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       setShowLoginAlert(true); // 显示提示
@@ -246,7 +247,7 @@ function MainHomePage() {
       }, 2000); // 2秒后跳转
     }
   }, []);
-  
+  */
 
   const shortcutsData = [
     { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
@@ -382,7 +383,14 @@ function MainHomePage() {
 
       <LandingSection />
       <div className="homepage" id="event-section" sx={{ background: "#e6f4e6", minHeight: "100vh" }}>
-        <Container maxWidth="xl">
+      <Container
+          maxWidth={false}
+          sx={{
+            px: { xs: 2, sm: 4, md: 8, xl: 15 }, // ✅ 左右padding适配不同屏幕
+            maxWidth: "1800px", // ✅ 给大屏限制一个最大宽度
+            mx: "auto" // ✅ 居中显示
+          }}
+        >
           {/* Shortcuts */}
           <Stack direction="row" spacing={1} justifyContent="center" mb={6}>
             {shortcutsData.map((s, idx) => (
@@ -427,17 +435,17 @@ function MainHomePage() {
           <Typography variant="h4" fontWeight="bold" textAlign="center" margin={6}>My Past Events</Typography>
           <Grid container spacing={2} rowSpacing={1}>
             {pastEvents.map(event => (
-              <Grid item key={event.id} xs={12} sm={6} lg={3} mb={8}>
+              <Grid item key={event.id} xs={12} sm={6} lg={6} mb={8}>
                 <Link to={`/event/${event.id}`} style={{ textDecoration: "none" }} onClick={() => localStorage.setItem("eventDetail", JSON.stringify(event))}>
-                  <EventCard
+                  <PastEventCard
                     image={event.image}
                     title={event.title}
                     summary={event.summary}
                     time={event.time}
-                    endTime={event.endTime}
+                    endtime={event.endTime}
                     location={event.location}
                     tags={event.tags}
-                    variant="popup"
+                    rewards={event.rewards}
                   />
                 </Link>
               </Grid>
