@@ -60,7 +60,8 @@ function EventDetailPage() {
                         location: raw.location,
                         tags: raw.tag,
                         description: raw.description || "",
-                        rewards: rewards
+                        rewards: rewards,
+                        organizer: raw.organizer
                     };
 
                     setEvent(transformed);
@@ -125,22 +126,36 @@ function EventDetailPage() {
                 <Header />
                 <Box className="event-detail-wrapper">
                     <Box className="event-detail-content" >
-                        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-                            <Button
-                                variant="contained"
-                                onClick={() => navigate("/home")}
-                                className="back-to-dashboard-button"
-                            >
-                                Dashboard
-                            </Button>
-                            <Button
-                                variant="contained"
-                                onClick={() => navigate("/events")}
-                                className="back-to-events-button"
-                            >
-                                Explore Events
-                            </Button>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", mb: 2 }}>
+                            {/* 左边按钮组 */}
+                            <Box sx={{ display: "flex", gap: 1 }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => navigate("/home")}
+                                    className="back-to-dashboard-button"
+                                >
+                                    Dashboard
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => navigate("/events")}
+                                    className="back-to-events-button"
+                                >
+                                    Explore Events
+                                </Button>
+                            </Box>
+
+                            {/* 右边 Hosted By */}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: { xs: 1, md: 0 } }}>
+                                <Typography variant="body2" fontWeight={600}>
+                                    Hosted By{" "}
+                                    <Typography component="span" variant="body1" sx={{ color: "#235858", fontWeight: 600, pr: 1 }}>
+                                        {event.organizer}
+                                    </Typography>
+                                </Typography>
+                            </Box>
                         </Box>
+
                         <Box className="event-detail-part1">
                             <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
                                 {event.title}
@@ -200,24 +215,28 @@ function EventDetailPage() {
                                             </Box>
                                         </Box>
                                     </Box>
+
                                     <Typography
                                         variant="h5"
                                         color="text.secondary"
-                                        sx={{ minWidth: "300px", mt: 3,mb:3, display: "flex", justifyContent: "center", alignItems: "center" }}
+                                        sx={{ minWidth: "300px", mt: 3, mb: 2, display: "flex", justifyContent: "center", alignItems: "center" }}
                                     >
                                         {event.summary || ""}
                                     </Typography>
-                                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1, pl: 0.3 }}>
+                                    <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
                                         {Array.isArray(event.rewards) &&
-                                            event.rewards.map((reward, idx) => (
-                                                <Box
-                                                    key={`reward-${idx}`}
-                                                    className={`event-reward-label ${reward.abbr}`}
-                                                >
-                                                    {reward.full} + {reward.value}
-                                                </Box>
-                                            ))}
+                                            [...event.rewards]
+                                                .sort((a, b) => b.value - a.value)
+                                                .map((reward, idx) => (
+                                                    <Box
+                                                        key={`reward-${idx}`}
+                                                        className={`event-reward-label ${reward.abbr}`}
+                                                    >
+                                                        {reward.full} + {reward.value}
+                                                    </Box>
+                                                ))}
                                     </Stack>
+
                                 </Box>
                             </Grid>
                         </Grid>
