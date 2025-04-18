@@ -140,7 +140,7 @@ export default function AccountMenu() {
             <ListItemIcon>
               <AiOutlineRadarChart fontSize="20px" />
             </ListItemIcon>
-            Career Coach
+            Recommend Events
           </MenuItem>,
 
           <Divider key="divider-bottom" />
