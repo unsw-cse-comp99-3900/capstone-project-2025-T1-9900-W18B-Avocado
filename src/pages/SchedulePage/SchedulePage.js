@@ -37,10 +37,10 @@ function formatDate(dateStr) {
 }
 
 function getEventStatusLabel(event) {
-  return event.checkIn === 1 ? (
-    <Chip label="Checked In" color="success" size="small" variant="outlined" />
+  return event.checkIn === 0 ? (
+    <Chip label="Check In" color="success" size="small" variant="outlined" />
   ) : (
-    <Chip label="Not Checked In" color="default" size="small" variant="outlined" />
+    <Chip label="Completed" color="default" size="small" variant="outlined" />
   );
 }
 

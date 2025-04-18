@@ -160,7 +160,7 @@ function EventListTable({ isStatic = false }) {
   const handleBatchDelete = async () => {
     try {
       const response = await fetch("http://localhost:7000/admin/delete_selected", {
-        method: "DELETE",
+        method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",

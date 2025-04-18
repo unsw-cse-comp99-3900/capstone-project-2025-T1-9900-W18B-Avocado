@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link,useNavigate } from "react-router-dom";
 import "./EventDetailPage.css";
 import { AiOutlineArrowLeft, AiOutlineClockCircle } from "react-icons/ai";
 
@@ -20,25 +20,11 @@ import {
     Snackbar,
     Alert,
     Paper,
-    Backdrop,
-    Divider,
-    Stack
+    Backdrop,Divider,Stack
 } from "@mui/material";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-
-const skillMap = {
-    AC: "Adaptability & Cross-Cultural Collaboration",
-    AP: "Analytical & Problem-Solving Abilities",
-    CT: "Creative & Strategic Thinking",
-    EC: "Effective Communication",
-    EI: "Emotional Intelligence & Inclusivity",
-    LT: "Leadership & Team Management",
-    NP: "Negotiation & Persuasion",
-    PM: "Project & Time Management",
-    PR: "Professional Networking & Relationship-Building",
-    SM: "Self-Motivation & Initiative",
-};
+import skillMap from "../../components/Functions/skillMap";
 
 function EventDetailPage() {
     const { id } = useParams();
@@ -59,20 +45,29 @@ function EventDetailPage() {
         try {
             const savedEvent = localStorage.getItem("eventDetail");
             if (savedEvent) {
-                const parsed = JSON.parse(savedEvent);
-                if (parsed && parsed.id === numericId) {
-                    if (parsed.rewards && typeof parsed.rewards === "object") {
-                        const keys = Object.keys(parsed.rewards);
-                        const isAbbr = keys.every(k => k.length <= 3 && skillMap[k]);
-                        if (isAbbr) {
-                            const fullRewards = {};
-                            for (const [abbr, val] of Object.entries(parsed.rewards)) {
-                                fullRewards[skillMap[abbr] || abbr] = val;
-                            }
-                            parsed.rewards = fullRewards;
-                        }
-                    }
-                    setEvent(parsed);
+                const raw = JSON.parse(savedEvent);
+                if (raw && raw.eventID === numericId) {
+                    // 转换字段结构
+                    const rewardKeys = Object.keys(raw).filter(k => skillMap[k]);
+                    const rewards = rewardKeys.reduce((acc, k) => {
+                        acc[skillMap[k]] = raw[k];
+                        return acc;
+                    }, {});
+    
+                    const transformed = {
+                        id: raw.eventID,
+                        title: raw.name,
+                        summary: raw.summary,
+                        time: raw.startTime,
+                        end_time: raw.endTime,
+                        image: raw.image,
+                        location: raw.location,
+                        tags: raw.tag,
+                        description: raw.description || "",
+                        rewards: rewards
+                    };
+    
+                    setEvent(transformed);
                 } else {
                     setError("Event data mismatch or not found.");
                 }
@@ -115,33 +110,18 @@ function EventDetailPage() {
     };
 
     const handleAttend = async () => {
-        if (!event) {
-            setSnackbarMsg("Event data not loaded yet.");
-            setOpenSnackbar(true);
-            return;
-        }
-
         const now = new Date();
-        const start = new Date(event.time);
-        const end = new Date(event.endTime);
-
-        if (now < start) {
-            setSnackbarMsg("This event hasn't started yet.");
-            setOpenSnackbar(true);
-            return;
-        }
-
-        if (now > end) {
+        const end = new Date(event.end_time);
+        if (end < now) {
             setSnackbarMsg("This event has already ended.");
             setOpenSnackbar(true);
             return;
         }
-
         sendRegistrationsToBackend(numericId);
     };
 
-    if (loading) return <Box display="flex" justifyContent="center" alignItems="center" height="50vh"><Typography>Loading...</Typography></Box>;
-    if (error) return <Box display="flex" justifyContent="center" alignItems="center" height="50vh"><Typography color="error">Error: {error}</Typography></Box>;
+    if (loading) return <Typography>Loading...</Typography>;
+    if (error) return <Typography color="error">Error: {error}</Typography>;
 
     return (
         <Box sx={{ minHeight: "100vh", backgroundColor: "#f4fff1", display: "flex", flexDirection: "column" }}>
@@ -163,14 +143,14 @@ function EventDetailPage() {
                             <Grid container spacing={4} alignItems="center">
                                 <Grid item xs={12} md={6.5}>
                                     <Box sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
-                                        <img src={event.image?.trim?.().length > 0 ? event.image : "/WhatsOnLogo.png"} alt={event.title} style={{ width: "100%", borderRadius: 12, objectFit: "cover", marginTop: "10px" }} />
+                                        <img src={event.image && event.image.trim() !== "" ? `http://localhost:7000${event.image}`: "/WhatsOnLogo.png"} alt={event.title} style={{ width: "100%", borderRadius: 12, objectFit: "cover", marginTop: "10px" }} />
                                     </Box>
                                 </Grid>
 
                                 <Grid item xs={12} md={5}>
                                     <Box display="flex" flexDirection="column" justifyContent="center" height="100%" gap={2} mt={2}>
                                         <Box display="flex" justifyContent="center">
-                                            <Typography variant="h5" fontWeight="bold">{event.title}</Typography>
+                                            <Typography variant="h5" fontWeight="bold" sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>{event.title}</Typography>
                                         </Box>
 
                                         <Typography variant="body1" color="text.secondary">{event.summary || ""}</Typography>
@@ -181,17 +161,17 @@ function EventDetailPage() {
                                             ))}
                                         </Stack>
 
-                                        <Box display="flex" alignItems="center" mb={1}>
+                                        <Box display="flex" alignItems="center" mb={1} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
                                             <LocationOnIcon sx={{ mr: 1 }} />
                                             <Typography variant="body1"><strong>Location:</strong> {event.location || "TBD"}</Typography>
                                         </Box>
 
-                                        <Box display="flex" alignItems="center" mb={2}>
+                                        <Box display="flex" alignItems="center" mb={2} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>
                                             <AccessTimeIcon sx={{ mr: 1 }} />
-                                            <Typography variant="body1">{new Date(event.time).toLocaleString()} - {new Date(event.endTime).toLocaleString()}</Typography>
+                                            <Typography variant="body1"><strong>Time:</strong> {new Date(event.time).toLocaleString()} - {new Date(event.end_time).toLocaleString()}</Typography>
                                         </Box>
 
-                                        <Typography variant="body1" mb={3}>{event.description || "Join us for a great event!"}</Typography>
+                                        <Typography variant="body1" mb={3} sx={{ transition: "transform 0.3s", '&:hover': { transform: "scale(1.03)" } }}>{event.description || "Join us for a great event!"}</Typography>
 
                                         <Button variant="contained" sx={{ mt: 2, mb: 3, color: "white", fontWeight: "bold", fontSize: "1rem", transition: "transform 0.2s", '&:hover': { backgroundColor: "#333", transform: "scale(1.02)" } }} onClick={() => setShowRewards(true)}>
                                             View Earnable Rewards
@@ -202,13 +182,13 @@ function EventDetailPage() {
                                         <DialogTitle fontWeight="bold">Earnable Rewards</DialogTitle>
                                         <DialogContent>
                                             <ul>
-                                                {typeof event.rewards === "object"
-                                                    ? Object.entries(event.rewards).map(([cat, pts], idx) => (
+                                                {typeof event.rewards === "object" ? (
+                                                    Object.entries(event.rewards).map(([cat, pts], idx) => (
                                                         <li key={idx}><strong>{cat}</strong>: {pts} pts</li>
                                                     ))
-                                                    : [
-                                                        <li key="single"><strong>Reward</strong>: {event.rewards} pts</li>
-                                                    ]}
+                                                ) : (
+                                                    <li><strong>Reward</strong>: {event.rewards} pts</li>
+                                                )}
                                             </ul>
                                         </DialogContent>
                                         <DialogActions>
