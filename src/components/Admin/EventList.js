@@ -257,22 +257,8 @@ function EventListTable({ isStatic = false }) {
   };  
 
   // edit event
-  const handleEditConfirm = async (editedEvent) => {
-    if (!editedEvent?.eventID) return;
-  
+  const handleEditConfirm = async (formData, eventID) => {
     try {
-      const formData = new FormData();
-  
-      for (const key in editedEvent) {
-        if (key === "image") {
-          formData.append("image", editedEvent.image);
-        } else if (key === "status") {
-          continue;
-        } else {
-          formData.append(key, editedEvent[key]);
-        }
-      }      
-  
       const response = await fetch("http://localhost:7000/admin/update_event", {
         method: "POST",
         body: formData,
@@ -285,7 +271,7 @@ function EventListTable({ isStatic = false }) {
         const errorData = await response.json();
         console.error("❌ Failed to update event:", errorData);
       } else {
-        console.log("✅ Event updated:", editedEvent.eventID);
+        console.log("✅ Event updated:", eventID);
         await fetchEvents();
       }
     } catch (error) {

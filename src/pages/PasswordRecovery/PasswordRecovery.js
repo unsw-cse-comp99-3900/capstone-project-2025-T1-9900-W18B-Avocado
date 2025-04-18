@@ -55,11 +55,11 @@ const PasswordRecovery = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    // try to match verification code
-    if (inputCode !== serverCode) {
-      alert("❌ Incorrect verification code.");
-      return;
-    }
+    // // try to match verification code
+    // if (inputCode !== serverCode) {
+    //   alert("❌ Incorrect verification code.");
+    //   return;
+    // }
 
     if (newPassword !== confirmNewPassword) {
       alert("❌ Passwords do not match.");
@@ -75,7 +75,7 @@ const PasswordRecovery = () => {
       const response = await fetch("http://localhost:5000/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, new_password: newPassword }),
+        body: JSON.stringify({ code:inputCode,email, new_password: newPassword }),
       });
 
       const data = await response.text();
