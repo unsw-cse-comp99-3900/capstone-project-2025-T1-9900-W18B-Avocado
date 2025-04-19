@@ -1,0 +1,32 @@
+[33md31843f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfront-end[m[33m, [m[1;31morigin/front-end[m[33m)[m HEAD@{0}: pull origin front-end --rebase: Fast-forward
+[33mb65bf16[m HEAD@{1}: rebase (abort): returning to refs/heads/front-end
+[33m6ca998d[m HEAD@{2}: commit: 修改redeem路径
+[33md31843f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfront-end[m[33m, [m[1;31morigin/front-end[m[33m)[m HEAD@{3}: pull origin front-end: Fast-forward
+[33mb65bf16[m HEAD@{4}: reset: moving to HEAD@{3}
+[33md69e292[m HEAD@{5}: merge origin/front-end: Merge made by the 'recursive' strategy.
+[33mb65bf16[m HEAD@{6}: reset: moving to HEAD@{1}
+[33m3cb1157[m HEAD@{7}: pull origin front-end --rebase (start): checkout 3cb1157aff35b9efe05fad23b8428d257b06e0a9
+[33mb65bf16[m HEAD@{8}: commit: header增加log out
+[33m19fe6e3[m HEAD@{9}: reset: moving to HEAD
+[33m19fe6e3[m HEAD@{10}: reset: moving to HEAD@{7}
+[33m6057212[m HEAD@{11}: reset: moving to HEAD@{0}
+[33m6057212[m HEAD@{12}: reset: moving to HEAD@{4}
+[33m3cb1157[m HEAD@{13}: reset: moving to HEAD@{2}
+[33m3cb1157[m HEAD@{14}: reset: moving to HEAD@{1}
+[33m4f83cd0[m HEAD@{15}: reset: moving to HEAD@{4}
+[33m3cb1157[m HEAD@{16}: commit: 更新profile UI
+[33m6057212[m HEAD@{17}: pull origin front-end: Fast-forward
+[33m19fe6e3[m HEAD@{18}: reset: moving to HEAD
+[33m19fe6e3[m HEAD@{19}: commit (amend): 更新 my-reward 页面
+[33m4f83cd0[m HEAD@{20}: commit: 更新my-reward页面
+[33m3442cd9[m HEAD@{21}: pull origin front-end: Fast-forward
+[33m2ddbb16[m HEAD@{22}: commit: 更新 LoginPage、ProfilePage、SchedulePage 页面
+[33ma2cc4ea[m HEAD@{23}: pull origin front-end: Fast-forward
+[33ma14f139[m HEAD@{24}: reset: moving to HEAD
+[33ma14f139[m HEAD@{25}: pull origin front-end: Fast-forward
+[33m5dab16d[m HEAD@{26}: commit: schedule
+[33me260384[m HEAD@{27}: pull origin front-end: Fast-forward
+[33mabae534[m HEAD@{28}: commit (amend): 更新 MyRewardsPage 和 RewardHistoryPage 页面
+[33m0cfe679[m HEAD@{29}: commit: 上传本地 front-end 项目代码
+[33m46fd876[m HEAD@{30}: checkout: moving from front-end to front-end
+[33m46fd876[m HEAD@{31}: clone: from https://github.com/unsw-cse-comp99-3900/capstone-project-2025-T1-9900-W18B-Avocado.git

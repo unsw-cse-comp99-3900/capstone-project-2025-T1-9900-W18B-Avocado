@@ -1,0 +1,281 @@
+.homepage {
+
+  background: linear-gradient(to top right,  #e0f7fa, #dcedc8); /* 淡绿渐变 */
+  min-height: 100vh;
+}
+ /* 主要内容区域 */
+.content {
+  min-height: 100vh;
+  background-color: transparent;
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 20px;
+  /* border: 1px solid red; */
+  gap: 20px;
+}
+  
+/***** left shortcuts *****/
+.left-shortcuts {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+
+  gap: 20px; 
+  width: 24%; 
+  min-height: 100%;
+  /* border: 1px solid black; */
+  padding: 10px;
+}
+
+.shortcuts {
+  flex: 1;                         /* 均分父容器 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+  background-color: #f4fff1;
+  border-radius: 15px;
+  width: 100%;
+
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* 悬停时效果 */
+.shortcuts:hover {
+  transform: translateY(-3px);
+  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+  background: #e3f2fd;
+}
+
+
+.shortcut-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.shortcut-summary {
+  font-size: 14px;
+  color: gray;
+}
+
+.shortcut-icon {
+  font-size: 40px;
+  color: #555;
+}
+
+/***** right cards *****/
+.right-cards {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 76%;
+  padding: 10px;
+  background-color: #f4fff1;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+}
+
+.cards-container {
+  flex: 1;
+  padding: 10px;
+  
+  display: flex;
+  flex-direction: column;
+}
+
+
+.cards-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+.event-module {
+  padding-left: 10px;
+  font-size: 25px;
+}
+
+.find-more {
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: 100;
+  color:#4682B4;
+  border: #817a7a;
+      
+  display: inline-flex;        /* ✅ 配合居中 */
+  justify-content: center;     /* ✅ 水平居中 */
+}
+
+.find-more:hover {
+  background: #f0f8ff;
+  transform: scale(1.05);
+}
+
+.event-cards {
+  display: grid;
+  gap: 20px;
+  padding: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.event-card {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+}
+
+.event-card:hover {
+  transform: scale(1.03);
+}
+
+.event-info {
+  display: flex;
+  font-size: 14px;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  gap: 4px;
+}
+
+/* card details */
+.event-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.event-title {
+  font-size: 22px !important;
+  padding-left: 5px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: black;
+
+}
+
+.event-summary {
+  padding-left: 5px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.event-time {
+  font-size: 14px;
+  margin-top: 3px;
+  padding-left: 5px;
+  margin-bottom: 5px;
+  color: black;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.popup-content {
+  background: white;
+  width: 80%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  gap: 10px;
+}
+
+/* 弹窗卡片区域：两行五列网格 */
+.event-cards.popup-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, auto); /* 显示两行 */
+  gap: 20px;
+  justify-items: center;
+  align-items: start;
+  padding: 20px;
+}
+
+/* 卡片样式固定大小 */
+.event-card.popup-card {
+  width: 280px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.event-card.popup-card:hover {
+  transform: scale(1.03);
+}
+
+/* 图片自适应不裁剪 */
+.event-card.popup-card .event-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+/* 弹窗主体高度提升 */
+.popup-content {
+  background: white;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+@media (max-width: 968px) {
+  .find-more {
+    display: none;
+  }
+}

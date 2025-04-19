@@ -1,0 +1,109 @@
+/* RewardHistoryPage.css */
+
+.reward-wrapper {
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+.reward-container {
+    width: 960px;
+    background-color: #ffffff;
+    padding: 40px;
+}
+
+.reward-title {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue';
+    background: linear-gradient(90deg, #388e3c, #66bb6a);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.reward-section-title {
+    font-family: 'Roboto Slab', 'Georgia', serif;
+    border-left: 4px solid #43a047;
+    padding-left: 16px;
+    color: #2e7d32;
+    margin-bottom: 8px;
+    font-weight: 'bold';
+}
+
+.reward-subtitle {
+    text-align: center;
+    color: #6c757d;
+    letter-spacing: 0.5;
+    font-weight: 400;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif,
+}
+
+
+.reward-table-head {
+    background-color: #f1f5f2;
+}
+
+.reward-chip-score {
+    background-color: #c8e6c9 !important;
+    color: #2e7d32 !important;
+    font-weight: bold !important;
+    font-size: 0.85rem !important;
+}
+
+.reward-collapse-cell {
+    padding: 0 !important;
+    background-color: #fafafa;
+}
+
+.reward-collapse-content {
+    padding: 16px;
+}
+
+.reward-skill-legend {
+    margin-top: 30px;
+}
+
+.skill-section-title {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: #235858;
+    position: relative;
+}
+
+.skill-section-title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 6px auto 0;
+    border-radius: 2px;
+}
+
+.skill-table-container {
+    margin-top: 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+}
+
+.skill-table-container td {
+    color: #6c757d;
+}
+
+.skill-header {
+    font-weight: bold;
+    background-color: #f5f8f0;
+    color: #235858;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.MuiTableCell-root {
+    color: #333;
+    font-size: 0.9rem;
+    text-align: center;
+}

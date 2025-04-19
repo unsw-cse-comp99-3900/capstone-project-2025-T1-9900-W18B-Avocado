@@ -1,0 +1,208 @@
+/* ProfilePage.css - Updated with user-provided layout */
+
+body {
+  height: 100%;
+}
+
+.profile-page {
+  background-color: #a8e847;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.profile-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  gap: 20px;
+}
+
+.left-profile {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  gap: 30px;
+}
+
+.avatar-icon {
+  font-size: 200px;
+  color: #555;
+}
+
+.left-profile-info {
+  margin-top: 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  align-items: flex-end;
+}
+
+.left-profile-info div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 6px;
+}
+
+.left-profile-info .field-label {
+  font-weight: bold;
+  color: #263238;
+  font-size: 13px;
+  margin-bottom: 2px;
+  flex: 1;
+  text-align: right;
+  padding-right: 10px;
+}
+
+.left-profile-info .field-value {
+  font-weight: 500;
+  color: #1e88e5;
+  font-size: 15px;
+  flex: 1;
+  text-align: left;
+}
+
+.left-profile-info .highlight-value {
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 15px;
+  text-align: left;
+}
+
+.brief-record {
+  flex-grow: 1;
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.brief-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  position: relative;
+  text-align: center;
+}
+
+.brief-container:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 2px;
+  background-color: #ccc;
+}
+
+.brief-reward {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.brief-number {
+  font-size: 40px;
+}
+
+.right-profile {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.profile-details {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 50px;
+}
+
+.profile-left-column,
+.profile-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+}
+
+.detail-container {
+  font-size: 20px;
+}
+
+.logout-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}
+
+.header-right-logout {
+  margin-left: auto;
+  margin-right: 1.5rem;
+}
+
+.profile-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.shortcut-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  transition: transform 0.2s;
+}
+
+.shortcut-link:hover {
+  transform: scale(1.05);
+}
+
+.shortcut-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 5px;
+}
+
+.shortcut-icon {
+  font-size: 30px;
+  color: #555;
+}

@@ -1,0 +1,86 @@
+.schedule-container {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.schedule-tabs {
+  width: 280px;
+  min-width: 280px;
+  background-color: #f9f9f9;
+  border-right: 1px solid #ddd;
+  padding: 16px;
+  box-sizing: border-box;
+  position: sticky;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+}
+.schedule-content-wrapper {
+  overflow-x: auto;
+  width: calc(100% - 280px);
+}
+
+.schedule-tabs a {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #444;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+  border-radius: 6px;
+  font-weight: bold;
+}
+.schedule-tabs a:hover {
+  background-color: #f2f2f2;
+  color: #3E7D5E;
+}
+.schedule-tabs a.schedule-active {
+  background-color: #a8e847 !important;
+  color: #4A5A29 !important;
+}
+
+
+.events-list {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.events-table th,
+.events-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.events-table th {
+  background-color: #4682B4;
+  color: white;
+}
+
+.ticket-button {
+  padding: 8px 12px;
+  background: #4682B4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ticket-button:hover {
+  background: #5a9bd3;
+}
