@@ -43,9 +43,8 @@ function EventDetailPage() {
                 const raw = JSON.parse(savedEvent);
                 if (raw && (raw.eventID === numericId || raw.id === numericId)) {
                     let rewards = [];
-    
+
                     if (typeof raw.rewards === "object" && !Array.isArray(raw.rewards)) {
-                        // mock数据：rewards是 { AC: 5, EC: 10 }
                         rewards = Object.entries(raw.rewards)
                             .filter(([abbr]) => skillMap[abbr])
                             .map(([abbr, value]) => ({
@@ -54,14 +53,12 @@ function EventDetailPage() {
                                 value: Number(value),
                             }));
                     } else if (Array.isArray(raw.rewards)) {
-                        // 后端可能已经返回了完整的结构，但为了保险给它补 full 名称
                         rewards = raw.rewards.map(({ abbr, value }) => ({
                             abbr,
                             full: skillMap[abbr] || abbr,
                             value: Number(value),
                         }));
                     } else {
-                        // rewards不存在，尝试直接从raw里提取各个技能
                         const rewardKeys = Object.keys(raw).filter(k => skillMap[k]);
                         rewards = rewardKeys.map((abbr) => ({
                             abbr,
@@ -69,7 +66,7 @@ function EventDetailPage() {
                             value: Number(raw[abbr]),
                         }));
                     }
-    
+
                     const transformed = {
                         id: raw.eventID || raw.id,
                         title: raw.name || raw.title,
@@ -83,7 +80,7 @@ function EventDetailPage() {
                         rewards: rewards,
                         organizer: raw.organizer || "",
                     };
-    
+
                     setEvent(transformed);
                 } else {
                     setError("Event data mismatch or not found.");
@@ -144,7 +141,7 @@ function EventDetailPage() {
                 <Box className="event-detail-wrapper">
                     <Box className="event-detail-content" >
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", mb: 2 }}>
-                            {/* 左边按钮组 */}
+                            {/* buttons sets */}
                             <Box sx={{ display: "flex", gap: 1 }}>
                                 <Button
                                     variant="contained"
@@ -162,7 +159,7 @@ function EventDetailPage() {
                                 </Button>
                             </Box>
 
-                            {/* 右边 Hosted By */}
+                            {/* Hosted By */}
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: { xs: 1, md: 0 } }}>
                                 <Typography variant="body2" fontWeight={600}>
                                     Hosted By{" "}
@@ -200,7 +197,7 @@ function EventDetailPage() {
                                 </Stack>
                             </Box>
                         </Box>
-                        <Grid container spacing={4} alignItems="flex-start" sx={{ padding: 0.5 }}>
+                        <Grid container spacing={4} alignItems="stretch" sx={{ padding: 0.5 }}>
                             <Grid item xs={12} md={7.5}>
                                 <Box className="event-detail-image-container">
                                     <img
@@ -257,7 +254,7 @@ function EventDetailPage() {
                                 </Box>
                             </Grid>
                         </Grid>
-                        <Typography variant="h6" className="event-description">
+                        <Typography variant="h6" className="event-description" sx={{ px: 1, pt: 2 }}>
                             {event.description || "Join us for a great event!"}
                         </Typography>
                         <Box mt={4} sx={{ display: "flex", justifyContent: "center" }}>
