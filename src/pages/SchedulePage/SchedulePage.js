@@ -35,9 +35,10 @@ function formatDate(dateStr) {
 }
 
 const chipStyle = {
+  width: 118,
   fontWeight: 600,
-  height: 36,
-  fontSize: "0.9rem",
+  height: 32,
+  fontSize: "0.8125rem",
   borderRadius: "10px",
   px: 1.5,
   boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)"
@@ -207,41 +208,41 @@ function SchedulePage() {
             Previous Events
           </Link>
         </div>
+        <div className="schedule-content-wrapper">
 
-        <Box p={2} width="100%">
+        <Box sx={{width:"97%", m:2}}>
           <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
             <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-              <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Events List</Typography>
+              <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Event List</Typography>
             </Box>
             <Divider sx={{ my: 2 }} />
-
             <HorizontalScrollBox>
-              <Table size="small" sx={{ minWidth: "950px", width: "100%" }}>
+              <Table size="small" sx={{ minWidth: "960px", width: "100%" }}>
                 <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                   <TableRow>
-                    <FixedCell width="15%" fontWeight="bold">Ticket ID</FixedCell>
-                    <FixedCell width="25%" fontWeight="bold">Event Name</FixedCell>
-                    <FixedCell width="20%" fontWeight="bold">Start Time</FixedCell>
-                    <FixedCell width="20%" fontWeight="bold">End Time</FixedCell>
-                    <FixedCell width="10%" fontWeight="bold">Tag</FixedCell>
-                    <FixedCell width="10%" fontWeight="bold">Status</FixedCell>
+                    <FixedCell width="11%" minWidth={100} fontWeight="bold">Ticket ID</FixedCell>
+                    <FixedCell width="27%" minWidth={260} fontWeight="bold">Event Name</FixedCell>
+                    <FixedCell width="17%" minWidth={160} fontWeight="bold">Start Time</FixedCell>
+                    <FixedCell width="17%" minWidth={160} fontWeight="bold">End Time</FixedCell>
+                    <FixedCell width="14%" minWidth={140} fontWeight="bold">Tag</FixedCell>
+                    <FixedCell width="14%" minWidth={140} fontWeight="bold">Status</FixedCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {eventList.map((event) => (
                     <TableRow key={event.eventID} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
-                      <FixedCell width="15%">{event.ticketID}</FixedCell>
-                      <FixedCell width="25%">{event.name}</FixedCell>
-                      <FixedCell width="20%">{formatDate(event.startTime)}</FixedCell>
-                      <FixedCell width="20%">{formatDate(event.endTime)}</FixedCell>
-                      <FixedCell width="10%">
+                      <FixedCell width="11%" minWidth={100}>{event.ticketID}</FixedCell>
+                      <FixedCell width="27%" minWidth={260}>{event.name}</FixedCell>
+                      <FixedCell width="17%" minWidth={160}>{formatDate(event.startTime)}</FixedCell>
+                      <FixedCell width="17%" minWidth={160}>{formatDate(event.endTime)}</FixedCell>
+                      <FixedCell width="14%" minWidth={140}>
                         <Chip label={event.tag} variant="outlined" />
                       </FixedCell>
-                      <FixedCell width="10%">
+                      <FixedCell width="14%" minWidth={140}>
                         {category === "current" && event.checkIn === 0 ? (
                           <Button
-                          sx={{width:"120px"}}
-                            size="medium"
+                            sx={{ width: "118px" }}
+                            size="small"
                             variant="contained"
                             color="success"
                             onClick={() => {
@@ -272,6 +273,7 @@ function SchedulePage() {
             </Box>
           </Paper>
         </Box>
+        </div>
 
       </div>
       <Footer />

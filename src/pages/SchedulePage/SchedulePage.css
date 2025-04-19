@@ -1,16 +1,26 @@
 .schedule-container {
   display: flex;
   min-height: 100vh;
-  overflow-x: auto;
+  overflow: hidden;
+  position: relative;
 }
 
 .schedule-tabs {
-  width: 300px;
-  min-width: 300px;
+  width: 280px;
+  min-width: 280px;
   background-color: #f9f9f9;
   border-right: 1px solid #ddd;
   padding: 16px;
   box-sizing: border-box;
+  position: sticky;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+}
+.schedule-content-wrapper {
+  overflow-x: auto;
+  width: calc(100% - 280px);
 }
 
 .schedule-tabs a {
@@ -38,12 +48,11 @@
 }
 
 
-/* 右侧事件表格 */
 .events-list {
   flex-grow: 1;
-  /* 占满剩余空间 */
   padding: 20px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .events-table {
