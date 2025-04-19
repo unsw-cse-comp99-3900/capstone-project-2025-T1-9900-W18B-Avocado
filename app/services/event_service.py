@@ -750,3 +750,22 @@ def attend_event(event_id, student_id):
             conn.close()
 
 
+def get_event_history(student_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT eventID FROM attendancedata WHERE studentID = %s", (student_id,))
+        rows = cursor.fetchall()
+        event_ids = [row[0] for row in rows]
+
+        return {
+            "eventHistory": event_ids,
+            "total": len(event_ids)
+        }, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()

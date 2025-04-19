@@ -5,7 +5,7 @@ from flask import Blueprint, request, jsonify
 from app.services.event_service import (
     create_event, get_event_list, update_event, delete_event,
     register_event, get_student_events, get_previous_events,
-    checkin_event, redeem_reward, attend_event, delete_selected_events
+    checkin_event, redeem_reward, attend_event, delete_selected_events,get_event_history
 )
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -178,3 +178,9 @@ def attend_event_route():
 
     response, status = attend_event(event_id, student_id)
     return jsonify(response), status
+
+@event_bp.route("/internal/event_history/<int:student_id>", methods=["GET"])
+def student_event_history(student_id):
+    result, status = get_event_history(student_id)
+    return jsonify(result), status
+
