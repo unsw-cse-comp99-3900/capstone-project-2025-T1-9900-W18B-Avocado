@@ -1,5 +1,5 @@
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.services.user_service import register_user, login_user, get_user, get_all_users
+from app.services.user_service import register_user, login_user, get_user, get_all_users, toggle_status, toggle_status_multi
 from flask import Blueprint, request, jsonify
 from app.services.user_service import (
     handle_email_verification,
@@ -82,7 +82,7 @@ def reset_password():
     return jsonify(response), status
 
 
-@user_bp.route("/userlist", methods=["GET"])
+@user_bp.route("/user_list", methods=["GET"])
 @jwt_required()
 def get_user_list():
     identity = get_jwt_identity()
@@ -104,3 +104,23 @@ def reward_status():
 
     response, status = get_reward_status(student_id)
     return jsonify(response), status
+
+@user_bp.route("/toggle_user", methods=["POST"])
+@jwt_required()
+def set_user_status():
+    jwt = request.headers.get('Authorization').replace('Bearer ', '')
+    data = request.get_json()
+    userID = data.get("userID")
+    user = get_jwt_identity()
+    response, code = toggle_status(user, userID)
+    return jsonify(response), code
+
+@user_bp.route("/toggle_selected", methods=["POST"])
+@jwt_required()
+def set_user_status_multi():
+    jwt = request.headers.get('Authorization').replace('Bearer ', '')
+    data = request.get_json()
+    userID = data.get("userIDs")
+    user = get_jwt_identity()
+    response, code = toggle_status_multi(user, userID)
+    return jsonify(response), code
