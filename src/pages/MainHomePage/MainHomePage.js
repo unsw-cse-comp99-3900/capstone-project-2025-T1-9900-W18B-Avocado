@@ -260,7 +260,7 @@ function MainHomePage() {
   */
 
   const shortcutsData = [
-    { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule/today" },
+    { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule" },
     // { name: "You might like", icon: <FiSunset />, path: "#", onClick: () => setShowRecommendPopup(true)},
     { name: "Explore", icon: <BiHappyHeartEyes />, path: "#", onClick: () => navigate("/events") },
   ];
