@@ -15,26 +15,32 @@ def get_host_ip():
         return "127.0.0.1"
 
 host_ip = get_host_ip()
-port = 5000  # userservice 固定端口
+port = SERVICE_PORT  # 固定端口
 
 nacos_client = NacosClient(NACOS_SERVER, namespace=NACOS_NAMESPACE)
 
-def register_service():
-    for attempt in range(10):
-        try:
-            print(f"🚀 尝试第 {attempt + 1} 次注册到 Nacos：{host_ip}:{port}")
-            nacos_client.add_naming_instance(NACOS_SERVICE_NAME, host_ip, port)
-            print(f"✅ 服务已注册到 Nacos：{host_ip}:{port}")
-            return
-        except Exception as e:
-            print(f"❌ 注册失败：{e}，3秒后重试")
-            time.sleep(3)
-    print("🛑 注册失败次数过多，已放弃注册")
 
 def start_nacos_registration():
-    t = threading.Thread(target=register_service)
-    t.daemon = True
-    t.start()
+    def register_and_heartbeat():
+        for attempt in range(10):
+            try:
+                nacos_client.add_naming_instance(NACOS_SERVICE_NAME, host_ip, port, ephemeral=True)
+                print(f"✅ 注册成功: {host_ip}:{port}")
+                break
+            except Exception as e:
+                print(f"❌ 注册失败: {e}")
+                time.sleep(3)
+
+        # 💓 开始发心跳
+        while True:
+            try:
+                nacos_client.send_heartbeat(NACOS_SERVICE_NAME, host_ip, port)
+                print("💓 心跳发送成功")
+            except Exception as e:
+                print(f"❌ 心跳失败: {e}")
+            time.sleep(5)
+
+    threading.Thread(target=register_and_heartbeat, daemon=True).start()
 
 def get_mysql_config():
     try:
@@ -43,4 +49,3 @@ def get_mysql_config():
     except Exception as e:
         print(f"⚠️ 获取 MySQL 配置失败: {e}")
         return {}
-

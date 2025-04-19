@@ -5,6 +5,10 @@ from app.utils.code import generate_code, store_code
 from app.utils.email_sender import send_email_verification
 from app.utils.code import verify_code, remove_code
 from collections import defaultdict
+from app.nacos.client import nacos_client
+import requests
+from app.utils.nacos_utils import get_service_url
+
 
 def register_user(data):
     is_arc_member = str(data["isArcMember"]).upper() == "TRUE"
@@ -208,23 +212,66 @@ def get_all_users():
     finally:
         cursor.close()
         conn.close()
-        
+
+
 def get_user(user):
     conn = get_db_connection()
     if not conn:
         return {"error": "Database connection failed"}, 500
+
     try:
         cursor = conn.cursor(dictionary=True)
-        print(user)
         studentID = user["studentID"]
         role = user["role"]
+
         cursor.execute("SELECT * FROM studentdata WHERE studentID = %s", (studentID,))
         user_data = cursor.fetchone()
-        
-        return user_data, 201
+
+        if not user_data:
+            return {"error": "User not found"}, 404
+
+        # ✅ 加入 reward 分数字段（即 studentdata.points）
+        user_data["reward"] = user_data.get("points", 0)
+
+        # ✅ 跨服务请求 event-service 获取报名历史信息
+        try:
+            base_url = get_service_url("event-service")
+            res = requests.get(f"{base_url}/internal/event_history/{studentID}", timeout=3)
+
+            if res.status_code == 200:
+                event_data = res.json()
+                user_data["eventHistory"] = event_data.get("eventHistory", [])
+                user_data["eventCount"] = event_data.get("total", 0)
+            else:
+                user_data["eventHistory"] = []
+                user_data["eventCount"] = 0
+        except Exception as e:
+            print(f"❌ Error calling event-service: {e}")
+            user_data["eventHistory"] = []
+            user_data["eventCount"] = 0
+
+        # ✅ 跨服务请求 analysis-service 获取软技能评分与教练分析
+        try:
+            base_url = get_service_url("analysis-service")
+            res = requests.get(f"{base_url}/internal/skill_summary/{studentID}", timeout=3)
+
+            if res.status_code == 200:
+                analysis_data = res.json()
+                user_data["skillScores"] = analysis_data.get("skillScores", {})
+                user_data["coachAnalysis"] = analysis_data.get("coachAnalysis", "")
+            else:
+                user_data["skillScores"] = {}
+                user_data["coachAnalysis"] = ""
+        except Exception as e:
+            print(f"❌ Error calling analysis-service: {e}")
+            user_data["skillScores"] = {}
+            user_data["coachAnalysis"] = ""
+
+        return user_data, 200
 
     except Exception as e:
         return {"error": str(e)}, 500
+
     finally:
         cursor.close()
         conn.close()

@@ -4,6 +4,7 @@ NACOS_GROUP = "DEFAULT_GROUP"
 NACOS_SERVICE_NAME = "user-service"  # 在 Nacos 里注册的服务名
 NACOS_DATA_ID = "mysql-config"  # 配置 ID
 
+SERVICE_PORT=5000
 
 MAIL_SERVER = "smtp.163.com"
 MAIL_PORT = 465
