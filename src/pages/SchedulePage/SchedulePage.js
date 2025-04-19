@@ -35,7 +35,7 @@ function formatDate(dateStr) {
 }
 
 const chipStyle = {
-  width: 118,
+  // width: 118,
   fontWeight: 600,
   height: 32,
   fontSize: "0.8125rem",

@@ -26,7 +26,7 @@ const TAGS = [
   "Movies", "Music", "Social", "Cultural", "Foods", "Volunteering"
 ];
 
-const useMock = true; // Add flag for using mock data
+const useMock = false; // Add flag for using mock data
 
 export default function SearchPopup({ open, onClose }) {
   const [query, setQuery] = useState("");
@@ -74,7 +74,12 @@ export default function SearchPopup({ open, onClose }) {
         setTotalCount(newEvents.length); // Update totalCount for mock data
         newEvents = newEvents.slice(page * rowsPerPage, (page + 1) * rowsPerPage); // Apply pagination
       } else {
-        const response = await axios.get("http://localhost:7000/event_list", { params });
+        const response = await axios.get("http://localhost:7000/event_list", {
+          params,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         if (response.status === 200) {
           newEvents = response.data?.events || [];
           setTotalCount(response.data?.totalCount || 0); // Update totalCount from server response
@@ -221,7 +226,9 @@ export default function SearchPopup({ open, onClose }) {
                     <CardMedia
                       component="img"
                       height="40"
-                      image={event.image}
+                      image={event.image?.trim()
+                        ? `http://localhost:7000${event.image}`
+                        : "/WhatsOnLogo.png"}
                       alt={event.name}
                     />
                   </Box>

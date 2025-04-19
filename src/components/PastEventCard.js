@@ -153,7 +153,7 @@ function PastEventCard({ image, title, time, endtime, location, tags, rewards })
                 >
                 <Box
                     component="img"
-                    src={image || "/WhatsOnLogo.png"}
+                    src={image ? image: "/WhatsOnLogo.png"}
                     alt={title}
                     sx={{
                     width: 100,

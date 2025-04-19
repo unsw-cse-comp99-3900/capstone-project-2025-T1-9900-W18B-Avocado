@@ -97,29 +97,36 @@ function EventDetailPage() {
 
     const sendRegistrationsToBackend = async (eventID) => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:7000/event/attend", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ eventId: eventID }),
-            });
-            const result = await response.json();
-
-            if (response.status === 201) {
-                setDialogMsg("Successfully registered!");
-                setTicketId(result.ticketId || "N/A");
-                setDialogOpen(true);
-            } else {
-                setSnackbar({ open: true, type: "error", message: "Registration failed." });
-            }
+          const token = localStorage.getItem("token");
+          const response = await fetch("http://localhost:7000/event/attend", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ eventId: eventID }),
+          });
+      
+          const result = await response.json(); // ✅ 无论成功/失败先拿 response body
+      
+          if (response.status === 201) {
+            setDialogMsg("Successfully registered!");
+            setTicketId(result.ticketId || "N/A");
+            setDialogOpen(true);
+          } else {
+            const errorMsg = result?.error || result?.message || "Registration failed.";
+            setSnackbar({ open: true, type: "error", message: errorMsg });
+          }
         } catch (error) {
-            console.error("Network error:", error);
-            setSnackbar({ open: true, type: "error", message: "Network error. Please try again." });
+          console.error("Network error:", error);
+          setSnackbar({
+            open: true,
+            type: "error",
+            message: "Network error. Please try again."
+          });
         }
-    };
+      };
+      
 
     const handleAttend = async () => {
         const now = new Date();
@@ -201,7 +208,7 @@ function EventDetailPage() {
                             <Grid item xs={12} md={7.5}>
                                 <Box className="event-detail-image-container">
                                     <img
-                                        src={event.image && event.image.trim() !== "" ? event.image : "/WhatsOnLogo.png"}
+                                        src={event.image && event.image.trim() !== "" ? `http://localhost:7000${event.image}` : "/WhatsOnLogo.png"}
                                         alt={event.title}
                                         className="event-detail-image"
                                     />
