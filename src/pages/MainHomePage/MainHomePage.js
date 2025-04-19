@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LuCalendarCheck } from "react-icons/lu";
 import { BiHappyHeartEyes } from "react-icons/bi";
-import { FiSunset } from "react-icons/fi";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import "./MainHomePage.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -13,8 +13,6 @@ import {
   Typography,
   Container,
   Stack,
-  Paper,
-  Tab,
   Pagination
 } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
@@ -41,7 +39,7 @@ const mockEvents = [
       EC: 10
     },
     participated: true,
-    organizer: "Music Club", 
+    organizer: "Music Club",
 
   },
   {
@@ -55,7 +53,7 @@ const mockEvents = [
     description: "Come and join mock event B!",
     tags: ["Books"],
     rewards: { "AC": 5, "EC": 10 },
-    participated: true, 
+    participated: true,
     organizer: "secondbook",
   },
   {
@@ -68,9 +66,9 @@ const mockEvents = [
     location: "Library",
     description: "Come and join mock event 3!",
     tags: ["Books"],
-    rewards: { "AC": 5, "EC": 10 , "NP":1, "PR":2 },
+    rewards: { "AC": 5, "EC": 10, "NP": 1, "PR": 2 },
     participated: true,
-    organizer: "Music Club", 
+    organizer: "Music Club",
   },
   {
     id: 4,
@@ -84,7 +82,7 @@ const mockEvents = [
     tags: ["Books"],
     rewards: { "AC": 5, "EC": 10 },
     participated: true,
-    organizer: "Music Club", 
+    organizer: "Music Club",
   },
   {
     id: 5,
@@ -123,7 +121,7 @@ const mockEvents = [
     tags: ["Music"],
     rewards: { "AC": 0, "EC": 7, "SM": 3 },
     participated: true,
-    organizer: "Music Club", 
+    organizer: "Music Club",
   },
 
   {
@@ -138,7 +136,7 @@ const mockEvents = [
     tags: ["Music"],
     rewards: { "EC": 8, "SM": 8 },
     participated: true,
-    organizer: "Music Club", 
+    organizer: "Music Club",
   },
 
   {
@@ -153,7 +151,7 @@ const mockEvents = [
     tags: ["Music"],
     rewards: { "EC": 8, "SM": 8 },
     participated: true,
-    organizer: "Music Club", 
+    organizer: "Music Club",
   }
 ]
 
@@ -247,7 +245,7 @@ function MainHomePage() {
   const [pastPage, setPastPage] = useState(1);
   const navigate = useNavigate();
   const [showLoginAlert, setShowLoginAlert] = useState(false);
-  
+
   /*useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -262,7 +260,8 @@ function MainHomePage() {
   const shortcutsData = [
     { name: "Schedule", icon: <LuCalendarCheck />, path: "/schedule" },
     // { name: "You might like", icon: <FiSunset />, path: "#", onClick: () => setShowRecommendPopup(true)},
-    { name: "Explore", icon: <BiHappyHeartEyes />, path: "#", onClick: () => navigate("/events") },
+    { name: "Explore Events", icon: <BiHappyHeartEyes />, path: "/events" },
+    { name: "Event & Reward History", icon: <EmojiEventsIcon sx={{ fontSize: 30 }} />, path: "/reward-history" },
   ];
 
 
@@ -328,7 +327,7 @@ function MainHomePage() {
         },
       });
       const data = await res.json();
-  
+
       return (data.events || []).map(event => {
         const rewards = {};
         for (const key in event) {
@@ -348,7 +347,7 @@ function MainHomePage() {
             ? `http://localhost:7000${event.image}`
             : "/WhatsOnLogo.png",
           tags: [event.tag || "Attended"],
-          rewards, 
+          rewards,
         };
       });
     } catch (err) {
@@ -393,50 +392,59 @@ function MainHomePage() {
 
       <LandingSection />
       <div className="homepage" id="event-section" sx={{ background: "#e6f4e6", minHeight: "100vh" }}>
-      <Container
+        <Container
           maxWidth={false}
           sx={{
-            px: { xs: 2, sm: 4, md: 8, xl: 15 }, // ✅ 左右padding适配不同屏幕
-            maxWidth: "1800px", // ✅ 给大屏限制一个最大宽度
-            mx: "auto" // ✅ 居中显示
+            px: { xs: 2, sm: 4, md: 8, xl: 15 },
+            maxWidth: "1800px",
+            mx: "auto"
           }}
         >
           {/* Shortcuts */}
-          <Stack direction="row" spacing={1} justifyContent="center" mb={6}>
+          <Stack direction="row" spacing={2} justifyContent="center" mb={6}>
             {shortcutsData.map((s, idx) => (
               <Grid item xs={12} sm={4} key={idx} mt={8}>
                 <Button
                   fullWidth
                   variant="contained"
                   sx={{
-                    color: "white",
-                    bgcolor: "#235858",
-                    height: 80,
+                    color: "#235858",
+                    bgcolor: "white",
+                    height: 100,
                     px: 2,
+                    m: 1,
                     maxWidth: 340,
                     minWidth: 290,
                     textTransform: "none",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    fontSize: "1rem",
-                    fontWeight: "bold",
-                    borderRadius: 1,
+                    borderRadius: "25px",
+                    border: "2px solid #a8e847",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
                     transition: "all 0.3s ease",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+
+                    fontFamily: "'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif",
+                    fontWeight: 600,
+                    fontSize: "1.05rem",
+                    letterSpacing: "0.3px",
+                    lineHeight: 1.4,
+
                     '&:hover': {
                       backgroundColor: "#a8e847",
-                      transform: "scale(1.03)",
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
+                      transform: "scale(1.035)",
+                      boxShadow: "0 6px 24px rgba(0,0,0,0.12)",
                     }
                   }}
+
                   onClick={() => s.path !== "#" ? window.location.href = s.path : s.onClick()}
                 >
-                  <Stack direction="column" alignItems="center" spacing={0.5}>
+                  <Stack direction="column" alignItems="center" spacing={0}>
                     <Box sx={{ fontSize: 28 }}>{s.icon}</Box>
-                    {s.name}
+                    <Typography pb={1} fontWeight="bold" fontSize="1.1rem">{s.name}</Typography>
                   </Stack>
-
                 </Button>
+
               </Grid>
             ))}
           </Stack>
@@ -499,11 +507,11 @@ function MainHomePage() {
         autoHideDuration={2000}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert severity="error"  sx={{ width: "100%" }}>
+        <Alert severity="error" sx={{ width: "100%" }}>
           Please login first.
         </Alert>
       </Snackbar>
-      </>
+    </>
   );
 
 }

@@ -26,16 +26,71 @@ export default function LandingSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
             >
-                <Typography variant="h3" fontWeight="bold" mb={2}>
-                    Welcome to What's On!
-                </Typography>
-                <Typography variant="h6" color="text.secondary" mb={4}>
-                    View your past rewards, check the schedule for upcoming events, and explore more activities.
+                <Box display="flex" alignItems="center" justifyContent="center" mb={4} >
+                    <Typography
+                        variant="h3"
+                        fontWeight="bold"
+                        sx={{
+                            mr: 2,
+                            fontSize: { xs: "2rem", md: "3.5rem" },
+                            lineHeight: 1.2,
+                            background: "linear-gradient(90deg, #235858, black)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            display: "inline-block",
+                        }}
+                    >
+                        Welcome to
+                    </Typography>
+
+                    <Box
+                        component="img"
+                        src="/WhatsOnLogo.png"
+                        alt="What's On"
+                        sx={{
+                            width: 400,
+                            height: "auto",
+                            display: "block",
+                            transform: "translateY(-26px)",
+                        }}
+                    />
+                </Box>
+
+
+
+                <Typography variant="h6" color="text.secondary" mb={4}
+                    sx={{
+                        background: "linear-gradient(90deg, #a8e847, #235858)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent"
+                    }}>
+                    View your past rewards, check the schedule for upcoming events, and explore more activities!
                 </Typography>
                 <Button
                     variant="contained"
                     color="primary"
-                    sx={{ mt: 4, fontWeight: "bold", px: 4, py: 1.5 }}
+                    sx={{
+                        width: 200,
+                        mt: 4,
+                        px: 4,
+                        py: 1.5,
+                        fontWeight: "bold",
+                        fontSize: "1.2rem",
+                        color: "#a8e847",
+                        border: "2px solid #a8e847",
+                        backgroundColor: "#000",
+                        borderRadius: "30px",
+                        textTransform: "none",
+                        transition: "all 0.3s ease",
+                        '&:hover': {
+                            backgroundColor: "#1a1a1a",
+                            transform: "scale(1.04)",
+                            boxShadow: "0 4px 16px rgba(168, 232, 71, 0.3)",
+                        },
+                        '& .MuiButton-endIcon': {
+                            color: "#a8e847",
+                        }
+                    }}
                     onClick={() => {
                         const section = document.getElementById("event-section");
                         if (section) {
