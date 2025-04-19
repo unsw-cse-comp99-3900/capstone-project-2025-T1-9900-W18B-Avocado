@@ -21,8 +21,8 @@ def get_skill_summary(student_id):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Step 1: 获取该学生所有报名的 eventID
-        cursor.execute("SELECT eventID FROM attendancedata WHERE studentID = %s", (student_id,))
+        # ✅ Step 1: 仅获取已签到的活动 ID
+        cursor.execute("SELECT eventID FROM attendancedata WHERE studentID = %s AND checkIn = 1", (student_id,))
         records = cursor.fetchall()
         event_ids = [r["eventID"] for r in records]
 
@@ -33,9 +33,9 @@ def get_skill_summary(student_id):
             }, 200
 
         # Step 2: 初始化分数容器
-        raw_scores = {k: 0 for k in SKILL_MAPPING}  # 英文描述为 key
+        raw_scores = {k: 0 for k in SKILL_MAPPING}
 
-        # Step 3: 遍历每个 eventID，累加对应分数
+        # Step 3: 遍历每个 eventID，累加小分
         for event_id in event_ids:
             cursor.execute("SELECT * FROM eventdata WHERE eventID = %s", (event_id,))
             event = cursor.fetchone()
@@ -44,14 +44,14 @@ def get_skill_summary(student_id):
             for full_name, short_key in SKILL_MAPPING.items():
                 raw_scores[full_name] += int(event.get(short_key, 0))
 
-        # Step 4: 将分数归一化为 0~10
+        # Step 4: 归一化 0~10
         max_score = max(raw_scores.values()) if raw_scores else 1
         skill_scores = {
             k: round((v / max_score) * 10, 2) if max_score > 0 else 0
             for k, v in raw_scores.items()
         }
 
-        # Step 5: Coach 分析（你可以自定义逻辑）
+        # Step 5: 调用 Gemini API
         coach_analysis = get_gemini_coach_advice(skill_scores)
 
         return {
@@ -65,6 +65,7 @@ def get_skill_summary(student_id):
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
+
 
 
 def get_gemini_coach_advice(skill_scores):
