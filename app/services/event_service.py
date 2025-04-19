@@ -696,30 +696,47 @@ def redeem_reward(student_id, reward_id):
             conn.close()
 
 
+
 def attend_event(event_id, student_id):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 判断是否已报名
+        # ✅ 获取活动时间范围
         cursor.execute(
-            "SELECT 1 FROM Attendancedata WHERE studentID = %s AND eventID = %s",
+            "SELECT startTime, endTime FROM eventdata WHERE eventID = %s",
+            (event_id,)
+        )
+        event = cursor.fetchone()
+        if not event:
+            return {"error": "Event not found."}, 404
+
+        start_time, end_time = event
+        now = datetime.utcnow()
+
+        # ✅ 只判断是否已结束
+        if now > end_time:
+            return {"error": "This event has already ended."}, 400
+
+        # ✅ 判断是否已报名
+        cursor.execute(
+            "SELECT 1 FROM attendancedata WHERE studentID = %s AND eventID = %s",
             (student_id, event_id)
         )
         if cursor.fetchone():
             return {"error": "You have already registered for this event."}, 400
 
-        # 插入新报名记录，默认 checkIn = 0
+        # ✅ 插入新报名记录
         cursor.execute(
-            "INSERT INTO Attendancedata (studentID, eventID, checkIn) VALUES (%s, %s, 0)",
+            "INSERT INTO attendancedata (studentID, eventID, checkIn) VALUES (%s, %s, 0)",
             (student_id, event_id)
         )
-        ticket_id = cursor.lastrowid  # ✅ 获取刚插入的 ticket ID
+        ticket_id = cursor.lastrowid
         conn.commit()
 
         return {
             "message": "Event registration successful.",
-            "ticketId": ticket_id  # ✅ 返回 ticketId
+            "ticketId": ticket_id
         }, 201
 
     except Exception as e:
@@ -731,4 +748,5 @@ def attend_event(event_id, student_id):
             cursor.close()
         if 'conn' in locals():
             conn.close()
+
 
