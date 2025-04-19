@@ -89,7 +89,7 @@ function RecommendEventsPage() {
   const tagLabels = [
     "Wellness", "Networking", "Games", "Startups", "Technology", "Entrepreneurship",
     "Careers", "Sustainability", "Tech", "Books", "Art", "Coding", "Debate",
-    "Movies", "Music", "Social", "Cultural", "Foods", "Volunteering"
+    "Movies", "Music", "Social", "Cultural", "Food", "Volunteering"
   ];
   const tagValues = [5, 7, 3, 2, 6, 4, 8, 1, 6, 2, 3, 9, 2, 4, 5, 3, 2, 1, 2];
 

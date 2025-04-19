@@ -15,7 +15,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import EventIcon from '@mui/icons-material/Event';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import RedeemIcon from '@mui/icons-material/Redeem';
-import { AiOutlineRadarChart } from "react-icons/ai";
+import RecommendIcon from '@mui/icons-material/Recommend';
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -138,7 +138,7 @@ export default function AccountMenu() {
 
           <MenuItem key="career-coach" onClick={() => navigate('/recommend-events')}>
             <ListItemIcon>
-              <AiOutlineRadarChart fontSize="20px" />
+              <RecommendIcon />
             </ListItemIcon>
             Recommend Events
           </MenuItem>,

@@ -1,4 +1,4 @@
-.container {
+.admin-container {
   display: flex;
   min-height: 100vh;
   background-color: #235858;
@@ -6,7 +6,7 @@
 }
 
 /* left sidebar */
-.tabs {
+.admin-tabs {
   width: 300px;
   background-color: #f9f9f9;
   border-right: 1px solid #ddd;
@@ -15,7 +15,7 @@
 }
 
 /* tab section title*/
-.tab-header {
+.admin-tab-header {
   width: 250px;
   height: 50px;
   font-weight: bold;
@@ -27,29 +27,28 @@
   transition: background-color 0.2s;
 }
 
-.tab-header:hover {
+.admin-tab-header:hover {
   background-color: #ececec;
   border-radius: 4px;
 }
 
-.tab-header.expanded-parent {
+.admin-tab-header.expanded-parent {
   background-color: #f0f0f0;
   border-radius: 6px;
 }
 
-
 /* tab children */
-.tab-children {
+.admin-tab-children {
   width: 250px;
   padding-left: 32px;
   display: flex;
   flex-direction: column;
   margin-top: 4px;
   margin-bottom: 12px;
+  font-weight: bold;
 }
 
-/* 每个子链接 */
-.tab-children a {
+.admin-tab-children a {
   height: 50px;
   display: flex;
   align-items: center;
@@ -64,44 +63,36 @@
   border-radius: 6px;
 }
 
-
-.tab-children a:hover {
+.admin-tab-children a:hover {
   background-color: #f2f2f2;
   color: #3E7D5E;
 }
 
 /* Active */
-.active:hover {
+.admin-active:hover {
   font-weight: bold;
   color: #555;
 }
 
-.active {
+.admin-active {
   font-weight: bold !important;
   background-color: #a8e847 !important;
   color: #4A5A29 !important;
 }
 
-.expand-icon {
+.admin-expand-icon {
   transition: transform 0.3s ease;
   vertical-align: middle;
   margin-right: 6px;
   color: #4CAF50;
 }
 
-.expand-icon.expanded {
+.admin-expand-icon.expanded {
   transform: rotate(180deg);
 }
 
-.admin-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-
 /* right side */
-.routes {
+.admin-routes {
   flex-grow: 1;
   padding: 24px;
   overflow-x: auto;

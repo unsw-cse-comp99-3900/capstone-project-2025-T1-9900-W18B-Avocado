@@ -5,22 +5,20 @@ import {
   TableBody,
   TableHead,
   TableRow,
-  TableCell,
   Box,
   Typography,
   Chip,
   Paper,
   Button,
   Pagination,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Divider,
   CircularProgress,
 } from "@mui/material";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import "./SchedulePage.css";
+import FixedCell from "../../components/Admin/FixedCell";
+import HorizontalScrollBox from "../../components/Admin/Styles/HorizontalScrollBox";
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -36,11 +34,21 @@ function formatDate(dateStr) {
   }).format(date);
 }
 
+const chipStyle = {
+  fontWeight: 600,
+  height: 36,
+  fontSize: "0.9rem",
+  borderRadius: "10px",
+  px: 1.5,
+  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)"
+};
+
+
 function getEventStatusLabel(event) {
   return event.checkIn === 0 ? (
-    <Chip label="Check In" color="success" size="small" variant="outlined" />
+    <Chip label="Unchecked" color="warning" sx={chipStyle} variant="contained" />
   ) : (
-    <Chip label="Completed" color="default" size="small" variant="outlined" />
+    <Chip label="Completed" color="default" sx={chipStyle} variant="contained" />
   );
 }
 
@@ -49,8 +57,8 @@ function SchedulePage() {
   const initialCategory = location.pathname.includes("upcoming")
     ? "upcoming"
     : location.pathname.includes("previous")
-    ? "previous"
-    : "current";
+      ? "previous"
+      : "current";
   const [category, setCategory] = useState(initialCategory);
   const [eventList, setEventList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,23 +78,29 @@ function SchedulePage() {
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1300,
+    padding: "16px",
   };
 
   const modalStyle = {
+    position: "relative",
     backgroundColor: "#fff",
-    padding: "24px",
-    borderRadius: "8px",
-    maxWidth: "400px",
-    textAlign: "center",
+    padding: "32px 24px 24px",
+    borderRadius: "12px",
+    maxWidth: "500px",
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
   };
+
 
   useEffect(() => {
     const pathname = location.pathname;
     const newCategory = pathname.includes("upcoming")
       ? "upcoming"
       : pathname.includes("previous")
-      ? "previous"
-      : "current";
+        ? "previous"
+        : "current";
     setCategory(newCategory);
     setPage(1);
   }, [location]);
@@ -173,22 +187,22 @@ function SchedulePage() {
     <div>
       <Header />
       <div className="schedule-container">
-        <div className="tabs">
+        <div className="schedule-tabs">
           <Link
             to="/schedule/current"
-            className={location.pathname === "/schedule/current" ? "active" : ""}
+            className={location.pathname === "/schedule/current" ? "schedule-active" : ""}
           >
             Current Events
           </Link>
           <Link
             to="/schedule/upcoming"
-            className={location.pathname === "/schedule/upcoming" ? "active" : ""}
+            className={location.pathname === "/schedule/upcoming" ? "schedule-active" : ""}
           >
             Upcoming Events
           </Link>
           <Link
             to="/schedule/previous"
-            className={location.pathname === "/schedule/previous" ? "active" : ""}
+            className={location.pathname === "/schedule/previous" ? "schedule-active" : ""}
           >
             Previous Events
           </Link>
@@ -196,89 +210,86 @@ function SchedulePage() {
 
         <Box p={2} width="100%">
           <Paper elevation={3} sx={{ borderRadius: 2, p: 2 }}>
-            <Box mb={2}>
-              <Typography variant="h6" fontWeight="bold">
-                Events List
-              </Typography>
+            <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+              <Typography sx={{ px: 1, py: 0.5 }} variant="h5" fontWeight="bold">Events List</Typography>
             </Box>
+            <Divider sx={{ my: 2 }} />
 
-            <Table size="small">
-              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: "bold" }}>Ticket ID</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Event Name</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Start Time</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>End Time</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Tag</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {eventList.map((event) => (
-                  <TableRow
-                    key={event.eventID}
-                    hover
-                    sx={{
-                      "&:nth-of-type(odd)": { backgroundColor: "#fafafa" },
-                    }}
-                  >
-                    <TableCell>{event.ticketID}</TableCell>
-                    <TableCell>{event.name}</TableCell>
-                    <TableCell>{formatDate(event.startTime)}</TableCell>
-                    <TableCell>{formatDate(event.endTime)}</TableCell>
-                    <TableCell>
-                      <Chip label={event.tag} size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      {category === "current" && event.checkIn === 0 ? (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => {
-                            setSelectedEventID(event.eventID);
-                            setCheckInDialogOpen(true);
-                          }}
-                        >
-                          Check In
-                        </Button>
-                      ) : (
-                        getEventStatusLabel(event)
-                      )}
-                    </TableCell>
+            <HorizontalScrollBox>
+              <Table size="small" sx={{ minWidth: "950px", width: "100%" }}>
+                <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+                  <TableRow>
+                    <FixedCell width="15%" fontWeight="bold">Ticket ID</FixedCell>
+                    <FixedCell width="25%" fontWeight="bold">Event Name</FixedCell>
+                    <FixedCell width="20%" fontWeight="bold">Start Time</FixedCell>
+                    <FixedCell width="20%" fontWeight="bold">End Time</FixedCell>
+                    <FixedCell width="10%" fontWeight="bold">Tag</FixedCell>
+                    <FixedCell width="10%" fontWeight="bold">Status</FixedCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            {loading && <Typography mt={2}>Loading...</Typography>}
+                </TableHead>
+                <TableBody>
+                  {eventList.map((event) => (
+                    <TableRow key={event.eventID} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
+                      <FixedCell width="15%">{event.ticketID}</FixedCell>
+                      <FixedCell width="25%">{event.name}</FixedCell>
+                      <FixedCell width="20%">{formatDate(event.startTime)}</FixedCell>
+                      <FixedCell width="20%">{formatDate(event.endTime)}</FixedCell>
+                      <FixedCell width="10%">
+                        <Chip label={event.tag} variant="outlined" />
+                      </FixedCell>
+                      <FixedCell width="10%">
+                        {category === "current" && event.checkIn === 0 ? (
+                          <Button
+                          sx={{width:"120px"}}
+                            size="medium"
+                            variant="contained"
+                            color="success"
+                            onClick={() => {
+                              setSelectedEventID(event.eventID);
+                              setCheckInDialogOpen(true);
+                            }}
+                          >
+                            Check In
+                          </Button>
+                        ) : (
+                          getEventStatusLabel(event)
+                        )}
+                      </FixedCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </HorizontalScrollBox>
 
             <Box display="flex" justifyContent="center" mt={3}>
               <Pagination
                 count={totalPages}
                 page={page}
                 onChange={(e, value) => setPage(value)}
-                color="primary"
+                color="success"
+                variant="outlined"
               />
             </Box>
           </Paper>
         </Box>
+
       </div>
       <Footer />
 
       {checkInDialogOpen && (
         <Box style={overlayStyle}>
           <Box style={modalStyle}>
-            <Typography variant="h6" gutterBottom>
-              Confirm Check-In
-            </Typography>
-            <Typography>Are you sure you want to check in for this event?</Typography>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <Typography variant="h5" fontWeight="bold">
+                Confirm Check-In
+              </Typography>
+            </Box>
+            <Typography variant="h6">Are you sure you want to check in for this event?</Typography>
             <Box mt={3} display="flex" justifyContent="space-around">
-              <Button variant="outlined" onClick={() => setCheckInDialogOpen(false)}>
+              <Button color="error" onClick={() => setCheckInDialogOpen(false)}>
                 Cancel
               </Button>
               <Button
-                variant="contained"
                 color="success"
                 onClick={() => {
                   handleCheckIn(selectedEventID);
