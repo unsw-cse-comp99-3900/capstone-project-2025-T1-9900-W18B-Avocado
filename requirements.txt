@@ -45,4 +45,3 @@ Werkzeug~=3.0.1
 flask_cors==5.0.1
 nacos_sdk_python==2.0.1
 flask_jwt_extended==4.6.0
-openai~=1.75.0
