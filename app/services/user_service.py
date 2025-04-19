@@ -51,10 +51,10 @@ def register_user(data):
         # 🔐 插入登录信息
         cursor.execute("""
             INSERT INTO userdata 
-            (studentID, email, password, role, active)
+            (studentID, email, password, role, active, name)
             VALUES (%s, %s, %s, %s, %s)
         """, (
-            data["studentID"], data["email"], hashed, data["role"], 1
+            data["studentID"], data["email"], hashed, data["role"], 1, data["name"]
         ))
 
         conn.commit()
@@ -200,7 +200,7 @@ def get_all_users():
         return {"error": "Database connection failed"}, 500
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM studentdata")
+        cursor.execute("SELECT * FROM userdata")
         users = cursor.fetchall()
         return {"users": users}, 200
     except Exception as e:
@@ -273,3 +273,36 @@ def get_reward_status(student_id):
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals(): conn.close()
+
+def toggle_status(user, userID):
+    conn = get_db_connection()
+    if not conn:
+        return {"error": "Database connection failed"}, 500
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("UPDATE userdata SET active=active^1 WHERE studentId = %s", (userID,))
+        conn.commit()
+        return {}, 201
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
+        
+def toggle_status_multi(user, userIDs):
+    conn = get_db_connection()
+    if not conn:
+        return {"error": "Database connection failed"}, 500
+    try:
+        cursor = conn.cursor(dictionary=True)
+        for userID in userIDs:
+            cursor.execute("UPDATE userdata SET active=active^1 WHERE studentId = %s", (userID,))
+        conn.commit()
+        return {}, 201
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        cursor.close()
+        conn.close()
